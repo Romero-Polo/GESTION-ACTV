@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Aller';
+  src: url('./assets/fonts/Aller-Regular.woff2') format('woff2'),
+       url('./assets/fonts/Aller-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aller';
+  src: url('./assets/fonts/Aller-Bold.woff2') format('woff2'),
+       url('./assets/fonts/Aller-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Base styles */
+body {
+  font-family: 'Aller', 'Calibri', 'Arial', sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #555555;
+}
+
+/* Button base styles */
+.btn {
+  @apply px-4 py-2 rounded-button font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.btn-primary {
+  @apply bg-primary text-white hover:bg-primary/90 focus:ring-primary;
+}
+
+.btn-secondary {
+  @apply bg-gray-light text-gray-dark hover:bg-gray-medium/20 focus:ring-gray-medium;
+}
+
+/* Input styles */
+.input-field {
+  @apply block w-full px-3 py-2 border border-gray-light rounded-button shadow-sm placeholder-gray-medium focus:outline-none focus:ring-primary focus:border-primary;
+}
+
+/* Select styles */
+.select-field {
+  @apply block w-full px-3 py-2 border border-gray-light rounded-button shadow-sm focus:outline-none focus:ring-primary focus:border-primary bg-white;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white rounded-lg shadow-sm border border-gray-light;
+}
+
+.card-header {
+  @apply px-6 py-4 border-b border-gray-light;
+}
+
+.card-body {
+  @apply px-6 py-4;
+}
