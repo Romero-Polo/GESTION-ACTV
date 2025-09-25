@@ -2,9 +2,14 @@ import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import session from 'express-session';
 import dotenv from 'dotenv';
 import { AppDataSource, initializeDatabase } from './utils/database';
 import { InitialDataSeeder } from './seeders/InitialDataSeeder';
+import { SESSION_CONFIG } from './config/auth';
+
+// Routes
+import authRoutes from './routes/auth';
 
 // Load environment variables
 dotenv.config();
@@ -12,9 +17,24 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// CORS configuration
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+};
+
 // Middlewares
-app.use(helmet());
-app.use(cors());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+app.use(cors(corsOptions));
+
+// Session configuration
+app.use(session(SESSION_CONFIG));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -70,6 +90,9 @@ app.get('/db-info', async (req, res) => {
   }
 });
 
+// Routes
+app.use('/auth', authRoutes);
+
 // Basic route
 app.get('/', (req, res) => {
   res.json({
@@ -77,7 +100,8 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     endpoints: {
       health: '/health',
-      database: '/db-info'
+      database: '/db-info',
+      auth: '/auth'
     }
   });
 });

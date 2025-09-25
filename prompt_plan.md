@@ -187,7 +187,7 @@ ENTREGABLES:
 
 ---
 
-## **Prompt 2: Base de Datos y Modelos**
+## **Prompt 2: Base de Datos y Modelos** ✅ COMPLETADO
 
 ```
 Implementar el esquema de base de datos y modelos de entidades para el sistema de gestión de actividades, basándose en el proyecto ya creado.
