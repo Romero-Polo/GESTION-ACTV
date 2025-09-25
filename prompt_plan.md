@@ -152,7 +152,7 @@ La aplicación requiere:
 
 # Prompts de Implementación Test-Driven
 
-## **Prompt 1: Configuración Inicial del Proyecto**
+## **Prompt 1: Configuración Inicial del Proyecto** ✅ COMPLETADO
 
 ```
 Crear la estructura inicial de un proyecto full-stack para una webapp de gestión de actividad laboral con las siguientes características:

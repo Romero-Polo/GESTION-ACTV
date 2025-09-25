@@ -3,7 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
-import { AppDataSource } from './utils/database';
+import { AppDataSource, initializeDatabase } from './utils/database';
+import { InitialDataSeeder } from './seeders/InitialDataSeeder';
 
 // Load environment variables
 dotenv.config();
@@ -17,19 +18,68 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check endpoint
-app.get('/health', (req, res) => {
+// Health check endpoint with database status
+app.get('/health', async (req, res) => {
+  let dbStatus = 'disconnected';
+  let dbError = null;
+
+  try {
+    if (AppDataSource.isInitialized) {
+      await AppDataSource.query('SELECT 1');
+      dbStatus = 'connected';
+    }
+  } catch (error) {
+    dbError = error instanceof Error ? error.message : 'Unknown database error';
+  }
+
   res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    database: {
+      status: dbStatus,
+      ...(dbError && { error: dbError })
+    }
   });
+});
+
+// Database info endpoint
+app.get('/db-info', async (req, res) => {
+  try {
+    if (!AppDataSource.isInitialized) {
+      return res.status(503).json({ message: 'Database not initialized' });
+    }
+
+    const entities = AppDataSource.entityMetadatas.map(entity => ({
+      name: entity.tableName,
+      columns: entity.columns.length,
+      relations: entity.relations.length
+    }));
+
+    res.json({
+      connected: true,
+      entities,
+      totalEntities: entities.length
+    });
+  } catch (error) {
+    res.status(500).json({
+      connected: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
 });
 
 // Basic route
 app.get('/', (req, res) => {
-  res.json({ message: 'Gestión de Actividad Laboral API' });
+  res.json({
+    message: 'Gestión de Actividad Laboral API',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      database: '/db-info'
+    }
+  });
 });
 
 // 404 handler
@@ -48,16 +98,25 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 // Start server only if not in test environment
 if (process.env.NODE_ENV !== 'test') {
-  AppDataSource.initialize()
-    .then(() => {
-      console.log('Database connected successfully');
+  initializeDatabase()
+    .then(async () => {
+      console.log('Database initialized successfully');
+
+      // Run seeders if database is empty
+      if (process.env.NODE_ENV === 'development') {
+        await InitialDataSeeder.runIfEmpty();
+      }
+
       app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
         console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`Health check: http://localhost:${PORT}/health`);
+        console.log(`DB info: http://localhost:${PORT}/db-info`);
       });
     })
     .catch((error) => {
-      console.error('Database connection error:', error);
+      console.error('Database initialization error:', error);
+      process.exit(1);
     });
 }
 

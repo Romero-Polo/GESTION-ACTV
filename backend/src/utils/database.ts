@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
 import dotenv from 'dotenv';
+import { entities } from '../models';
 
 dotenv.config();
 
@@ -12,7 +13,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: process.env.NODE_ENV === 'development',
   logging: process.env.NODE_ENV === 'development',
-  entities: ['src/models/*.ts'],
+  entities: entities,
   migrations: ['src/migrations/*.ts'],
   subscribers: ['src/subscribers/*.ts'],
   options: {
@@ -20,3 +21,29 @@ export const AppDataSource = new DataSource({
     trustServerCertificate: true // Use false in production with proper certificates
   }
 });
+
+// Helper function to initialize database
+export async function initializeDatabase(): Promise<void> {
+  try {
+    if (!AppDataSource.isInitialized) {
+      await AppDataSource.initialize();
+      console.log('Database connection established successfully');
+    }
+  } catch (error) {
+    console.error('Error connecting to database:', error);
+    throw error;
+  }
+}
+
+// Helper function to close database connection
+export async function closeDatabase(): Promise<void> {
+  try {
+    if (AppDataSource.isInitialized) {
+      await AppDataSource.destroy();
+      console.log('Database connection closed');
+    }
+  } catch (error) {
+    console.error('Error closing database connection:', error);
+    throw error;
+  }
+}
