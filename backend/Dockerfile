@@ -40,11 +40,11 @@ USER nodejs
 # Copy package files
 COPY --chown=nodejs:nodejs package*.json ./
 
-# Install all dependencies with npm ci for reproducible builds
-# Separate production and development dependencies
-RUN npm ci --only=production --ignore-scripts && \
+# Install all dependencies
+# Using npm install for compatibility when package-lock.json is missing
+RUN npm install --only=production --legacy-peer-deps && \
     cp -R node_modules prod_node_modules && \
-    npm ci --ignore-scripts
+    npm install --legacy-peer-deps
 
 # Stage 3: Build stage
 FROM dependencies AS build
