@@ -25,7 +25,7 @@ COPY --chown=frontend:frontend package*.json ./
 
 # Install all dependencies for building
 # Using npm install for better compatibility across npm versions
-RUN npm install --no-audit --prefer-offline
+RUN npm install --no-audit
 
 # Stage 3: Build stage
 FROM dependencies AS build
