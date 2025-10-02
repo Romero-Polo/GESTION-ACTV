@@ -31,16 +31,19 @@ RUN apk add --no-cache \
     linux-headers \
     unixodbc-dev || echo "Warning: Some build dependencies may not be available"
 
-# Switch to app user for npm operations
-USER nodejs
-
 # Copy package files
 COPY --chown=nodejs:nodejs package*.json ./
 
-# Install all dependencies
-RUN npm install --only=production && \
+# Install all dependencies as root to avoid permission issues
+RUN echo "=== Starting npm install ===" && \
+    npm install --only=production && \
     cp -R node_modules prod_node_modules && \
-    npm install
+    npm install && \
+    echo "=== npm install completed ===" && \
+    chown -R nodejs:nodejs /app
+
+# Switch to app user for npm operations
+USER nodejs
 
 # Stage 3: Build stage
 FROM dependencies AS build

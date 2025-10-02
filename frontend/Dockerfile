@@ -17,17 +17,23 @@ RUN chown -R frontend:frontend /app
 # Stage 2: Dependencies stage
 FROM base AS dependencies
 
-# Switch to app user
-USER frontend
-
-# Copy package files
+# Copy package files first
 COPY --chown=frontend:frontend package*.json ./
 
-# Install all dependencies for building
-RUN npm install && \
-    echo "Verifying TypeScript installation..." && \
-    ls -la node_modules/.bin/ && \
-    test -f node_modules/.bin/tsc || (echo "ERROR: TypeScript not installed!" && exit 1)
+# Install all dependencies as root to avoid permission issues
+RUN echo "=== Starting npm install ===" && \
+    npm install && \
+    echo "=== npm install completed ===" && \
+    echo "=== Checking /app contents ===" && \
+    ls -la /app && \
+    echo "=== Checking node_modules ===" && \
+    ls -la /app/node_modules/.bin/ | head -20 && \
+    echo "=== Verifying TypeScript ===" && \
+    test -f /app/node_modules/.bin/tsc || (echo "ERROR: TypeScript not installed!" && exit 1) && \
+    chown -R frontend:frontend /app
+
+# Switch to app user
+USER frontend
 
 # Stage 3: Build stage
 FROM dependencies AS build
