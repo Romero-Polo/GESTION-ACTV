@@ -4,6 +4,9 @@
 # Stage 1: Base dependencies stage
 FROM node:18-alpine AS base
 
+# Use alternative Alpine mirrors for better reliability
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.edge.kernel.org\/alpine/g' /etc/apk/repositories || true
+
 # Install security updates and essential packages
 RUN apk update && apk upgrade && \
     apk add --no-cache \
