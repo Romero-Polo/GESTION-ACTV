@@ -20,16 +20,20 @@ FROM base AS dependencies
 # Copy only package.json (not package-lock.json to force fresh install)
 COPY --chown=frontend:frontend package.json ./
 
+# Configure npm with retries and timeout settings for unstable networks
+RUN npm config set fetch-retries 5 && \
+    npm config set fetch-retry-mintimeout 20000 && \
+    npm config set fetch-retry-maxtimeout 120000 && \
+    npm config set registry https://registry.npmjs.org/
+
 # Install all dependencies as root to avoid permission issues
 # Remove package-lock.json if it exists to force a clean install
-RUN echo "=== Starting npm install ===" && \
+RUN echo "=== Testing network connectivity ===" && \
+    (ping -c 2 registry.npmjs.org || echo "Warning: Cannot ping npm registry") && \
+    echo "=== Starting npm install ===" && \
     rm -f package-lock.json && \
-    npm install --force && \
+    npm install --force --verbose && \
     echo "=== npm install completed ===" && \
-    echo "=== Checking /app contents ===" && \
-    ls -la /app && \
-    echo "=== Checking node_modules ===" && \
-    ls -la /app/node_modules 2>&1 | head -20 && \
     echo "=== Checking .bin directory ===" && \
     ls -la /app/node_modules/.bin/ 2>&1 | head -20 && \
     echo "=== Verifying TypeScript ===" && \

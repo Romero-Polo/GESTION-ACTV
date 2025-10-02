@@ -34,12 +34,20 @@ RUN apk add --no-cache \
 # Copy only package.json (not package-lock.json to force fresh install)
 COPY --chown=nodejs:nodejs package.json ./
 
+# Configure npm with retries and timeout settings for unstable networks
+RUN npm config set fetch-retries 5 && \
+    npm config set fetch-retry-mintimeout 20000 && \
+    npm config set fetch-retry-maxtimeout 120000 && \
+    npm config set registry https://registry.npmjs.org/
+
 # Install all dependencies as root to avoid permission issues
-RUN echo "=== Starting npm install ===" && \
+RUN echo "=== Testing network connectivity ===" && \
+    (ping -c 2 registry.npmjs.org || echo "Warning: Cannot ping npm registry") && \
+    echo "=== Starting npm install ===" && \
     rm -f package-lock.json && \
-    npm install --only=production --force && \
+    npm install --only=production --force --verbose && \
     cp -R node_modules prod_node_modules && \
-    npm install --force && \
+    npm install --force --verbose && \
     echo "=== npm install completed ===" && \
     chown -R nodejs:nodejs /app
 
