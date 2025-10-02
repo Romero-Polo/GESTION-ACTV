@@ -8,7 +8,6 @@ FROM node:18-alpine AS base
 RUN apk add --no-cache \
     dumb-init \
     curl \
-    tini \
     ca-certificates \
     tzdata
 
@@ -101,8 +100,8 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:$PORT/health || exit 1
 
-# Use tini as PID 1 for proper signal handling
-ENTRYPOINT ["/sbin/tini", "--"]
+# Use dumb-init as PID 1 for proper signal handling
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 
 # Start the application
 CMD ["node", "dist/index.js"]

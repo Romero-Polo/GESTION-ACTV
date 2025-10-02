@@ -57,7 +57,6 @@ FROM nginx:1.25-alpine AS production
 # Install necessary packages (skip upgrade to avoid repository issues)
 RUN apk add --no-cache \
     curl \
-    tini \
     tzdata
 
 # Set timezone to Europe/Madrid (Spain)
@@ -102,9 +101,6 @@ EXPOSE 8080
 # Health check with proper endpoint
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:8080/health-check || exit 1
-
-# Use tini for proper signal handling
-ENTRYPOINT ["/sbin/tini", "--"]
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
