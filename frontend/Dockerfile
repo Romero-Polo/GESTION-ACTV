@@ -17,17 +17,21 @@ RUN chown -R frontend:frontend /app
 # Stage 2: Dependencies stage
 FROM base AS dependencies
 
-# Copy package files first
-COPY --chown=frontend:frontend package*.json ./
+# Copy only package.json (not package-lock.json to force fresh install)
+COPY --chown=frontend:frontend package.json ./
 
 # Install all dependencies as root to avoid permission issues
+# Remove package-lock.json if it exists to force a clean install
 RUN echo "=== Starting npm install ===" && \
-    npm install && \
+    rm -f package-lock.json && \
+    npm install --force && \
     echo "=== npm install completed ===" && \
     echo "=== Checking /app contents ===" && \
     ls -la /app && \
     echo "=== Checking node_modules ===" && \
-    ls -la /app/node_modules/.bin/ | head -20 && \
+    ls -la /app/node_modules 2>&1 | head -20 && \
+    echo "=== Checking .bin directory ===" && \
+    ls -la /app/node_modules/.bin/ 2>&1 | head -20 && \
     echo "=== Verifying TypeScript ===" && \
     test -f /app/node_modules/.bin/tsc || (echo "ERROR: TypeScript not installed!" && exit 1) && \
     chown -R frontend:frontend /app

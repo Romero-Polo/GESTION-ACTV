@@ -31,14 +31,15 @@ RUN apk add --no-cache \
     linux-headers \
     unixodbc-dev || echo "Warning: Some build dependencies may not be available"
 
-# Copy package files
-COPY --chown=nodejs:nodejs package*.json ./
+# Copy only package.json (not package-lock.json to force fresh install)
+COPY --chown=nodejs:nodejs package.json ./
 
 # Install all dependencies as root to avoid permission issues
 RUN echo "=== Starting npm install ===" && \
-    npm install --only=production && \
+    rm -f package-lock.json && \
+    npm install --only=production --force && \
     cp -R node_modules prod_node_modules && \
-    npm install && \
+    npm install --force && \
     echo "=== npm install completed ===" && \
     chown -R nodejs:nodejs /app
 
