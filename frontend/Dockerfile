@@ -28,8 +28,7 @@ USER frontend
 COPY --chown=frontend:frontend package*.json ./
 
 # Install all dependencies for building
-# Using npm install instead of npm ci for compatibility
-RUN npm install --legacy-peer-deps
+RUN npm ci --ignore-scripts
 
 # Stage 3: Build stage
 FROM dependencies AS build
