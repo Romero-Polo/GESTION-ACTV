@@ -38,10 +38,9 @@ USER nodejs
 COPY --chown=nodejs:nodejs package*.json ./
 
 # Install all dependencies
-# Using npm install for better compatibility across npm versions
-RUN npm install --only=production --no-audit && \
+RUN npm install --only=production && \
     cp -R node_modules prod_node_modules && \
-    npm install --no-audit
+    npm install
 
 # Stage 3: Build stage
 FROM dependencies AS build

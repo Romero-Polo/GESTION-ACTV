@@ -24,8 +24,10 @@ USER frontend
 COPY --chown=frontend:frontend package*.json ./
 
 # Install all dependencies for building
-# Using npm install for better compatibility across npm versions
-RUN npm install --no-audit
+RUN npm install && \
+    echo "Verifying TypeScript installation..." && \
+    ls -la node_modules/.bin/ && \
+    test -f node_modules/.bin/tsc || (echo "ERROR: TypeScript not installed!" && exit 1)
 
 # Stage 3: Build stage
 FROM dependencies AS build
