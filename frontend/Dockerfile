@@ -4,12 +4,8 @@
 # Stage 1: Base stage with Node.js
 FROM node:18-alpine AS base
 
-# Use alternative Alpine mirrors for better reliability
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.edge.kernel.org\/alpine/g' /etc/apk/repositories || true
-
-# Install security updates
-RUN apk update && apk upgrade && \
-    apk add --no-cache git
+# Install git (skip upgrade to avoid repository issues)
+RUN apk add --no-cache git
 
 # Create app user
 RUN addgroup -g 1001 -S frontend && \
@@ -58,12 +54,8 @@ RUN npm run build
 # Stage 4: Production stage with Nginx
 FROM nginx:1.25-alpine AS production
 
-# Use alternative Alpine mirrors for better reliability
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.edge.kernel.org\/alpine/g' /etc/apk/repositories || true
-
-# Install security updates and necessary packages
-RUN apk update && apk upgrade && \
-    apk add --no-cache \
+# Install necessary packages (skip upgrade to avoid repository issues)
+RUN apk add --no-cache \
     curl \
     tini \
     tzdata
