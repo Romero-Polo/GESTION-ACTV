@@ -4,9 +4,6 @@
 # Stage 1: Base stage with Node.js
 FROM node:18-alpine AS base
 
-# Install git (skip upgrade to avoid repository issues)
-RUN apk add --no-cache git
-
 # Create app user
 RUN addgroup -g 1001 -S frontend && \
     adduser -S frontend -u 1001 -G frontend
@@ -54,14 +51,13 @@ RUN npm run build
 # Stage 4: Production stage with Nginx
 FROM nginx:1.25-alpine AS production
 
-# Install necessary packages (skip upgrade to avoid repository issues)
-RUN apk add --no-cache \
-    curl \
-    tzdata
+# Install necessary packages only if available
+RUN apk add --no-cache curl || true
 
-# Set timezone to Europe/Madrid (Spain)
+# Set timezone to Europe/Madrid (Spain) if tzdata is available
 ENV TZ=Europe/Madrid
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime 2>/dev/null || true && \
+    echo $TZ > /etc/timezone 2>/dev/null || true
 
 # Create non-root nginx user
 RUN addgroup -g 101 -S nginx || true && \

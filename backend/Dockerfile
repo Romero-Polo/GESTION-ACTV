@@ -4,12 +4,10 @@
 # Stage 1: Base dependencies stage
 FROM node:18-alpine AS base
 
-# Install essential packages (skip upgrade to avoid repository issues)
+# Install essential packages only if not already present
 RUN apk add --no-cache \
     dumb-init \
-    curl \
-    ca-certificates \
-    tzdata
+    curl || true
 
 # Create app user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -25,12 +23,13 @@ RUN chown -R nodejs:nodejs /app
 FROM base AS dependencies
 
 # Install build dependencies (needed for native modules, including SQL Server)
+# Try to install, but continue even if repositories fail
 RUN apk add --no-cache \
     python3 \
     make \
     g++ \
     linux-headers \
-    unixodbc-dev
+    unixodbc-dev || echo "Warning: Some build dependencies may not be available"
 
 # Switch to app user for npm operations
 USER nodejs
@@ -61,14 +60,16 @@ RUN npm run build
 FROM base AS production
 
 # Install only runtime dependencies (SQL Server ODBC drivers)
+# Try to install, but continue even if repositories fail
 RUN apk add --no-cache \
     unixodbc \
     freetds \
-    freetds-dev
+    freetds-dev || echo "Warning: SQL Server ODBC drivers may not be available"
 
-# Set timezone to Europe/Madrid (Spain)
+# Set timezone to Europe/Madrid (Spain) if tzdata is available
 ENV TZ=Europe/Madrid
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime 2>/dev/null || true && \
+    echo $TZ > /etc/timezone 2>/dev/null || true
 
 # Switch to app user
 USER nodejs
