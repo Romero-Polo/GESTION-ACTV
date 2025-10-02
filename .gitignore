@@ -136,3 +136,24 @@ desktop.ini
 # Database files
 *.sqlite
 *.db
+
+# Production secrets (NEVER commit these!)
+secrets/
+!secrets/.gitkeep
+.env.production
+
+# Docker volumes and data
+data/
+uploads/
+backups/
+
+# SSL certificates
+ssl/
+*.pem
+*.key
+*.crt
+
+# Monitoring data
+monitoring/prometheus/data
+monitoring/grafana/data
+monitoring/loki/data

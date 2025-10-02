@@ -1,0 +1,125 @@
+{
+  "app": {
+    "title": "Gestión de Actividades",
+    "welcome": "Bienvenido",
+    "logout": "Cerrar Sesión"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "activities": "Actividades",
+    "obras": "Obras",
+    "recursos": "Recursos",
+    "users": "Usuarios",
+    "reports": "Informes",
+    "settings": "Configuración"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "todaysActivities": "Actividades de Hoy",
+    "openShifts": "Jornadas Abiertas",
+    "quickStats": "Estadísticas Rápidas",
+    "activeWorks": "Obras Más Activas",
+    "monthlyHours": "Horas del Mes",
+    "pendingActivities": "Actividades Pendientes",
+    "noActivities": "No hay actividades para mostrar",
+    "noOpenShifts": "No hay jornadas abiertas"
+  },
+  "calendar": {
+    "month": "Mes",
+    "week": "Semana",
+    "day": "Día",
+    "today": "Hoy",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "createActivity": "Crear Actividad",
+    "viewDetails": "Ver Detalles",
+    "noActivities": "No hay actividades en este período"
+  },
+  "filters": {
+    "title": "Filtros",
+    "obra": "Obra",
+    "recurso": "Recurso",
+    "tipoActividad": "Tipo de Actividad",
+    "fechaDesde": "Fecha Desde",
+    "fechaHasta": "Fecha Hasta",
+    "clear": "Limpiar",
+    "apply": "Aplicar",
+    "quickFilters": "Filtros Rápidos",
+    "thisWeek": "Esta Semana",
+    "thisMonth": "Este Mes",
+    "allWorks": "Todas las Obras",
+    "allResources": "Todos los Recursos",
+    "allTypes": "Todos los Tipos"
+  },
+  "activities": {
+    "title": "Actividades",
+    "create": "Nueva Actividad",
+    "edit": "Editar Actividad",
+    "delete": "Eliminar Actividad",
+    "close": "Cerrar Jornada",
+    "obra": "Obra",
+    "recurso": "Recurso",
+    "tipo": "Tipo",
+    "fechaInicio": "Fecha Inicio",
+    "horaInicio": "Hora Inicio",
+    "fechaFin": "Fecha Fin",
+    "horaFin": "Hora Fin",
+    "observaciones": "Observaciones",
+    "estado": "Estado",
+    "abierta": "Abierta",
+    "cerrada": "Cerrada",
+    "duration": "Duración",
+    "hours": "horas",
+    "noEndTime": "Jornada abierta",
+    "confirmDelete": "¿Está seguro de eliminar esta actividad?"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "noData": "No hay datos disponibles",
+    "search": "Buscar",
+    "select": "Seleccionar",
+    "all": "Todos",
+    "none": "Ninguno",
+    "required": "Campo obligatorio",
+    "optional": "Opcional"
+  },
+  "validation": {
+    "required": "Este campo es obligatorio",
+    "invalidDate": "Fecha inválida",
+    "invalidTime": "Hora inválida",
+    "overlap": "Esta actividad se solapa con otra existente",
+    "conflictingActivities": "Actividades en conflicto:",
+    "suggestedSlots": "Horarios sugeridos:",
+    "noSuggestions": "No hay horarios disponibles sugeridos"
+  },
+  "errors": {
+    "generic": "Ha ocurrido un error inesperado",
+    "network": "Error de conexión",
+    "unauthorized": "No autorizado",
+    "forbidden": "Acceso denegado",
+    "notFound": "No encontrado",
+    "serverError": "Error del servidor",
+    "validationFailed": "Validación fallida"
+  },
+  "dates": {
+    "format": "DD/MM/YYYY",
+    "timeFormat": "HH:mm",
+    "dateTimeFormat": "DD/MM/YYYY HH:mm",
+    "weekdays": {
+      "short": ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+      "long": ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+    },
+    "months": {
+      "short": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+      "long": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    }
+  }
+}

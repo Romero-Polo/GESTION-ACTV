@@ -1,0 +1,125 @@
+{
+  "app": {
+    "title": "Gestió d'Activitats",
+    "welcome": "Benvingut",
+    "logout": "Tancar Sessió"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "activities": "Activitats",
+    "obras": "Obres",
+    "recursos": "Recursos",
+    "users": "Usuaris",
+    "reports": "Informes",
+    "settings": "Configuració"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "todaysActivities": "Activitats d'Avui",
+    "openShifts": "Jornades Obertes",
+    "quickStats": "Estadístiques Ràpides",
+    "activeWorks": "Obres Més Actives",
+    "monthlyHours": "Hores del Mes",
+    "pendingActivities": "Activitats Pendents",
+    "noActivities": "No hi ha activitats per mostrar",
+    "noOpenShifts": "No hi ha jornades obertes"
+  },
+  "calendar": {
+    "month": "Mes",
+    "week": "Setmana",
+    "day": "Dia",
+    "today": "Avui",
+    "previous": "Anterior",
+    "next": "Següent",
+    "createActivity": "Crear Activitat",
+    "viewDetails": "Veure Detalls",
+    "noActivities": "No hi ha activitats en aquest període"
+  },
+  "filters": {
+    "title": "Filtres",
+    "obra": "Obra",
+    "recurso": "Recurs",
+    "tipoActividad": "Tipus d'Activitat",
+    "fechaDesde": "Data Des de",
+    "fechaHasta": "Data Fins a",
+    "clear": "Netejar",
+    "apply": "Aplicar",
+    "quickFilters": "Filtres Ràpids",
+    "thisWeek": "Aquesta Setmana",
+    "thisMonth": "Aquest Mes",
+    "allWorks": "Totes les Obres",
+    "allResources": "Tots els Recursos",
+    "allTypes": "Tots els Tipus"
+  },
+  "activities": {
+    "title": "Activitats",
+    "create": "Nova Activitat",
+    "edit": "Editar Activitat",
+    "delete": "Eliminar Activitat",
+    "close": "Tancar Jornada",
+    "obra": "Obra",
+    "recurso": "Recurs",
+    "tipo": "Tipus",
+    "fechaInicio": "Data Inici",
+    "horaInicio": "Hora Inici",
+    "fechaFin": "Data Fi",
+    "horaFin": "Hora Fi",
+    "observaciones": "Observacions",
+    "estado": "Estat",
+    "abierta": "Oberta",
+    "cerrada": "Tancada",
+    "duration": "Duració",
+    "hours": "hores",
+    "noEndTime": "Jornada oberta",
+    "confirmDelete": "Esteu segur d'eliminar aquesta activitat?"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancel·lar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "close": "Tancar",
+    "loading": "Carregant...",
+    "error": "Error",
+    "success": "Èxit",
+    "noData": "No hi ha dades disponibles",
+    "search": "Cercar",
+    "select": "Seleccionar",
+    "all": "Tots",
+    "none": "Cap",
+    "required": "Camp obligatori",
+    "optional": "Opcional"
+  },
+  "validation": {
+    "required": "Aquest camp és obligatori",
+    "invalidDate": "Data invàlida",
+    "invalidTime": "Hora invàlida",
+    "overlap": "Aquesta activitat se solapa amb una altra existent",
+    "conflictingActivities": "Activitats en conflicte:",
+    "suggestedSlots": "Horaris suggerits:",
+    "noSuggestions": "No hi ha horaris disponibles suggerits"
+  },
+  "errors": {
+    "generic": "S'ha produït un error inesperat",
+    "network": "Error de connexió",
+    "unauthorized": "No autoritzat",
+    "forbidden": "Accés denegat",
+    "notFound": "No trobat",
+    "serverError": "Error del servidor",
+    "validationFailed": "Validació fallida"
+  },
+  "dates": {
+    "format": "DD/MM/YYYY",
+    "timeFormat": "HH:mm",
+    "dateTimeFormat": "DD/MM/YYYY HH:mm",
+    "weekdays": {
+      "short": ["Dg", "Dl", "Dt", "Dc", "Dj", "Dv", "Ds"],
+      "long": ["Diumenge", "Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte"]
+    },
+    "months": {
+      "short": ["Gen", "Feb", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Oct", "Nov", "Des"],
+      "long": ["Gener", "Febrer", "Març", "Abril", "Maig", "Juny", "Juliol", "Agost", "Setembre", "Octubre", "Novembre", "Desembre"]
+    }
+  }
+}

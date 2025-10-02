@@ -1,0 +1,41 @@
+{
+  "development": {
+    "backend": {
+      "port": 3002,
+      "host": "localhost",
+      "protocol": "http"
+    },
+    "frontend": {
+      "port": 8080,
+      "host": "localhost",
+      "protocol": "http"
+    },
+    "database": {
+      "host": "192.168.0.30",
+      "port": 1433,
+      "username": "rp-gestorjornadas",
+      "password": "KBNYERNCK8EKK7389RXB7CEQZTF39GCT.",
+      "database": "RP_GESTOR_JORNADAS"
+    }
+  },
+  "production": {
+    "backend": {
+      "port": 3000,
+      "host": "localhost",
+      "protocol": "http"
+    },
+    "frontend": {
+      "port": 80,
+      "host": "localhost",
+      "protocol": "http"
+    },
+    "database": {
+      "host": "192.168.0.30",
+      "port": 1433,
+      "username": "rp-gestorjornadas",
+      "password": "KBNYERNCK8EKK7389RXB7CEQZTF39GCT.",
+      "database": "RP_GESTOR_JORNADAS"
+    }
+  },
+  "current_environment": "development"
+}

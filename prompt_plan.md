@@ -222,7 +222,7 @@ ENTREGABLES:
 
 ---
 
-## **Prompt 3: Sistema de Autenticación y Autorización**
+## **Prompt 3: Sistema de Autenticación y Autorización** ✅ COMPLETADO
 
 ```
 Implementar autenticación con Office365 y sistema de roles, construyendo sobre la estructura existente.
@@ -267,7 +267,7 @@ ENTREGABLES:
 
 ---
 
-## **Prompt 4: CRUD de Obras y Recursos**
+## **Prompt 4: CRUD de Obras y Recursos** ✅ COMPLETADO
 
 ```
 Implementar la gestión completa de Obras y Recursos (Operarios/Máquinas), basándose en la autenticación ya implementada.
@@ -314,7 +314,7 @@ ENTREGABLES:
 
 ---
 
-## **Prompt 5: Gestión de Actividades - Parte 1 (CRUD Básico)**
+## **Prompt 5: Gestión de Actividades - Parte 1 (CRUD Básico)** ✅ COMPLETADO
 
 ```
 Implementar el CRUD básico de actividades sin validaciones de solapamiento, construyendo sobre el sistema de obras y recursos existente.
@@ -367,7 +367,7 @@ ENTREGABLES:
 
 ---
 
-## **Prompt 6: Validaciones de Solapamiento y Jornada Abierta**
+## **Prompt 6: Validaciones de Solapamiento y Jornada Abierta** ✅ COMPLETADO
 
 ```
 Implementar las validaciones de negocio críticas: no solapamiento de actividades y manejo de jornada abierta, basándose en el CRUD ya implementado.
@@ -418,7 +418,7 @@ ENTREGABLES:
 
 ---
 
-## **Prompt 7: Dashboard y Visualizaciones**
+## **Prompt 7: Dashboard y Visualizaciones** ✅ COMPLETADO
 
 ```
 Crear el dashboard principal con calendario y vistas de actividades, integrando todos los componentes desarrollados anteriormente.
@@ -478,7 +478,7 @@ ENTREGABLES:
 
 ---
 
-## **Prompt 8: Sincronización con APIs Externas**
+## **Prompt 8: Sincronización con APIs Externas** ✅ COMPLETADO
 
 ```
 Implementar la sincronización con n8n para obtener obras y recursos externos, construyendo sobre la gestión de maestros ya existente.

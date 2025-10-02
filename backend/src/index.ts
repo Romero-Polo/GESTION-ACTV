@@ -3,13 +3,23 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import session from 'express-session';
+import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
 import { AppDataSource, initializeDatabase } from './utils/database';
 import { InitialDataSeeder } from './seeders/InitialDataSeeder';
 import { SESSION_CONFIG } from './config/auth';
+import { specs } from './config/swagger';
+import { compressionMiddleware } from './middleware/compression';
 
 // Routes
 import authRoutes from './routes/auth';
+import obrasRoutes from './routes/obras';
+import recursosRoutes from './routes/recursos';
+import actividadesRoutes from './routes/actividades';
+import { syncRouter } from './routes/sync';
+import { exportRouter } from './routes/export';
+import { gpsRouter } from './routes/gps';
+import { metricsRouter } from './routes/metrics';
 
 // Load environment variables
 dotenv.config();
@@ -31,6 +41,7 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use(cors(corsOptions));
+app.use(compressionMiddleware);
 
 // Session configuration
 app.use(session(SESSION_CONFIG));
@@ -92,6 +103,30 @@ app.get('/db-info', async (req, res) => {
 
 // Routes
 app.use('/auth', authRoutes);
+app.use('/api/obras', obrasRoutes);
+app.use('/api/recursos', recursosRoutes);
+app.use('/api/actividades', actividadesRoutes);
+app.use('/api/sync', syncRouter);
+app.use('/api/export', exportRouter);
+app.use('/api/gps', gpsRouter);
+app.use('/api/metrics', metricsRouter);
+
+// Swagger Documentation
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
+    explorer: true,
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'Gestión Actividad Laboral API',
+    swaggerOptions: {
+      persistAuthorization: true,
+      displayRequestDuration: true,
+      filter: true,
+      showExtensions: true,
+      showCommonExtensions: true,
+      docExpansion: 'list'
+    }
+  }));
+}
 
 // Basic route
 app.get('/', (req, res) => {
@@ -101,7 +136,17 @@ app.get('/', (req, res) => {
     endpoints: {
       health: '/health',
       database: '/db-info',
-      auth: '/auth'
+      auth: '/auth',
+      obras: '/api/obras',
+      recursos: '/api/recursos',
+      actividades: '/api/actividades',
+      sync: '/api/sync',
+      export: '/api/export',
+      gps: '/api/gps',
+      metrics: '/api/metrics',
+      ...(process.env.NODE_ENV !== 'production' && {
+        documentation: '/api-docs'
+      })
     }
   });
 });

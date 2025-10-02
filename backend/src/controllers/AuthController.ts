@@ -269,6 +269,67 @@ export class AuthController {
       });
     }
   };
+
+  /**
+   * Mock login for testing purposes only
+   * POST /auth/mock-login
+   */
+  mockLogin = async (req: Request, res: Response): Promise<void> => {
+    // Only available in test environment
+    if (process.env.NODE_ENV !== 'test') {
+      res.status(404).json({ message: 'Endpoint not found' });
+      return;
+    }
+
+    try {
+      const { email, name, role } = req.body;
+
+      if (!email || !name || !role) {
+        res.status(400).json({ message: 'Email, name, and role are required' });
+        return;
+      }
+
+      // Check if user exists in database, create if not
+      const usuarioRepository = AppDataSource.getRepository(Usuario);
+      let usuario = await usuarioRepository.findOne({ where: { email } });
+
+      if (!usuario) {
+        usuario = usuarioRepository.create({
+          email,
+          nombre: name,
+          rol: role,
+          activo: true
+        });
+        await usuarioRepository.save(usuario);
+      }
+
+      // Generate JWT token
+      const token = this.authService.generateJWT({
+        userId: usuario.id,
+        email: usuario.email,
+        nombre: usuario.nombre,
+        rol: usuario.rol
+      });
+
+      res.json({
+        message: 'Mock authentication successful',
+        token: token,
+        user: {
+          id: usuario.id,
+          email: usuario.email,
+          nombre: usuario.nombre,
+          rol: usuario.rol
+        }
+      });
+
+    } catch (error) {
+      console.error('Mock login error:', error);
+      res.status(500).json({
+        message: 'Mock authentication failed',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  };
 }
 
 export const authController = new AuthController();

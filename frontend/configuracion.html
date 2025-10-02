@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - Gestión de Actividades</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f9fafb;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            color: #1f2937;
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        /* Debug Mode Toggle Styles */
+        .debug-control {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .debug-info {
+            margin-bottom: 1rem;
+        }
+
+        .debug-info strong {
+            color: #1f2937;
+            font-size: 1rem;
+        }
+
+        .debug-info p {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #10b981;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .debug-status {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        .debug-status.active {
+            color: #10b981;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .card h2 {
+            color: #1f2937;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .config-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .config-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .config-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .config-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .config-description {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .config-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb {
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .feature-tag {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        /* Technology Stack Styles */
+        .tech-stack-section {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .tech-category {
+            margin-bottom: 2rem;
+        }
+
+        .tech-category:last-child {
+            margin-bottom: 0;
+        }
+
+        .tech-category-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .tech-item {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 1rem;
+            transition: all 0.2s;
+        }
+
+        .tech-item:hover {
+            background: #f3f4f6;
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tech-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .tech-version {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .tech-description {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            line-height: 1.4;
+        }
+
+        .feature-tag.new {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .stats-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .admin-section {
+            border-left: 4px solid #f59e0b;
+            background: #fffbeb;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1rem;
+        }
+
+        .admin-warning {
+            color: #92400e;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .version-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            background-color: #dbeafe;
+            color: #1e40af;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            margin-left: 12px;
+        }
+
+        .version-link:hover {
+            background-color: #bfdbfe;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                    <h1>⚙️ Configuración del Sistema</h1>
+                    <a href="changelog.html" class="version-link" title="Ver registro de cambios">
+                        v1.6.1
+                    </a>
+                </div>
+            <button class="btn btn-secondary" onclick="window.location.href='/index.html'">
+                🏠 Dashboard
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="/index.html">Dashboard</a> / Configuración
+        </div>
+
+        <!-- Estadísticas del Sistema -->
+        <div class="stats-section">
+            <h2 style="margin-bottom: 0.5rem;">📊 Estado del Sistema</h2>
+            <p style="opacity: 0.9; margin-bottom: 1rem;">Información general sobre la configuración actual</p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="tiposCount">5</div>
+                    <div class="stat-label">Tipos de Actividad</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="obrasCount">4</div>
+                    <div class="stat-label">Obras Activas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="recursosCount">5</div>
+                    <div class="stat-label">Recursos Disponibles</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="actividadesCount">0</div>
+                    <div class="stat-label">Actividades Registradas</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gestión de Maestros -->
+        <div class="card">
+            <h2>🗂️ Gestión de Maestros</h2>
+            <p style="color: #6b7280; margin-bottom: 1.5rem;">
+                Configure y mantenga la información base del sistema
+            </p>
+
+            <div class="config-grid">
+                <!-- Tipos de Actividad -->
+                <div class="config-item">
+                    <span class="config-icon">🎨</span>
+                    <div class="config-title">
+                        Tipos de Actividad
+                        <span class="feature-tag new">NUEVO</span>
+                    </div>
+                    <div class="config-description">
+                        Gestione los tipos de actividad disponibles en el sistema.
+                        Configure códigos, nombres, descripciones y colores personalizados
+                        para cada tipo de actividad.
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn" onclick="window.location.href='/tipos-actividad.html'">
+                            🎨 Gestionar Tipos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Equipos -->
+                <div class="config-item">
+                    <span class="config-icon">🎯</span>
+                    <div class="config-title">
+                        Equipos
+                        <span class="feature-tag">DISPONIBLE</span>
+                    </div>
+                    <div class="config-description">
+                        Configure equipos para agrupar recursos y facilitar
+                        la asignación masiva de actividades a múltiples recursos.
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn" onclick="window.location.href='/equipos.html'">
+                            🎯 Gestionar Equipos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Obras -->
+                <div class="config-item">
+                    <span class="config-icon">🏗️</span>
+                    <div class="config-title">
+                        Obras
+                        <span class="feature-tag new">NUEVO</span>
+                    </div>
+                    <div class="config-description">
+                        Administre las obras del proyecto. Configure códigos de obra,
+                        descripciones y estados de activación para organizar mejor
+                        sus actividades laborales.
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn" onclick="window.location.href='/obras.html'">
+                            🏗️ Gestionar Obras
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recursos -->
+                <div class="config-item">
+                    <span class="config-icon">👥</span>
+                    <div class="config-title">Recursos</div>
+                    <div class="config-description">
+                        Configure operarios, maquinaria y otros recursos.
+                        Mantenga información de contacto, especialidades y disponibilidad.
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn" onclick="showComingSoon('Recursos')">
+                            👥 Gestionar Recursos
+                        </button>
+                        <span class="feature-tag">Próximamente</span>
+                    </div>
+                </div>
+
+                <!-- Usuarios -->
+                <div class="config-item">
+                    <span class="config-icon">🔐</span>
+                    <div class="config-title">Usuarios y Permisos</div>
+                    <div class="config-description">
+                        Gestione usuarios del sistema, roles y permisos de acceso
+                        a diferentes secciones y funcionalidades.
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn" onclick="window.location.href='/usuarios.html'">
+                            🔐 Gestionar Usuarios
+                        </button>
+                        <span class="feature-tag new">NUEVO</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuración del Sistema -->
+        <div class="card">
+            <h2>⚡ Configuración del Sistema</h2>
+            <p style="color: #6b7280; margin-bottom: 1.5rem;">
+                Opciones generales de configuración y personalización
+            </p>
+
+            <div class="config-grid">
+                <!-- Configuración de Tiempo -->
+                <div class="config-item">
+                    <span class="config-icon">⏰</span>
+                    <div class="config-title">Configuración de Tiempo</div>
+                    <div class="config-description">
+                        Configure intervalos de tiempo, horarios de trabajo,
+                        formatos de fecha y zona horaria del sistema.
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn" onclick="showComingSoon('Tiempo')">
+                            ⏰ Configurar
+                        </button>
+                        <span class="feature-tag">Próximamente</span>
+                    </div>
+                </div>
+
+                <!-- Notificaciones -->
+                <div class="config-item">
+                    <span class="config-icon">🔔</span>
+                    <div class="config-title">Notificaciones</div>
+                    <div class="config-description">
+                        Configure alertas, recordatorios y notificaciones
+                        automáticas del sistema.
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn" onclick="showComingSoon('Notificaciones')">
+                            🔔 Configurar
+                        </button>
+                        <span class="feature-tag">Próximamente</span>
+                    </div>
+                </div>
+
+                <!-- Exportación -->
+                <div class="config-item">
+                    <span class="config-icon">📤</span>
+                    <div class="config-title">Exportación de Datos</div>
+                    <div class="config-description">
+                        Configure formatos de exportación, plantillas
+                        y conexiones con sistemas externos.
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn" onclick="showComingSoon('Exportación')">
+                            📤 Configurar
+                        </button>
+                        <span class="feature-tag">Próximamente</span>
+                    </div>
+                </div>
+
+                <!-- Prueba de API -->
+                <div class="config-item">
+                    <span class="config-icon">🔌</span>
+                    <div class="config-title">Prueba de API</div>
+                    <div class="config-description">
+                        Verificar conexión con el servidor API y realizar
+                        pruebas de conectividad de los endpoints.
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn" onclick="testAPIConnection()">
+                            🔌 Probar API
+                        </button>
+                        <button class="btn btn-secondary" onclick="testAllEndpoints()">
+                            🧪 Probar Endpoints
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Base de Datos -->
+                <div class="config-item">
+                    <span class="config-icon">🗄️</span>
+                    <div class="config-title">Estado de Conexión</div>
+                    <div class="config-description">
+                        Información sobre la conexión a base de datos,
+                        respaldos y mantenimiento del sistema.
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn" onclick="checkDatabaseStatus()">
+                            📊 Ver Estado DB
+                        </button>
+                        <button class="btn btn-secondary" onclick="showComingSoon('Backup')">
+                            💾 Respaldos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Logs y Monitoreo -->
+                <div class="config-item">
+                    <span class="config-icon">📊</span>
+                    <div class="config-title">
+                        Logs y Monitoreo
+                        <span class="feature-tag new">NUEVO</span>
+                    </div>
+                    <div class="config-description">
+                        Visualice y filtre logs del sistema, llamadas API,
+                        tiempos de respuesta y estadísticas de rendimiento.
+                    </div>
+
+                    <!-- Debug Mode Toggle -->
+                    <div class="debug-control">
+                        <div class="debug-info">
+                            <strong>🐛 Modo Debug</strong>
+                            <p>Activar para registrar todas las llamadas API en la base de datos. Útil para debug y optimización.</p>
+                        </div>
+                        <div class="toggle-container">
+                            <label class="toggle">
+                                <input type="checkbox" id="debugModeToggle" onchange="toggleDebugMode()">
+                                <span class="slider"></span>
+                            </label>
+                            <span id="debugStatus" class="debug-status">Desactivado</span>
+                        </div>
+                    </div>
+
+                    <div class="config-actions">
+                        <button class="btn" onclick="window.location.href='/logs.html'">
+                            📊 Ver Logs
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportSystemLogs()">
+                            📥 Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Stack -->
+        <div class="tech-stack-section">
+            <h2 style="margin-bottom: 0.5rem;">🔧 Technology Stack</h2>
+            <p style="color: #6b7280; margin-bottom: 2rem;">
+                Tecnologías y herramientas utilizadas en el proyecto
+            </p>
+
+            <!-- Frontend -->
+            <div class="tech-category">
+                <div class="tech-category-title">
+                    <span>🎨</span> Frontend
+                </div>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <div class="tech-name">HTML5</div>
+                        <div class="tech-version">Standard</div>
+                        <div class="tech-description">Estructura y marcado semántico</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">CSS3</div>
+                        <div class="tech-version">Standard</div>
+                        <div class="tech-description">Estilos y diseño responsivo</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">JavaScript</div>
+                        <div class="tech-version">ES6+</div>
+                        <div class="tech-description">Lógica de cliente vanilla</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">Fetch API</div>
+                        <div class="tech-version">Native</div>
+                        <div class="tech-description">Comunicación con el backend</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backend -->
+            <div class="tech-category">
+                <div class="tech-category-title">
+                    <span>⚙️</span> Backend
+                </div>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <div class="tech-name">Node.js</div>
+                        <div class="tech-version">v18+</div>
+                        <div class="tech-description">Servidor HTTP nativo</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">mssql-cli</div>
+                        <div class="tech-version">Latest</div>
+                        <div class="tech-description">Cliente CLI para SQL Server</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">PowerShell</div>
+                        <div class="tech-version">5.1+</div>
+                        <div class="tech-description">Wrapper para comandos SQL</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">Express-like Router</div>
+                        <div class="tech-version">Custom</div>
+                        <div class="tech-description">Enrutamiento HTTP personalizado</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database -->
+            <div class="tech-category">
+                <div class="tech-category-title">
+                    <span>💾</span> Base de Datos
+                </div>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <div class="tech-name">SQL Server</div>
+                        <div class="tech-version">2019+</div>
+                        <div class="tech-description">Motor de base de datos principal</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">T-SQL</div>
+                        <div class="tech-version">Standard</div>
+                        <div class="tech-description">Lenguaje de consultas</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">Authentication</div>
+                        <div class="tech-version">SQL Server</div>
+                        <div class="tech-description">Autenticación de usuario dedicado</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools & Infrastructure -->
+            <div class="tech-category">
+                <div class="tech-category-title">
+                    <span>🛠️</span> Herramientas e Infraestructura
+                </div>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <div class="tech-name">Git</div>
+                        <div class="tech-version">Latest</div>
+                        <div class="tech-description">Control de versiones</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">Windows Server</div>
+                        <div class="tech-version">2019+</div>
+                        <div class="tech-description">Sistema operativo servidor</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">npm</div>
+                        <div class="tech-version">Latest</div>
+                        <div class="tech-description">Gestor de paquetes</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">Static Server</div>
+                        <div class="tech-version">Custom</div>
+                        <div class="tech-description">Servidor de archivos estáticos</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Architecture Patterns -->
+            <div class="tech-category">
+                <div class="tech-category-title">
+                    <span>🏗️</span> Patrones y Arquitectura
+                </div>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <div class="tech-name">REST API</div>
+                        <div class="tech-version">Custom</div>
+                        <div class="tech-description">API RESTful para comunicación</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">MVC Pattern</div>
+                        <div class="tech-version">Adapted</div>
+                        <div class="tech-description">Separación de responsabilidades</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">Zero Dependencies</div>
+                        <div class="tech-version">Philosophy</div>
+                        <div class="tech-description">Sin frameworks externos</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">Single Page</div>
+                        <div class="tech-version">Multi-file</div>
+                        <div class="tech-description">Páginas independientes HTML</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Administración -->
+        <div class="admin-section">
+            <div class="admin-warning">
+                ⚠️ <strong>Administración del Sistema:</strong>
+                Algunas configuraciones requieren permisos de administrador y pueden afectar el funcionamiento del sistema.
+            </div>
+        </div>
+    </div>
+
+        <!-- Configuración centralizada -->
+    <script src="src/config.js"></script>
+
+    <script>
+        // API_BASE se carga automáticamente desde config.js
+        let API_BASE = window.API_BASE || (window.appConfig?.getApiUrl('') || 'http://localhost:3002');
+
+        // Cargar estadísticas al inicio
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemStats();
+        });
+
+        // Cargar estadísticas del sistema
+        async function loadSystemStats() {
+            try {
+                // Cargar tipos de actividad
+                const tiposResponse = await fetch(`${API_BASE}/tipos-actividad`);
+                if (tiposResponse.ok) {
+                    const tipos = await tiposResponse.json();
+                    document.getElementById('tiposCount').textContent = tipos.length;
+                }
+
+                // Cargar obras
+                const obrasResponse = await fetch(`${API_BASE}/obras`);
+                if (obrasResponse.ok) {
+                    const obras = await obrasResponse.json();
+                    document.getElementById('obrasCount').textContent = obras.length;
+                }
+
+                // Cargar recursos
+                const recursosResponse = await fetch(`${API_BASE}/recursos`);
+                if (recursosResponse.ok) {
+                    const recursos = await recursosResponse.json();
+                    document.getElementById('recursosCount').textContent = recursos.length;
+                }
+
+                // Cargar actividades
+                const actividadesResponse = await fetch(`${API_BASE}/actividades`);
+                if (actividadesResponse.ok) {
+                    const actividades = await actividadesResponse.json();
+                    document.getElementById('actividadesCount').textContent = actividades.length;
+                }
+
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+
+        // Mostrar mensaje de próximamente
+        function showComingSoon(feature) {
+            alert(`🚧 ${feature}\n\nEsta funcionalidad estará disponible en una próxima actualización.\n\nPor ahora puedes gestionar los tipos de actividad con colores personalizados.`);
+        }
+
+        // Probar conexión de API
+        async function testAPIConnection() {
+            const startTime = Date.now();
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const message = `🔌 Prueba de Conexión API\n\n` +
+                                  `✅ Conexión exitosa\n` +
+                                  `🌐 URL: ${API_BASE}\n` +
+                                  `⏱️ Tiempo de respuesta: ${responseTime}ms\n` +
+                                  `📊 Estado: ${response.status} ${response.statusText}\n\n` +
+                                  `Servidor: ${data.server || 'API Server'}\n` +
+                                  `Timestamp: ${new Date().toLocaleString()}`;
+                    alert(message);
+                } else {
+                    alert(`❌ Error de conexión API\n\nCódigo: ${response.status}\nEstado: ${response.statusText}`);
+                }
+            } catch (error) {
+                alert('❌ Error al conectar con la API:\n\n' + error.message);
+            }
+        }
+
+        // Probar todos los endpoints
+        async function testAllEndpoints() {
+            const endpoints = [
+                { name: 'Health Check', url: '/health' },
+                { name: 'Actividades', url: '/actividades' },
+                { name: 'Tipos de Actividad', url: '/tipos-actividad' },
+                { name: 'Obras', url: '/obras' },
+                { name: 'Recursos', url: '/recursos' },
+                { name: 'Equipos', url: '/equipos' }
+            ];
+
+            let results = '🧪 Prueba de Endpoints\n\n';
+            let allSuccess = true;
+
+            for (const endpoint of endpoints) {
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(`${API_BASE}${endpoint.url}`);
+                    const endTime = Date.now();
+                    const responseTime = endTime - startTime;
+
+                    if (response.ok) {
+                        results += `✅ ${endpoint.name}: OK (${responseTime}ms)\n`;
+                    } else {
+                        results += `❌ ${endpoint.name}: Error ${response.status}\n`;
+                        allSuccess = false;
+                    }
+                } catch (error) {
+                    results += `❌ ${endpoint.name}: ${error.message}\n`;
+                    allSuccess = false;
+                }
+            }
+
+            results += `\n${allSuccess ? '🎉 Todos los endpoints funcionan correctamente' : '⚠️ Algunos endpoints tienen problemas'}`;
+            results += `\nTimestamp: ${new Date().toLocaleString()}`;
+
+            alert(results);
+        }
+
+        // Verificar estado de la base de datos
+        async function checkDatabaseStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+
+                const status = data.database.includes('Connected') ? 'Conectado ✅' : 'Desconectado ❌';
+                const message = `🗄️ Estado de la Base de Datos\n\n` +
+                              `Estado: ${status}\n` +
+                              `Servidor: SQL Server\n` +
+                              `Usuario: rp-gestorjornadas\n` +
+                              `Base de datos: RP_GESTOR_JORNADAS\n\n` +
+                              `Timestamp: ${new Date().toLocaleString()}`;
+
+                alert(message);
+
+            } catch (error) {
+                alert('❌ Error al verificar el estado de la base de datos:\n\n' + error.message);
+            }
+        }
+
+        // Exportar logs del sistema
+        function exportSystemLogs() {
+            // Redireccionar a la página de logs con parámetro de exportación
+            window.open('/logs.html#export', '_blank');
+        }
+
+        // Funciones de debug mode
+        async function loadDebugModeStatus() {
+            try {
+                const response = await fetch('http://localhost:3002/configuration/debug-mode');
+                const data = await response.json();
+
+                const toggleElement = document.getElementById('debugModeToggle');
+                const statusElement = document.getElementById('debugStatus');
+
+                toggleElement.checked = data.debug_mode;
+                statusElement.textContent = data.debug_mode ? 'Activado' : 'Desactivado';
+                statusElement.className = data.debug_mode ? 'debug-status active' : 'debug-status';
+            } catch (error) {
+                console.error('Error loading debug mode status:', error);
+                document.getElementById('debugStatus').textContent = 'Error';
+            }
+        }
+
+        async function toggleDebugMode() {
+            const toggleElement = document.getElementById('debugModeToggle');
+            const statusElement = document.getElementById('debugStatus');
+
+            try {
+                statusElement.textContent = 'Actualizando...';
+
+                const response = await fetch('http://localhost:3002/configuration/debug-mode', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ debug_mode: toggleElement.checked })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusElement.textContent = data.debug_mode ? 'Activado' : 'Desactivado';
+                    statusElement.className = data.debug_mode ? 'debug-status active' : 'debug-status';
+
+                    // Mostrar notificación de éxito
+                    showNotification(
+                        data.debug_mode ? '✅ Modo debug activado' : '⚠️ Modo debug desactivado',
+                        data.debug_mode ? 'Las llamadas API se registrarán en la base de datos' : 'Las llamadas API no se registrarán'
+                    );
+                } else {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+            } catch (error) {
+                console.error('Error toggling debug mode:', error);
+                statusElement.textContent = 'Error';
+                // Revertir el toggle
+                toggleElement.checked = !toggleElement.checked;
+                alert('❌ Error al cambiar el modo debug:\n\n' + error.message);
+            }
+        }
+
+        function showNotification(title, message) {
+            // Crear notificación temporal
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                padding: 1rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+                max-width: 300px;
+            `;
+
+            notification.innerHTML = `
+                <strong style="color: #1f2937;">${title}</strong>
+                <p style="color: #6b7280; margin: 0.25rem 0 0 0; font-size: 0.875rem;">${message}</p>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+
+        // Cargar estado del debug mode al cargar la página
+        document.addEventListener('DOMContentLoaded', loadDebugModeStatus);
+
+        // ===== FUNCIONES CONSOLA SQL =====
+
+        function setQuery(query) {
+            document.getElementById('sql-query').value = query;
+        }
+
+        function clearQuery() {
+            document.getElementById('sql-query').value = '';
+            document.getElementById('sql-results').style.display = 'none';
+            document.getElementById('sql-warning').style.display = 'none';
+        }
+
+        function isDangerousQuery(sql) {
+            const dangerous = ['DROP', 'TRUNCATE', 'DELETE', 'UPDATE', 'ALTER', 'CREATE'];
+            const upperQuery = sql.trim().toUpperCase();
+            return dangerous.some(keyword => upperQuery.startsWith(keyword));
+        }
+
+        function cancelDangerousQuery() {
+            document.getElementById('sql-warning').style.display = 'none';
+        }
+
+        async function executeSQL(confirmed) {
+            const query = document.getElementById('sql-query').value.trim();
+
+            if (!query) {
+                alert('❌ Por favor, ingresa una consulta SQL');
+                return;
+            }
+
+            // Si es peligrosa y no está confirmada, mostrar advertencia
+            if (isDangerousQuery(query) && !confirmed) {
+                document.getElementById('sql-warning').style.display = 'block';
+                return;
+            }
+
+            // Ocultar advertencia si está visible
+            document.getElementById('sql-warning').style.display = 'none';
+
+            // Mostrar indicador de carga
+            const resultsDiv = document.getElementById('sql-results');
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <div style="display: inline-block; width: 2rem; height: 2rem; border: 3px solid #f3f4f6; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="margin-top: 1rem; color: #6b7280;">Ejecutando consulta...</p>
+                </div>
+                <style>
+                    @keyframes spin {
+                        to { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+
+            try {
+                const response = await fetch(`${API_BASE}/sql/execute`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Mostrar resultado exitoso
+                    let html = `
+                        <div style="background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 1rem; margin-bottom: 1rem; border-radius: 0 6px 6px 0;">
+                            <div style="display: flex; align-items-start;">
+                                <div style="flex-shrink: 0; margin-right: 0.75rem;">
+                                    <svg style="width: 1.25rem; height: 1.25rem; color: #10b981;" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.875rem; color: #065f46;">
+                                        ${data.message} - ${data.rowCount} fila(s) afectada(s)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Mostrar tabla de datos si hay resultados
+                    if (data.data && data.data.length > 0) {
+                        html += `
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+                                    <thead style="background-color: #f9fafb;">
+                                        <tr>
+                                            ${Object.keys(data.data[0]).map(key => `
+                                                <th style="text-align: left; padding: 0.75rem; border-bottom: 2px solid #e5e7eb; font-weight: 600; color: #1f2937;">
+                                                    ${key}
+                                                </th>
+                                            `).join('')}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${data.data.map((row, idx) => `
+                                            <tr style="background-color: ${idx % 2 === 0 ? '#ffffff' : '#f9fafb'};">
+                                                ${Object.values(row).map(value => `
+                                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e5e7eb; color: #374151;">
+                                                        ${value === null ? '<span style="color: #9ca3af; font-style: italic;">NULL</span>' :
+                                                          typeof value === 'boolean' ? (value ? 'true' : 'false') :
+                                                          typeof value === 'object' ? JSON.stringify(value) :
+                                                          String(value)}
+                                                    </td>
+                                                `).join('')}
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    }
+
+                    resultsDiv.innerHTML = html;
+                } else {
+                    // Mostrar error
+                    resultsDiv.innerHTML = `
+                        <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 1rem; border-radius: 0 6px 6px 0;">
+                            <div style="display: flex; align-items-start;">
+                                <div style="flex-shrink: 0; margin-right: 0.75rem;">
+                                    <svg style="width: 1.25rem; height: 1.25rem; color: #ef4444;" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.875rem; color: #991b1b; font-family: 'Courier New', monospace;">
+                                        ${data.error || 'Error desconocido'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 1rem; border-radius: 0 6px 6px 0;">
+                        <div style="display: flex; align-items-start;">
+                            <div style="flex-shrink: 0; margin-right: 0.75rem;">
+                                <svg style="width: 1.25rem; height: 1.25rem; color: #ef4444;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p style="font-size: 0.875rem; color: #991b1b;">
+                                    Error de conexión: ${error.message}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+    </script>
+
+    
+    <!-- Footer de información de conexión -->
+    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #1f2937; color: #9ca3af; padding: 8px 16px; font-size: 11px; border-top: 1px solid #374151; z-index: 1000;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Frontend: http://localhost:5173</span>
+                <span>Backend: <span id="apiBaseUrl">http://localhost:3002</span></span>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Última llamada: <span id="lastApiCall">Ninguna</span></span>
+                <span id="apiStatus" style="padding: 2px 6px; border-radius: 3px; background-color: #374151;">Esperando...</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script para monitorear llamadas API -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Actualizar la URL del API en el footer
+            const apiBaseElement = document.getElementById('apiBaseUrl');
+            if (apiBaseElement && typeof API_BASE !== 'undefined') {
+                apiBaseElement.textContent = API_BASE;
+            }
+
+            // Interceptar llamadas fetch para mostrar actividad de API
+            const originalFetch = window.fetch;
+            const lastApiCallElement = document.getElementById('lastApiCall');
+            const apiStatusElement = document.getElementById('apiStatus');
+
+            window.fetch = async function(...args) {
+                const [url, options] = args;
+
+                // Solo mostrar llamadas que vayan al API backend
+                if (typeof url === 'string' && (url.includes('localhost:300') || url.includes(API_BASE))) {
+                    const method = options?.method || 'GET';
+                    const endpoint = url.replace(API_BASE, '').split('?')[0];
+
+                    // Mostrar llamada en progreso
+                    lastApiCallElement.textContent = `${method} ${endpoint}`;
+                    apiStatusElement.textContent = 'Cargando...';
+                    apiStatusElement.style.backgroundColor = '#f59e0b';
+
+                    try {
+                        const response = await originalFetch(...args);
+
+                        // Mostrar resultado
+                        const status = response.ok ? 'OK' : `Error ${response.status}`;
+                        apiStatusElement.textContent = status;
+                        apiStatusElement.style.backgroundColor = response.ok ? '#10b981' : '#ef4444';
+
+                        // Resetear después de 2 segundos
+                        setTimeout(() => {
+                            if (apiStatusElement.textContent === status) {
+                                apiStatusElement.textContent = 'Listo';
+                                apiStatusElement.style.backgroundColor = '#374151';
+                            }
+                        }, 2000);
+
+                        return response;
+                    } catch (error) {
+                        apiStatusElement.textContent = 'Error de red';
+                        apiStatusElement.style.backgroundColor = '#ef4444';
+                        setTimeout(() => {
+                            apiStatusElement.textContent = 'Error';
+                            apiStatusElement.style.backgroundColor = '#374151';
+                        }, 3000);
+                        throw error;
+                    }
+                }
+
+                return originalFetch(...args);
+            };
+        });
+    </script>
+</body>
+</html>

@@ -1,16 +1,49 @@
 import { DataSource } from 'typeorm';
 import dotenv from 'dotenv';
 import { entities } from '../models';
+import * as fs from 'fs';
+import * as path from 'path';
 
 dotenv.config();
 
-export const AppDataSource = new DataSource({
-  type: 'mssql',
+// Load config.json for database configuration
+let dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '1433'),
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  username: process.env.DB_USERNAME || process.env.DB_USER || '',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || ''
+};
+
+try {
+  const configPath = path.resolve(__dirname, '../../../config.json');
+  if (fs.existsSync(configPath)) {
+    const configFile = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    const env = configFile.current_environment || 'development';
+    if (configFile[env] && configFile[env].database) {
+      // Ensure password is properly handled without escaping
+      const rawPassword = configFile[env].database.password;
+      dbConfig = {
+        host: configFile[env].database.host || dbConfig.host,
+        port: configFile[env].database.port || dbConfig.port,
+        username: configFile[env].database.username || dbConfig.username,
+        password: rawPassword || dbConfig.password,
+        database: configFile[env].database.database || dbConfig.database
+      };
+      console.log(`📋 Database config loaded from config.json (${env} environment)`);
+    }
+  }
+} catch (error) {
+  console.log('⚠️  Could not load config.json, using environment variables');
+}
+
+export const AppDataSource = new DataSource({
+  type: 'mssql',
+  host: dbConfig.host,
+  port: dbConfig.port,
+  username: dbConfig.username,
+  password: dbConfig.password,
+  database: dbConfig.database,
   synchronize: process.env.NODE_ENV === 'development',
   logging: process.env.NODE_ENV === 'development',
   entities: entities,

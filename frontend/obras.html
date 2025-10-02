@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Obras - Sistema de Actividades</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f9fafb;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            color: #1f2937;
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .card h2 {
+            color: #1f2937;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb {
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        input[type="text"], input[type="search"], select, textarea {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+
+        input[type="text"]:focus, input[type="search"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-inactive {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 500px;
+            margin: 10% auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .close:hover {
+            color: #374151;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state h3 {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>🏗️ Gestión de Obras</h1>
+            <a href="index.html" class="btn btn-secondary">← Volver al Dashboard</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a> > <a href="configuracion.html">Configuración</a> > Obras
+        </div>
+
+        <div class="card">
+            <div class="controls">
+                <div class="search-container">
+                    <input type="search" id="searchInput" placeholder="Buscar obras..." style="min-width: 300px;">
+                </div>
+                <button class="btn btn-success" onclick="openCreateModal()">
+                    + Crear Nueva Obra
+                </button>
+            </div>
+
+            <div class="loading" id="loading">
+                Cargando obras...
+            </div>
+
+            <div id="error" class="error" style="display: none;">
+                <p id="errorMessage"></p>
+            </div>
+
+            <div class="table-container" id="tableContainer" style="display: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="obrasTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <h3>No hay obras registradas</h3>
+                <p>Comienza creando una nueva obra para organizar tus actividades laborales.</p>
+                <button class="btn btn-success" onclick="openCreateModal()" style="margin-top: 1rem;">
+                    + Crear Primera Obra
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear/editar obra -->
+    <div id="obraModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Crear Nueva Obra</h3>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="obraForm">
+                <div class="form-group">
+                    <label for="codigo">Código de la Obra *</label>
+                    <input type="text" id="codigo" name="codigo" required
+                           placeholder="Ej: OBR001" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="descripcion">Descripción *</label>
+                    <textarea id="descripcion" name="descripcion" required
+                              placeholder="Descripción de la obra" rows="3" maxlength="255"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="activo">Estado</label>
+                    <select id="activo" name="activo">
+                        <option value="1">Activo</option>
+                        <option value="0">Inactivo</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success" id="submitBtn">
+                        Crear Obra
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+        <!-- Configuración centralizada -->
+    <script src="src/config.js"></script>
+
+    <script>
+        // API_BASE se carga automáticamente desde config.js
+        let API_BASE = window.API_BASE || (window.appConfig?.getApiUrl('') || 'http://localhost:3002');
+        let obras = [];
+        let editingObraId = null;
+
+        // Cargar obras al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadObras();
+            setupSearch();
+        });
+
+        // Configurar búsqueda
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function() {
+                filterObras(this.value);
+            });
+        }
+
+        // Cargar obras desde la API
+        async function loadObras() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const tableContainer = document.getElementById('tableContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            tableContainer.style.display = 'none';
+            emptyState.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/obras`);
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+
+                obras = await response.json();
+                console.log('Obras cargadas:', obras);
+
+                loading.style.display = 'none';
+
+                if (obras.length === 0) {
+                    emptyState.style.display = 'block';
+                } else {
+                    tableContainer.style.display = 'block';
+                    renderObras(obras);
+                }
+
+            } catch (err) {
+                console.error('Error cargando obras:', err);
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                document.getElementById('errorMessage').textContent =
+                    'Error al cargar las obras: ' + err.message;
+            }
+        }
+
+        // Renderizar tabla de obras
+        function renderObras(obrasList) {
+            const tbody = document.getElementById('obrasTableBody');
+            tbody.innerHTML = '';
+
+            obrasList.forEach(obra => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${obra.codigo}</strong></td>
+                    <td>${obra.descripcion}</td>
+                    <td>
+                        <span class="status-badge ${obra.activo ? 'status-active' : 'status-inactive'}">
+                            ${obra.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn btn-primary" onclick="editObra(${obra.id})">
+                                Editar
+                            </button>
+                            <button class="btn btn-danger" onclick="confirmDeleteObra(${obra.id}, '${obra.codigo}')">
+                                Eliminar
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Filtrar obras
+        function filterObras(searchTerm) {
+            const filtered = obras.filter(obra =>
+                obra.codigo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                obra.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            renderObras(filtered);
+        }
+
+        // Abrir modal para crear obra
+        function openCreateModal() {
+            editingObraId = null;
+            document.getElementById('modalTitle').textContent = 'Crear Nueva Obra';
+            document.getElementById('submitBtn').textContent = 'Crear Obra';
+            document.getElementById('obraForm').reset();
+            document.getElementById('activo').value = '1';
+            document.getElementById('obraModal').style.display = 'block';
+        }
+
+        // Editar obra
+        function editObra(id) {
+            const obra = obras.find(o => o.id === id);
+            if (!obra) return;
+
+            editingObraId = id;
+            document.getElementById('modalTitle').textContent = 'Editar Obra';
+            document.getElementById('submitBtn').textContent = 'Actualizar Obra';
+
+            document.getElementById('codigo').value = obra.codigo;
+            document.getElementById('descripcion').value = obra.descripcion;
+            document.getElementById('activo').value = obra.activo ? '1' : '0';
+
+            document.getElementById('obraModal').style.display = 'block';
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            document.getElementById('obraModal').style.display = 'none';
+            editingObraId = null;
+        }
+
+        // Manejar envío del formulario
+        document.getElementById('obraForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const obraData = {
+                codigo: formData.get('codigo').trim(),
+                descripcion: formData.get('descripcion').trim(),
+                activo: parseInt(formData.get('activo'))
+            };
+
+            if (!obraData.codigo || !obraData.descripcion) {
+                alert('Por favor completa todos los campos obligatorios');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Guardando...';
+            submitBtn.disabled = true;
+
+            try {
+                let response;
+                if (editingObraId) {
+                    response = await fetch(`${API_BASE}/obras/${editingObraId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(obraData)
+                    });
+                } else {
+                    response = await fetch(`${API_BASE}/obras`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(obraData)
+                    });
+                }
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Error ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Obra guardada:', result);
+
+                closeModal();
+                loadObras(); // Recargar la lista
+
+                showNotification(editingObraId ? 'Obra actualizada exitosamente' : 'Obra creada exitosamente', 'success');
+
+            } catch (err) {
+                console.error('Error guardando obra:', err);
+                showNotification('Error al guardar la obra: ' + err.message, 'error');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Confirmar eliminación
+        function confirmDeleteObra(id, codigo) {
+            if (confirm(`¿Estás seguro de que deseas eliminar la obra "${codigo}"?`)) {
+                deleteObra(id);
+            }
+        }
+
+        // Eliminar obra
+        async function deleteObra(id) {
+            try {
+                const response = await fetch(`${API_BASE}/obras/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Error ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Obra eliminada:', result);
+
+                loadObras(); // Recargar la lista
+                showNotification('Obra eliminada exitosamente', 'success');
+
+            } catch (err) {
+                console.error('Error eliminando obra:', err);
+                showNotification('Error al eliminar la obra: ' + err.message, 'error');
+            }
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('obraModal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' || e.keyCode === 27) {
+                const modal = document.getElementById('obraModal');
+                if (modal.style.display === 'block') {
+                    closeModal();
+                }
+            }
+        });
+
+        // Sistema de notificaciones
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container') || createNotificationContainer();
+
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
+            `;
+
+            container.appendChild(notification);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        function createNotificationContainer() {
+            const container = document.createElement('div');
+            container.id = 'notification-container';
+            container.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 10000;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                pointer-events: none;
+            `;
+            document.body.appendChild(container);
+            return container;
+        }
+
+        // CSS para notificaciones
+        const notificationStyles = document.createElement('style');
+        notificationStyles.textContent = `
+            .notification {
+                background: white;
+                border-radius: 8px;
+                padding: 12px 16px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-left: 4px solid #3b82f6;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                min-width: 300px;
+                max-width: 400px;
+                pointer-events: auto;
+                animation: slideInRight 0.3s ease-out;
+            }
+
+            .notification-success {
+                border-left-color: #10b981;
+            }
+
+            .notification-error {
+                border-left-color: #ef4444;
+            }
+
+            .notification-warning {
+                border-left-color: #f59e0b;
+            }
+
+            .notification-close {
+                background: none;
+                border: none;
+                font-size: 18px;
+                cursor: pointer;
+                color: #6b7280;
+                padding: 0;
+                margin-left: auto;
+                flex-shrink: 0;
+            }
+
+            .notification-close:hover {
+                color: #374151;
+            }
+
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(notificationStyles);
+    </script>
+
+    
+    <!-- Footer de información de conexión -->
+    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #1f2937; color: #9ca3af; padding: 8px 16px; font-size: 11px; border-top: 1px solid #374151; z-index: 1000;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Frontend: http://localhost:5173</span>
+                <span>Backend: <span id="apiBaseUrl">http://localhost:3002</span></span>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Última llamada: <span id="lastApiCall">Ninguna</span></span>
+                <span id="apiStatus" style="padding: 2px 6px; border-radius: 3px; background-color: #374151;">Esperando...</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script para monitorear llamadas API -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Actualizar la URL del API en el footer
+            const apiBaseElement = document.getElementById('apiBaseUrl');
+            if (apiBaseElement && typeof API_BASE !== 'undefined') {
+                apiBaseElement.textContent = API_BASE;
+            }
+
+            // Interceptar llamadas fetch para mostrar actividad de API
+            const originalFetch = window.fetch;
+            const lastApiCallElement = document.getElementById('lastApiCall');
+            const apiStatusElement = document.getElementById('apiStatus');
+
+            window.fetch = async function(...args) {
+                const [url, options] = args;
+
+                // Solo mostrar llamadas que vayan al API backend
+                if (typeof url === 'string' && (url.includes('localhost:300') || url.includes(API_BASE))) {
+                    const method = options?.method || 'GET';
+                    const endpoint = url.replace(API_BASE, '').split('?')[0];
+
+                    // Mostrar llamada en progreso
+                    lastApiCallElement.textContent = `${method} ${endpoint}`;
+                    apiStatusElement.textContent = 'Cargando...';
+                    apiStatusElement.style.backgroundColor = '#f59e0b';
+
+                    try {
+                        const response = await originalFetch(...args);
+
+                        // Mostrar resultado
+                        const status = response.ok ? 'OK' : `Error ${response.status}`;
+                        apiStatusElement.textContent = status;
+                        apiStatusElement.style.backgroundColor = response.ok ? '#10b981' : '#ef4444';
+
+                        // Resetear después de 2 segundos
+                        setTimeout(() => {
+                            if (apiStatusElement.textContent === status) {
+                                apiStatusElement.textContent = 'Listo';
+                                apiStatusElement.style.backgroundColor = '#374151';
+                            }
+                        }, 2000);
+
+                        return response;
+                    } catch (error) {
+                        apiStatusElement.textContent = 'Error de red';
+                        apiStatusElement.style.backgroundColor = '#ef4444';
+                        setTimeout(() => {
+                            apiStatusElement.textContent = 'Error';
+                            apiStatusElement.style.backgroundColor = '#374151';
+                        }, 3000);
+                        throw error;
+                    }
+                }
+
+                return originalFetch(...args);
+            };
+        });
+    </script>
+</body>
+</html>

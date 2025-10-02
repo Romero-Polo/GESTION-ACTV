@@ -1,13 +1,607 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Actividades - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f9fafb;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+        }
+
+        .status-text {
+            font-size: 0.875rem;
+            color: #10b981;
+            font-weight: 500;
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .card h2 {
+            color: #1f2937;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: #f0f9ff;
+            border: 1px solid #e0f2fe;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+
+        .api-section {
+            background: #fefefe;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .api-endpoint {
+            font-family: 'Courier New', monospace;
+            background: #f3f4f6;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            font-size: 0.875rem;
+        }
+
+        .connection-info {
+            background: #ecfdf5;
+            border: 1px solid #d1fae5;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .connection-success {
+            color: #065f46;
+            font-weight: 500;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        .error-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .error-message {
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .error-details {
+            background: #fee2e2;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            word-break: break-word;
+        }
+
+        #apiResponse {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .version-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            background-color: #dbeafe;
+            color: #1e40af;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .version-link:hover {
+            background-color: #bfdbfe;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>🏗️ Gestión de Actividades Laborales</h1>
+                    <a href="changelog.html" class="version-link" title="Ver registro de cambios">
+                        v1.6.1
+                    </a>
+                </div>
+                <div class="status">
+                    <div class="status-dot"></div>
+                    <span class="status-text">Sistema Activo</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Error de conexión -->
+            <div id="connectionError" style="display: none;" class="error">
+                <div class="error-title">
+                    ⚠️ Error de Conexión con la Base de Datos
+                </div>
+                <div class="error-message">
+                    No se pudo conectar con el servidor de base de datos. Verifica que SQL Server esté ejecutándose y accesible.
+                </div>
+                <div class="error-details" id="errorDetails"></div>
+            </div>
+
+            <!-- Métricas del Dashboard -->
+            <div class="card">
+                <h2>📊 Dashboard del Sistema</h2>
+                <div class="grid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="todayActivities">0</div>
+                        <div class="metric-label">Actividades Hoy</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="tomorrowActivities">0</div>
+                        <div class="metric-label">Actividades Mañana</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="openActivities">0</div>
+                        <div class="metric-label">Actividades Abiertas</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="monthlyHours">0h</div>
+                        <div class="metric-label">Horas del Mes</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="totalRecursos">0</div>
+                        <div class="metric-label">Total Recursos</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="totalObras">0</div>
+                        <div class="metric-label">Total Obras</div>
+                    </div>
+                </div>
+
+                <!-- Acciones Principales -->
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
+                    <button class="btn btn-success btn-large" onclick="window.location.href='/nueva-actividad.html'">
+                        📝 Nueva Actividad
+                    </button>
+                    <button class="btn btn-primary btn-large" onclick="window.location.href='/actividades.html'">
+                        📋 Ver Actividades
+                    </button>
+                    <button class="btn btn-primary btn-large" onclick="window.location.href='/agenda.html'" style="background-color: #8b5cf6;">
+                        📅 Vista Agenda
+                    </button>
+                    <button class="btn btn-primary btn-large" onclick="window.location.href='/configuracion.html'" style="background-color: #6b7280;">
+                        ⚙️ Configuración
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Próximos Pasos -->
+            <div class="card">
+                <h2>🚀 Próximos Pasos</h2>
+                <p style="margin-bottom: 1rem;">Una vez que el sistema esté completamente funcional, podrás:</p>
+                <ul style="list-style-type: disc; margin-left: 2rem; color: #6b7280;">
+                    <li>Registrar y gestionar actividades laborales</li>
+                    <li>Seguimiento de jornadas de trabajo</li>
+                    <li>Exportación de datos para sistemas ERP</li>
+                    <li>Sincronización con sistemas externos</li>
+                    <li>Gestión de obras y recursos</li>
+                    <li>Panel de administración completo</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+        <!-- Configuración centralizada -->
+    <script src="src/config.js"></script>
+
+    <script>
+        function updateConnectionStatus(isConnected) {
+            const statusDot = document.querySelector('.status-dot');
+            const statusText = document.querySelector('.status-text');
+
+            if (isConnected) {
+                statusDot.style.backgroundColor = '#10b981';
+                statusText.style.color = '#10b981';
+                statusText.textContent = 'Sistema Activo';
+            } else {
+                statusDot.style.backgroundColor = '#ef4444';
+                statusText.style.color = '#ef4444';
+                statusText.textContent = 'Desconectado';
+            }
+        }
+
+        // Configuración de la API
+        const baseURL = window.appConfig?.getApiUrl('') || 'http://localhost:3002';
+
+        // Mostrar error de conexión
+        function showConnectionError(errorMessage) {
+            const errorDiv = document.getElementById('connectionError');
+            const errorDetails = document.getElementById('errorDetails');
+
+            errorDiv.style.display = 'block';
+            errorDetails.textContent = errorMessage;
+
+            // Actualizar estado de conexión
+            updateConnectionStatus(false);
+        }
+
+        // Ocultar error de conexión
+        function hideConnectionError() {
+            const errorDiv = document.getElementById('connectionError');
+            errorDiv.style.display = 'none';
+
+            // Actualizar estado de conexión
+            updateConnectionStatus(true);
+        }
+
+        // Cargar datos del dashboard
+        async function loadDashboardData() {
+            try {
+                console.log('🔄 Cargando datos del dashboard...');
+
+                // Cargar datos en paralelo
+                const [actividadesResponse, recursosResponse, obrasResponse] = await Promise.all([
+                    fetch(`${baseURL}/actividades`),
+                    fetch(`${baseURL}/recursos`),
+                    fetch(`${baseURL}/obras`)
+                ]);
+
+                // Verificar errores 503 (Service Unavailable)
+                if (actividadesResponse.status === 503 || recursosResponse.status === 503 || obrasResponse.status === 503) {
+                    let errorMessage = 'Error de conexión con la base de datos';
+
+                    // Intentar obtener mensaje detallado del servidor
+                    try {
+                        if (actividadesResponse.status === 503) {
+                            const errorData = await actividadesResponse.json();
+                            errorMessage = errorData.error || errorData.message || errorMessage;
+                        } else if (recursosResponse.status === 503) {
+                            const errorData = await recursosResponse.json();
+                            errorMessage = errorData.error || errorData.message || errorMessage;
+                        } else if (obrasResponse.status === 503) {
+                            const errorData = await obrasResponse.json();
+                            errorMessage = errorData.error || errorData.message || errorMessage;
+                        }
+                    } catch (parseError) {
+                        console.error('Error parseando mensaje de error:', parseError);
+                    }
+
+                    showConnectionError(errorMessage);
+                    return;
+                } else {
+                    hideConnectionError();
+                }
+
+                // Procesar actividades
+                if (actividadesResponse.ok) {
+                    const actividades = await actividadesResponse.json();
+
+                    // Filtrar actividades de hoy
+                    const today = new Date().toISOString().split('T')[0];
+                    const actividadesHoy = actividades.filter(a => a.fechaInicio === today);
+
+                    document.getElementById('todayActivities').textContent = actividadesHoy.length;
+
+                    // Calcular actividades de mañana
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                    const actividadesManana = actividades.filter(a => a.fechaInicio === tomorrowStr);
+                    document.getElementById('tomorrowActivities').textContent = actividadesManana.length;
+
+                    // Calcular actividades abiertas (sin horaFin)
+                    const actividadesAbiertas = actividades.filter(a => {
+                        // Una actividad está abierta si:
+                        // 1. horaFin es null, undefined, o 'null' (comportamiento legacy)
+                        // 2. fechaFin es '2099-12-31' (nuevo comportamiento)
+                        return (!a.horaFin || a.horaFin === null || a.horaFin === 'null') || (a.fechaFin === '2099-12-31');
+                    });
+                    document.getElementById('openActivities').textContent = actividadesAbiertas.length;
+
+                    // Calcular horas del mes
+                    const currentMonth = new Date().getMonth();
+                    const currentYear = new Date().getFullYear();
+                    const actividadesMes = actividades.filter(a => {
+                        const fecha = new Date(a.fechaInicio);
+                        return fecha.getMonth() === currentMonth && fecha.getFullYear() === currentYear;
+                    });
+
+                    let horasMes = 0;
+                    actividadesMes.forEach(a => {
+                        if (a.horaInicio && a.horaFin && a.horaInicio !== 'null' && a.horaFin !== 'null') {
+                            try {
+                                // Asegurar formato HH:MM
+                                const inicioStr = a.horaInicio.includes(':') ? a.horaInicio : a.horaInicio + ':00';
+                                const finStr = a.horaFin.includes(':') ? a.horaFin : a.horaFin + ':00';
+
+                                const inicio = new Date(`1970-01-01T${inicioStr}`);
+                                const fin = new Date(`1970-01-01T${finStr}`);
+
+                                if (!isNaN(inicio.getTime()) && !isNaN(fin.getTime())) {
+                                    const horas = (fin - inicio) / (1000 * 60 * 60);
+                                    if (horas > 0) {
+                                        horasMes += horas;
+                                    }
+                                }
+                            } catch (error) {
+                                console.warn('Error procesando horas:', a.horaInicio, a.horaFin, error);
+                            }
+                        }
+                    });
+
+                    document.getElementById('monthlyHours').textContent = `${Math.round(horasMes) || 0}h`;
+
+                    console.log('✅ Datos de actividades cargados:', {
+                        actividadesHoy: actividadesHoy.length,
+                        actividadesManana: actividadesManana.length,
+                        actividadesAbiertas: actividadesAbiertas.length,
+                        horasMes: Math.round(horasMes) || 0
+                    });
+                }
+
+                // Procesar recursos
+                if (recursosResponse.ok) {
+                    const recursos = await recursosResponse.json();
+                    document.getElementById('totalRecursos').textContent = recursos.length;
+                    console.log('✅ Datos de recursos cargados:', recursos.length);
+                }
+
+                // Procesar obras
+                if (obrasResponse.ok) {
+                    const obras = await obrasResponse.json();
+                    document.getElementById('totalObras').textContent = obras.length;
+                    console.log('✅ Datos de obras cargados:', obras.length);
+                }
+
+            } catch (error) {
+                console.error('❌ Error cargando datos del dashboard:', error);
+                showConnectionError(error.message || 'Error de conexión con el servidor');
+            }
+        }
+
+        // Cargar datos al iniciar
+        window.onload = function() {
+            setTimeout(() => {
+                loadDashboardData();
+            }, 1000);
+        };
+    </script>
+
+    
+    <!-- Footer de información de conexión -->
+    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #1f2937; color: #9ca3af; padding: 8px 16px; font-size: 11px; border-top: 1px solid #374151; z-index: 1000;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Frontend: http://localhost:8080</span>
+                <span>Backend: <span id="apiBaseUrl">http://localhost:3002</span></span>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Última llamada: <span id="lastApiCall">Ninguna</span></span>
+                <span id="apiStatus" style="padding: 2px 6px; border-radius: 3px; background-color: #374151;">Esperando...</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script para monitorear llamadas API -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Actualizar la URL del API en el footer
+            const apiBaseElement = document.getElementById('apiBaseUrl');
+            if (apiBaseElement && typeof API_BASE !== 'undefined') {
+                apiBaseElement.textContent = API_BASE;
+            }
+
+            // Interceptar llamadas fetch para mostrar actividad de API
+            const originalFetch = window.fetch;
+            const lastApiCallElement = document.getElementById('lastApiCall');
+            const apiStatusElement = document.getElementById('apiStatus');
+
+            window.fetch = async function(...args) {
+                const [url, options] = args;
+
+                // Solo mostrar llamadas que vayan al API backend
+                if (typeof url === 'string' && (url.includes('localhost:300') || url.includes(API_BASE))) {
+                    const method = options?.method || 'GET';
+                    const endpoint = url.replace(API_BASE, '').split('?')[0];
+
+                    // Mostrar llamada en progreso
+                    lastApiCallElement.textContent = `${method} ${endpoint}`;
+                    apiStatusElement.textContent = 'Cargando...';
+                    apiStatusElement.style.backgroundColor = '#f59e0b';
+
+                    try {
+                        const response = await originalFetch(...args);
+
+                        // Mostrar resultado
+                        const status = response.ok ? 'OK' : `Error ${response.status}`;
+                        apiStatusElement.textContent = status;
+                        apiStatusElement.style.backgroundColor = response.ok ? '#10b981' : '#ef4444';
+
+                        // Resetear después de 2 segundos
+                        setTimeout(() => {
+                            if (apiStatusElement.textContent === status) {
+                                apiStatusElement.textContent = 'Listo';
+                                apiStatusElement.style.backgroundColor = '#374151';
+                            }
+                        }, 2000);
+
+                        return response;
+                    } catch (error) {
+                        apiStatusElement.textContent = 'Error de red';
+                        apiStatusElement.style.backgroundColor = '#ef4444';
+                        setTimeout(() => {
+                            apiStatusElement.textContent = 'Error';
+                            apiStatusElement.style.backgroundColor = '#374151';
+                        }, 3000);
+                        throw error;
+                    }
+                }
+
+                return originalFetch(...args);
+            };
+        });
+    </script>
+</body>
 </html>

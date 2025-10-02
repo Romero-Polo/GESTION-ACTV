@@ -26,6 +26,39 @@ export class Obra {
   @IsBoolean()
   activo: boolean;
 
+  // Sync-related fields
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  @IsOptional()
+  externalId?: string;
+
+  @Column({ type: 'datetime', nullable: true })
+  @IsOptional()
+  fechaInicio?: Date;
+
+  @Column({ type: 'datetime', nullable: true })
+  @IsOptional()
+  fechaFin?: Date;
+
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  @IsOptional()
+  cliente?: string;
+
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  @IsOptional()
+  ubicacion?: string;
+
+  @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
+  @IsOptional()
+  presupuesto?: number;
+
+  @Column({ type: 'bit', default: true })
+  @IsBoolean()
+  activa: boolean; // External active status
+
+  @Column({ type: 'datetime', nullable: true })
+  @IsOptional()
+  lastSyncDate?: Date;
+
   @CreateDateColumn({ name: 'fecha_creacion' })
   fechaCreacion: Date;
 

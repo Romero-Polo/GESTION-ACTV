@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Agenda - Gestión de Actividades</title>
+        <!-- Configuración centralizada -->
+    <script src="src/config.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 0;
+            color: #374151;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        h1 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .version-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            background-color: #dbeafe;
+            color: #1e40af;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            margin-left: 12px;
+        }
+
+        .version-link:hover {
+            background-color: #bfdbfe;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        .controls {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        input, select {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            background: white;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .report-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .report-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f8fafc;
+        }
+
+        .report-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .report-subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .report-content {
+            padding: 0;
+        }
+
+        .day-group {
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .day-group:last-child {
+            border-bottom: none;
+        }
+
+        .day-header {
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .day-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .day-subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin: 0.25rem 0 0 0;
+        }
+
+        .resource-type-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .resource-type-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .resource-type-header {
+            background: #f3f4f6;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #d1d5db;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .resource-type-header:hover {
+            background: #e5e7eb;
+        }
+
+        .resource-type-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .resource-type-toggle {
+            font-size: 1.2rem;
+            color: #6b7280;
+            transition: transform 0.2s;
+        }
+
+        .resource-type-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .resource-type-content.collapsed {
+            max-height: 0;
+        }
+
+        .resource-type-content.expanded {
+            max-height: 2000px;
+        }
+
+        .resource-group {
+            margin-bottom: 1rem;
+        }
+
+        .resource-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .resource-header {
+            background: #fafafa;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .resource-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .resource-icon {
+            font-size: 1.2rem;
+        }
+
+        .resource-details {
+            flex: 1;
+        }
+
+        .resource-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .resource-code {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .activities-list {
+            padding: 1rem 1.5rem;
+        }
+
+        .activity-item {
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: #fefefe;
+        }
+
+        .activity-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .activity-time {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 0.875rem;
+        }
+
+        .activity-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        .status-open {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-closed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .activity-obra {
+            font-size: 0.875rem;
+            color: #374151;
+            margin: 0.25rem 0;
+        }
+
+        .activity-tipo {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin: 0.25rem 0;
+        }
+
+        .activity-observaciones {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            font-style: italic;
+            padding: 0.5rem;
+            background: #f9fafb;
+            border-radius: 4px;
+        }
+
+        .no-activities {
+            padding: 2rem;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .loading {
+            padding: 2rem;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            border-color: #a7f3d0;
+            color: #065f46;
+        }
+
+        .alert-error {
+            background-color: #fee2e2;
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+
+        .alert-warning {
+            background-color: #fef3c7;
+            border-color: #fde68a;
+            color: #92400e;
+        }
+
+        .alert-info {
+            background-color: #dbeafe;
+            border-color: #bfdbfe;
+            color: #1e40af;
+        }
+
+        #alertContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .alert.hiding {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        @media (max-width: 768px) {
+            .controls-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .activity-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .activity-status {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>📊 Reporte Agenda - Listado de Actividades</h1>
+                    <a href="changelog.html" class="version-link" title="Ver registro de cambios">
+                        v1.6.1
+                    </a>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="window.location.href='/agenda.html'">
+                        📅 Vista Agenda
+                    </button>
+                    <button class="btn btn-secondary" onclick="window.location.href='/index.html'">
+                        🏠 Dashboard
+                    </button>
+                    <button class="btn btn-primary" onclick="exportReport()">
+                        📥 Exportar PDF
+                    </button>
+                    <button class="btn btn-success" onclick="exportToText()">
+                        📋 Exportar a Texto
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Controles de Filtro -->
+            <div class="controls">
+                <div class="controls-row">
+                    <div class="form-group">
+                        <label for="fechaFiltro">Fecha</label>
+                        <input type="date" id="fechaFiltro" name="fechaFiltro">
+                    </div>
+                    <div class="form-group">
+                        <label for="obraFiltro">Obra</label>
+                        <select id="obraFiltro" name="obraFiltro">
+                            <option value="">Todas las obras</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipoFiltro">Tipo de Actividad</label>
+                        <select id="tipoFiltro" name="tipoFiltro">
+                            <option value="">Todos los tipos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary" onclick="aplicarFiltros()">
+                            🔍 Generar Reporte
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenedor de Alertas -->
+            <div id="alertContainer"></div>
+
+            <!-- Contenedor del Reporte -->
+            <div class="report-container">
+                <div class="report-header">
+                    <h2 class="report-title">Reporte de Actividades por Día</h2>
+                    <p class="report-subtitle">Agrupado por día y recurso con detalles completos</p>
+                </div>
+                <div class="report-content">
+                    <div id="reportContent">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            Cargando datos del reporte...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Configuración de la API
+        // API_BASE se carga automáticamente desde config.js
+        let API_BASE = window.API_BASE || (window.appConfig?.getApiUrl('') || 'http://localhost:3002');
+
+        // Variables globales
+        let allActividades = [];
+        let allObras = [];
+        let allTiposActividad = [];
+        let allRecursos = [];
+
+        // Función para mostrar alertas
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertId = 'alert-' + Date.now();
+
+            const alertHTML = `
+                <div id="${alertId}" class="alert alert-${type}">
+                    ${message}
+                </div>
+            `;
+
+            alertContainer.innerHTML = alertHTML;
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                const alertElement = document.getElementById(alertId);
+                if (alertElement) {
+                    alertElement.remove();
+                }
+            }, 5000);
+        }
+
+        // Función para formatear fechas
+        function formatearFecha(fecha) {
+            const date = new Date(fecha + 'T00:00:00');
+            const opciones = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            return date.toLocaleDateString('es-ES', opciones);
+        }
+
+        // Función para formatear tiempo
+        function formatearHora(hora) {
+            if (!hora) return 'Sin especificar';
+            return hora.substring(0, 5); // HH:MM
+        }
+
+        // Función para obtener el estado de la actividad
+        function getActivityStatus(activity) {
+            if (activity.horaFin) {
+                return {
+                    class: 'status-closed',
+                    text: 'Finalizada'
+                };
+            } else {
+                return {
+                    class: 'status-open',
+                    text: 'En curso'
+                };
+            }
+        }
+
+        // Cargar datos iniciales
+        async function loadInitialData() {
+            try {
+                console.log('🔄 Cargando datos iniciales...');
+
+                const [actividadesRes, obrasRes, tiposRes, recursosRes] = await Promise.all([
+                    fetch(`${API_BASE}/actividades`),
+                    fetch(`${API_BASE}/obras`),
+                    fetch(`${API_BASE}/tipos-actividad`),
+                    fetch(`${API_BASE}/recursos`)
+                ]);
+
+                allActividades = await actividadesRes.json();
+                allObras = await obrasRes.json();
+                allTiposActividad = await tiposRes.json();
+                allRecursos = await recursosRes.json();
+
+                console.log('✅ Datos cargados:', {
+                    actividades: allActividades.length,
+                    obras: allObras.length,
+                    tipos: allTiposActividad.length,
+                    recursos: allRecursos.length
+                });
+
+                // Llenar filtros
+                fillFilters();
+
+                // Establecer fecha por defecto (hoy)
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('fechaFiltro').value = today;
+
+                // Aplicar filtros iniciales
+                aplicarFiltros();
+
+            } catch (error) {
+                console.error('❌ Error cargando datos iniciales:', error);
+                showAlert('Error al cargar los datos iniciales: ' + error.message, 'error');
+            }
+        }
+
+        // Llenar los filtros con los datos
+        function fillFilters() {
+            // Llenar filtro de obras
+            const obraSelect = document.getElementById('obraFiltro');
+            obraSelect.innerHTML = '<option value="">Todas las obras</option>';
+            allObras.forEach(obra => {
+                const option = document.createElement('option');
+                option.value = obra.id;
+                option.textContent = `${obra.codigo} - ${obra.descripcion}`;
+                obraSelect.appendChild(option);
+            });
+
+            // Llenar filtro de tipos
+            const tipoSelect = document.getElementById('tipoFiltro');
+            tipoSelect.innerHTML = '<option value="">Todos los tipos</option>';
+            allTiposActividad.forEach(tipo => {
+                const option = document.createElement('option');
+                option.value = tipo.id;
+                option.textContent = `${tipo.codigo} - ${tipo.nombre}`;
+                tipoSelect.appendChild(option);
+            });
+        }
+
+        // Aplicar filtros y generar reporte
+        function aplicarFiltros() {
+            const fecha = document.getElementById('fechaFiltro').value;
+            const obraId = document.getElementById('obraFiltro').value;
+            const tipoId = document.getElementById('tipoFiltro').value;
+
+            console.log('🔍 Aplicando filtros:', { fecha, obraId, tipoId });
+
+            // Filtrar actividades
+            let actividadesFiltradas = allActividades.filter(actividad => {
+                let matches = true;
+
+                // Filtro por fecha - incluir actividades que estén activas en esa fecha
+                if (fecha) {
+                    const fechaFiltro = fecha;
+                    const fechaInicio = actividad.fechaInicio;
+                    const fechaFin = actividad.fechaFin || actividad.fechaInicio;
+
+                    // La actividad coincide si la fecha filtrada está dentro del rango [fechaInicio, fechaFin]
+                    if (fechaFiltro < fechaInicio || fechaFiltro > fechaFin) {
+                        matches = false;
+                    }
+                }
+
+                // Filtro por obra
+                if (obraId && actividad.obraId != obraId) {
+                    matches = false;
+                }
+
+                // Filtro por tipo
+                if (tipoId && actividad.tipoActividadId != tipoId) {
+                    matches = false;
+                }
+
+                return matches;
+            });
+
+            console.log(`✅ Actividades filtradas: ${actividadesFiltradas.length}`);
+            generarReporte(actividadesFiltradas);
+        }
+
+        // Generar el reporte HTML
+        function generarReporte(actividades) {
+            const reportContent = document.getElementById('reportContent');
+
+            if (actividades.length === 0) {
+                reportContent.innerHTML = `
+                    <div class="no-activities">
+                        <h3>📝 No hay actividades</h3>
+                        <p>No se encontraron actividades con los filtros seleccionados.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Agrupar por fecha
+            const actividadesPorFecha = {};
+            actividades.forEach(actividad => {
+                const fecha = actividad.fechaInicio;
+                if (!actividadesPorFecha[fecha]) {
+                    actividadesPorFecha[fecha] = [];
+                }
+                actividadesPorFecha[fecha].push(actividad);
+            });
+
+            // Ordenar fechas
+            const fechasOrdenadas = Object.keys(actividadesPorFecha).sort();
+
+            let reportHTML = '';
+
+            fechasOrdenadas.forEach(fecha => {
+                const actividadesDelDia = actividadesPorFecha[fecha];
+
+                // Agrupar por recurso dentro del día
+                const actividadesPorRecurso = {};
+                actividadesDelDia.forEach(actividad => {
+                    const recursoId = actividad.recursoId;
+                    if (!actividadesPorRecurso[recursoId]) {
+                        actividadesPorRecurso[recursoId] = [];
+                    }
+                    actividadesPorRecurso[recursoId].push(actividad);
+                });
+
+                reportHTML += `
+                    <div class="day-group">
+                        <div class="day-header">
+                            <h3 class="day-title">📅 ${formatearFecha(fecha)}</h3>
+                            <p class="day-subtitle">${actividadesDelDia.length} actividad(es) programada(s)</p>
+                        </div>
+                `;
+
+                // Agrupar recursos por tipo
+                const recursosOperarios = {};
+                const recursosMaquinas = {};
+
+                Object.keys(actividadesPorRecurso).forEach(recursoId => {
+                    const recurso = allRecursos.find(r => r.id == recursoId);
+                    if (recurso?.tipo === 'operario') {
+                        recursosOperarios[recursoId] = actividadesPorRecurso[recursoId];
+                    } else {
+                        recursosMaquinas[recursoId] = actividadesPorRecurso[recursoId];
+                    }
+                });
+
+                // Función para generar contenido de un tipo de recurso
+                const generarSeccionRecursos = (recursosData, tipoTitulo, tipoIcon, sectionId) => {
+                    if (Object.keys(recursosData).length === 0) return '';
+
+                    const resourceCount = Object.keys(recursosData).length;
+                    const activityCount = Object.values(recursosData).reduce((sum, acts) => sum + acts.length, 0);
+
+                    let seccionHTML = `
+                        <div class="resource-type-section">
+                            <div class="resource-type-header" onclick="toggleResourceTypeSection('${sectionId}')">
+                                <h3 class="resource-type-title">
+                                    ${tipoIcon} ${tipoTitulo} (${resourceCount} recursos, ${activityCount} actividades)
+                                </h3>
+                                <span class="resource-type-toggle" id="${sectionId}-toggle">▼</span>
+                            </div>
+                            <div class="resource-type-content expanded" id="${sectionId}-content">
+                    `;
+
+                    Object.keys(recursosData).forEach(recursoId => {
+                        const recurso = allRecursos.find(r => r.id == recursoId);
+                        const actividadesRecurso = recursosData[recursoId];
+
+                        // Ordenar actividades por hora
+                        actividadesRecurso.sort((a, b) => {
+                            if (!a.horaInicio && !b.horaInicio) return 0;
+                            if (!a.horaInicio) return 1;
+                            if (!b.horaInicio) return -1;
+                            return a.horaInicio.localeCompare(b.horaInicio);
+                        });
+
+                        const recursoIcon = recurso?.tipo === 'operario' ? '👷' : '🚛';
+
+                        seccionHTML += `
+                            <div class="resource-group">
+                                <div class="resource-header">
+                                    <div class="resource-info">
+                                        <span class="resource-icon">${recursoIcon}</span>
+                                        <div class="resource-details">
+                                            <h4 class="resource-name">${recurso ? `${recurso.nombre} (${recurso.codigo})` : 'Recurso desconocido (N/A)'}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="activities-list">
+                        `;
+
+                        // Generar cada actividad del recurso
+                        actividadesRecurso.forEach(actividad => {
+                            const obra = allObras.find(o => o.id == actividad.obraId);
+                            const tipo = allTiposActividad.find(t => t.id == actividad.tipoActividadId);
+                            const status = getActivityStatus(actividad);
+
+                            const timeText = actividad.horaInicio
+                                ? `${formatearHora(actividad.horaInicio)}${actividad.horaFin ? ` - ${formatearHora(actividad.horaFin)}` : ' - En curso'}`
+                                : 'Sin horario especificado';
+
+                            seccionHTML += `
+                                <div class="activity-item">
+                                    <div class="activity-header">
+                                        <span class="activity-time">${timeText}</span>
+                                        <span class="activity-status ${status.class}">${status.text}</span>
+                                    </div>
+                                    <div class="activity-obra">
+                                        <strong>Obra:</strong> ${obra ? `${obra.codigo} - ${obra.descripcion}` : 'Sin asignar'}
+                                    </div>
+                                    <div class="activity-tipo">
+                                        <strong>Actividad:</strong> ${tipo ? `${tipo.codigo} - ${tipo.nombre}` : 'Sin tipo'}
+                                    </div>
+                                    ${actividad.observaciones && actividad.observaciones !== 'null' && actividad.observaciones.trim() !== '' ? `
+                                        <div class="activity-observaciones">
+                                            <strong>Observaciones:</strong> ${actividad.observaciones}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                        });
+
+                        seccionHTML += `
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    seccionHTML += `
+                            </div>
+                        </div>
+                    `;
+
+                    return seccionHTML;
+                };
+
+                // Generar secciones por tipo (primero personas, luego máquinas)
+                reportHTML += generarSeccionRecursos(recursosOperarios, 'Personal', '👥', 'operarios');
+                reportHTML += generarSeccionRecursos(recursosMaquinas, 'Maquinaria', '🏗️', 'maquinas');
+
+                reportHTML += `
+                    </div>
+                `;
+            });
+
+            reportContent.innerHTML = reportHTML;
+        }
+
+        // Función para exportar el reporte a PDF
+        function exportReport() {
+            try {
+                showAlert('📄 Generando PDF...', 'info');
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Configuración del PDF
+                const marginLeft = 20;
+                const marginTop = 30;
+                let currentY = marginTop;
+                const pageWidth = doc.internal.pageSize.width;
+                const pageHeight = doc.internal.pageSize.height;
+                const lineHeight = 6;
+                const maxLineWidth = pageWidth - 2 * marginLeft;
+
+                // Función para verificar si necesitamos una nueva página
+                function checkNewPage(neededHeight = 20) {
+                    if (currentY + neededHeight > pageHeight - 30) {
+                        doc.addPage();
+                        currentY = marginTop;
+                        return true;
+                    }
+                    return false;
+                }
+
+                // Función para agregar texto con ajuste automático
+                function addWrappedText(text, x, y, maxWidth, fontSize = 10) {
+                    doc.setFontSize(fontSize);
+                    const lines = doc.splitTextToSize(text, maxWidth);
+                    lines.forEach((line, index) => {
+                        if (checkNewPage()) {
+                            y = currentY;
+                        }
+                        doc.text(line, x, y + (index * lineHeight));
+                    });
+                    return y + (lines.length * lineHeight);
+                }
+
+                // Encabezado del documento
+                doc.setFontSize(16);
+                doc.setFont(undefined, 'bold');
+                doc.text('Informe de Agenda - Gestión de Actividades', marginLeft, currentY);
+                currentY += 15;
+
+                // Información del reporte
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                const fechaActual = new Date().toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                currentY = addWrappedText(`Generado el: ${fechaActual}`, marginLeft, currentY, maxLineWidth);
+                currentY += 10;
+
+                // Obtener filtros aplicados
+                const fecha = document.getElementById('fechaFiltro').value;
+                const obraId = document.getElementById('obraFiltro').value;
+                const tipoId = document.getElementById('tipoFiltro').value;
+
+                if (fecha || obraId || tipoId) {
+                    doc.setFont(undefined, 'bold');
+                    currentY = addWrappedText('Filtros aplicados:', marginLeft, currentY, maxLineWidth);
+                    currentY += 5;
+                    doc.setFont(undefined, 'normal');
+
+                    if (fecha) {
+                        currentY = addWrappedText(`• Fecha: ${formatearFecha(fecha)}`, marginLeft + 5, currentY, maxLineWidth);
+                    }
+                    if (obraId) {
+                        const obraSelect = document.getElementById('obraFiltro');
+                        const obraTexto = obraSelect.options[obraSelect.selectedIndex].text;
+                        currentY = addWrappedText(`• Obra: ${obraTexto}`, marginLeft + 5, currentY, maxLineWidth);
+                    }
+                    if (tipoId) {
+                        const tipoSelect = document.getElementById('tipoFiltro');
+                        const tipoTexto = tipoSelect.options[tipoSelect.selectedIndex].text;
+                        currentY = addWrappedText(`• Tipo de Actividad: ${tipoTexto}`, marginLeft + 5, currentY, maxLineWidth);
+                    }
+                    currentY += 10;
+                }
+
+                // Obtener datos del reporte actual
+                const reportContent = document.getElementById('reportContent');
+                if (!reportContent.innerHTML.trim()) {
+                    showAlert('⚠️ No hay datos para exportar. Aplique filtros primero.', 'warning');
+                    return;
+                }
+
+                // Procesar datos por día
+                const diasProcesados = {};
+
+                // Obtener todas las secciones de día del DOM
+                const daySections = reportContent.querySelectorAll('.day-group');
+
+                daySections.forEach(daySection => {
+                    const dayHeader = daySection.querySelector('.day-header h3');
+                    if (!dayHeader) return;
+
+                    const fechaDia = dayHeader.textContent.trim();
+
+                    // Procesar secciones de tipos de recursos
+                    const resourceTypeSections = daySection.querySelectorAll('.resource-type-section');
+
+                    resourceTypeSections.forEach(typeSection => {
+                        const typeHeader = typeSection.querySelector('.resource-type-title');
+                        if (!typeHeader) return;
+
+                        const tipoTexto = typeHeader.textContent.trim();
+
+                        // Extraer actividades de cada recurso
+                        const resourceSections = typeSection.querySelectorAll('.resource-group');
+
+                        resourceSections.forEach(resourceSection => {
+                            const resourceHeader = resourceSection.querySelector('.resource-header');
+                            if (!resourceHeader) return;
+
+                            // Extraer nombre del recurso sin iconos
+                            const resourceName = resourceHeader.querySelector('.resource-name');
+                            if (!resourceName) return;
+
+                            const recursoTexto = resourceName.textContent.trim();
+
+                            const activities = resourceSection.querySelectorAll('.activity-item');
+
+                            activities.forEach(activity => {
+                                const timeElement = activity.querySelector('.activity-time');
+                                const obraElement = activity.querySelector('.activity-obra');
+                                const tipoElement = activity.querySelector('.activity-tipo');
+                                const observacionesElement = activity.querySelector('.activity-observaciones');
+
+                                if (timeElement && obraElement && tipoElement) {
+                                    const tiempo = timeElement.textContent.trim();
+
+                                    // Extraer obra y actividad
+                                    const obraTexto = obraElement.textContent.trim().replace('Obra: ', '');
+                                    const tipoTexto = tipoElement.textContent.trim().replace('Actividad: ', '');
+                                    const detalles = `${obraTexto} (${tipoTexto})`;
+
+                                    const observaciones = observacionesElement ?
+                                        observacionesElement.textContent.trim().replace('Observaciones: ', '') : '';
+
+                                    if (!diasProcesados[fechaDia]) {
+                                        diasProcesados[fechaDia] = {};
+                                    }
+                                    if (!diasProcesados[fechaDia][tipoTexto]) {
+                                        diasProcesados[fechaDia][tipoTexto] = {};
+                                    }
+                                    if (!diasProcesados[fechaDia][tipoTexto][recursoTexto]) {
+                                        diasProcesados[fechaDia][tipoTexto][recursoTexto] = [];
+                                    }
+
+                                    diasProcesados[fechaDia][tipoTexto][recursoTexto].push({
+                                        tiempo,
+                                        detalles,
+                                        observaciones
+                                    });
+                                }
+                            });
+                        });
+                    });
+                });
+
+                // Generar contenido del PDF
+                Object.keys(diasProcesados).forEach(fecha => {
+                    checkNewPage(30);
+
+                    // Encabezado del día
+                    doc.setFontSize(14);
+                    doc.setFont(undefined, 'bold');
+                    currentY = addWrappedText(fecha, marginLeft, currentY, maxLineWidth, 14);
+                    currentY += 5;
+
+                    // Línea separadora
+                    doc.setLineWidth(0.5);
+                    doc.line(marginLeft, currentY, pageWidth - marginLeft, currentY);
+                    currentY += 10;
+
+                    // Procesar tipos de recursos
+                    Object.keys(diasProcesados[fecha]).forEach(tipoRecurso => {
+                        checkNewPage(20);
+
+                        // Título del tipo de recurso
+                        doc.setFontSize(12);
+                        doc.setFont(undefined, 'bold');
+                        currentY = addWrappedText(tipoRecurso, marginLeft, currentY, maxLineWidth, 12);
+                        currentY += 8;
+
+                        // Procesar recursos dentro del tipo
+                        Object.keys(diasProcesados[fecha][tipoRecurso]).forEach(recurso => {
+                            checkNewPage(15);
+
+                            // Nombre del recurso
+                            doc.setFontSize(10);
+                            doc.setFont(undefined, 'bold');
+                            currentY = addWrappedText(recurso, marginLeft + 10, currentY, maxLineWidth);
+                            currentY += 5;
+
+                            // Actividades del recurso
+                            diasProcesados[fecha][tipoRecurso][recurso].forEach(actividad => {
+                                checkNewPage(15);
+
+                                doc.setFont(undefined, 'normal');
+                                currentY = addWrappedText(`• ${actividad.tiempo}`, marginLeft + 20, currentY, maxLineWidth);
+                                currentY = addWrappedText(`  ${actividad.detalles}`, marginLeft + 20, currentY, maxLineWidth);
+
+                                if (actividad.observaciones && actividad.observaciones !== 'null' && actividad.observaciones.trim() !== '') {
+                                    currentY = addWrappedText(`  Observaciones: ${actividad.observaciones}`, marginLeft + 20, currentY, maxLineWidth);
+                                }
+                                currentY += 3;
+                            });
+                            currentY += 5;
+                        });
+                        currentY += 5;
+                    });
+                    currentY += 10;
+                });
+
+                // Generar nombre del archivo
+                const fechaArchivo = fecha ? fecha.replace(/-/g, '') : new Date().toISOString().split('T')[0].replace(/-/g, '');
+                const nombreArchivo = `informe_agenda_${fechaArchivo}.pdf`;
+
+                // Descargar el PDF
+                doc.save(nombreArchivo);
+
+                showAlert(`✅ PDF generado exitosamente: ${nombreArchivo}`, 'success');
+
+            } catch (error) {
+                console.error('Error al generar PDF:', error);
+                showAlert('❌ Error al generar el PDF. Verifique que hay datos para exportar.', 'error');
+            }
+        }
+
+        // Función para alternar secciones de tipos de recursos
+        function toggleResourceTypeSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const toggle = document.getElementById(sectionId + '-toggle');
+
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                content.classList.add('collapsed');
+                toggle.textContent = '▶';
+            } else {
+                content.classList.remove('collapsed');
+                content.classList.add('expanded');
+                toggle.textContent = '▼';
+            }
+        }
+
+        // Función para exportar el reporte a texto plano (portapapeles)
+        async function exportToText() {
+            try {
+                showAlert('📋 Preparando texto...', 'info');
+
+                // Obtener datos del reporte actual
+                const reportContent = document.getElementById('reportContent');
+                if (!reportContent.innerHTML.trim()) {
+                    showAlert('⚠️ No hay datos para exportar. Aplique filtros primero.', 'warning');
+                    return;
+                }
+
+                let textOutput = [];
+
+                // Procesar datos por día
+                const daySections = reportContent.querySelectorAll('.day-group');
+                console.log('🔍 Encontradas day-sections:', daySections.length);
+
+                daySections.forEach(daySection => {
+                    const dayHeader = daySection.querySelector('.day-header h3');
+                    if (!dayHeader) return;
+
+                    const fechaDia = dayHeader.textContent.trim();
+                    textOutput.push(`=== ${fechaDia} ===`);
+                    textOutput.push('');
+
+                    // Procesar secciones de tipos de recursos
+                    const resourceTypeSections = daySection.querySelectorAll('.resource-type-section');
+
+                    resourceTypeSections.forEach(typeSection => {
+                        const typeHeader = typeSection.querySelector('.resource-type-title');
+                        if (!typeHeader) return;
+
+                        // Extraer solo el texto sin los iconos y contadores
+                        const tipoTexto = typeHeader.textContent.trim();
+                        const tipoLimpio = tipoTexto.split('(')[0].trim().replace(/^[^\w\s]+/, '').trim();
+
+                        textOutput.push(`--- ${tipoLimpio} ---`);
+
+                        // Extraer actividades de cada recurso
+                        const resourceSections = typeSection.querySelectorAll('.resource-group');
+
+                        resourceSections.forEach(resourceSection => {
+                            const resourceHeader = resourceSection.querySelector('.resource-header');
+                            if (!resourceHeader) return;
+
+                            // Extraer nombre del recurso sin iconos
+                            const resourceName = resourceHeader.querySelector('.resource-name');
+                            if (!resourceName) return;
+
+                            const recursoTexto = resourceName.textContent.trim();
+                            textOutput.push('');
+                            textOutput.push(recursoTexto);
+
+                            const activities = resourceSection.querySelectorAll('.activity-item');
+
+                            activities.forEach(activity => {
+                                const timeElement = activity.querySelector('.activity-time');
+                                const obraElement = activity.querySelector('.activity-obra');
+                                const tipoElement = activity.querySelector('.activity-tipo');
+                                const observacionesElement = activity.querySelector('.activity-observaciones');
+
+                                if (timeElement && obraElement && tipoElement) {
+                                    const tiempo = timeElement.textContent.trim();
+
+                                    // Extraer código de obra (removiendo "Obra: " al inicio)
+                                    const obraTexto = obraElement.textContent.trim().replace('Obra: ', '');
+
+                                    // Extraer actividad (removiendo "Actividad: " al inicio)
+                                    const tipoTexto = tipoElement.textContent.trim().replace('Actividad: ', '');
+
+                                    // Construir línea en formato: hora_inicio - hora_fin - Codigo Obra (actividad)
+                                    textOutput.push(`${tiempo} - ${obraTexto} (${tipoTexto})`);
+
+                                    // Añadir observaciones si existen
+                                    if (observacionesElement) {
+                                        const observaciones = observacionesElement.textContent.trim().replace('Observaciones: ', '');
+                                        if (observaciones && observaciones !== 'null' && observaciones.trim() !== '') {
+                                            textOutput.push(`  Observaciones: ${observaciones}`);
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                        textOutput.push('');
+                    });
+                    textOutput.push('');
+                });
+
+                // Unir todo el texto
+                const finalText = textOutput.join('\n');
+                console.log('📝 Texto generado:', finalText.length + ' caracteres');
+                console.log('📝 Contenido:', finalText.substring(0, 200) + '...');
+
+                // Copiar al portapapeles usando la API moderna del navegador
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(finalText);
+                    showAlert('✅ Texto copiado al portapapeles exitosamente', 'success');
+                } else {
+                    // Fallback para navegadores más antiguos
+                    const textArea = document.createElement('textarea');
+                    textArea.value = finalText;
+                    textArea.style.position = 'fixed';
+                    textArea.style.opacity = '0';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+
+                    try {
+                        const successful = document.execCommand('copy');
+                        if (successful) {
+                            showAlert('✅ Texto copiado al portapapeles exitosamente', 'success');
+                        } else {
+                            throw new Error('Comando copy falló');
+                        }
+                    } catch (err) {
+                        console.error('Error copiando al portapapeles:', err);
+                        showAlert('❌ No se pudo copiar al portapapeles. Intente manualmente.', 'error');
+
+                        // Mostrar el texto en un modal para copiar manualmente
+                        const modal = document.createElement('div');
+                        modal.style.cssText = `
+                            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                            background: rgba(0,0,0,0.8); z-index: 10000; display: flex;
+                            align-items: center; justify-content: center;
+                        `;
+
+                        const content = document.createElement('div');
+                        content.style.cssText = `
+                            background: white; padding: 20px; border-radius: 8px;
+                            max-width: 80%; max-height: 80%; overflow: auto;
+                        `;
+
+                        const title = document.createElement('h3');
+                        title.textContent = 'Copie el siguiente texto:';
+                        title.style.marginTop = '0';
+
+                        const textarea = document.createElement('textarea');
+                        textarea.value = finalText;
+                        textarea.style.cssText = `
+                            width: 100%; height: 300px; font-family: monospace;
+                            font-size: 12px; margin: 10px 0;
+                        `;
+                        textarea.readOnly = true;
+                        textarea.select();
+
+                        const closeBtn = document.createElement('button');
+                        closeBtn.textContent = 'Cerrar';
+                        closeBtn.onclick = () => document.body.removeChild(modal);
+                        closeBtn.style.cssText = `
+                            padding: 8px 16px; background: #007bff; color: white;
+                            border: none; border-radius: 4px; cursor: pointer;
+                        `;
+
+                        content.appendChild(title);
+                        content.appendChild(textarea);
+                        content.appendChild(closeBtn);
+                        modal.appendChild(content);
+                        document.body.appendChild(modal);
+                    }
+
+                    document.body.removeChild(textArea);
+                }
+
+            } catch (error) {
+                console.error('Error al exportar texto:', error);
+                showAlert('❌ Error al generar el texto. Verifique que hay datos para exportar.', 'error');
+            }
+        }
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Inicializando reporte de agenda...');
+            loadInitialData();
+        });
+    </script>
+
+    
+    <!-- Footer de información de conexión -->
+    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #1f2937; color: #9ca3af; padding: 8px 16px; font-size: 11px; border-top: 1px solid #374151; z-index: 1000;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Frontend: http://localhost:5173</span>
+                <span>Backend: <span id="apiBaseUrl">http://localhost:3002</span></span>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Última llamada: <span id="lastApiCall">Ninguna</span></span>
+                <span id="apiStatus" style="padding: 2px 6px; border-radius: 3px; background-color: #374151;">Esperando...</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script para monitorear llamadas API -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Actualizar la URL del API en el footer
+            const apiBaseElement = document.getElementById('apiBaseUrl');
+            if (apiBaseElement && typeof API_BASE !== 'undefined') {
+                apiBaseElement.textContent = API_BASE;
+            }
+
+            // Interceptar llamadas fetch para mostrar actividad de API
+            const originalFetch = window.fetch;
+            const lastApiCallElement = document.getElementById('lastApiCall');
+            const apiStatusElement = document.getElementById('apiStatus');
+
+            window.fetch = async function(...args) {
+                const [url, options] = args;
+
+                // Solo mostrar llamadas que vayan al API backend
+                if (typeof url === 'string' && (url.includes('localhost:300') || url.includes(API_BASE))) {
+                    const method = options?.method || 'GET';
+                    const endpoint = url.replace(API_BASE, '').split('?')[0];
+
+                    // Mostrar llamada en progreso
+                    lastApiCallElement.textContent = `${method} ${endpoint}`;
+                    apiStatusElement.textContent = 'Cargando...';
+                    apiStatusElement.style.backgroundColor = '#f59e0b';
+
+                    try {
+                        const response = await originalFetch(...args);
+
+                        // Mostrar resultado
+                        const status = response.ok ? 'OK' : `Error ${response.status}`;
+                        apiStatusElement.textContent = status;
+                        apiStatusElement.style.backgroundColor = response.ok ? '#10b981' : '#ef4444';
+
+                        // Resetear después de 2 segundos
+                        setTimeout(() => {
+                            if (apiStatusElement.textContent === status) {
+                                apiStatusElement.textContent = 'Listo';
+                                apiStatusElement.style.backgroundColor = '#374151';
+                            }
+                        }, 2000);
+
+                        return response;
+                    } catch (error) {
+                        apiStatusElement.textContent = 'Error de red';
+                        apiStatusElement.style.backgroundColor = '#ef4444';
+                        setTimeout(() => {
+                            apiStatusElement.textContent = 'Error';
+                            apiStatusElement.style.backgroundColor = '#374151';
+                        }, 3000);
+                        throw error;
+                    }
+                }
+
+                return originalFetch(...args);
+            };
+        });
+    </script>
+</body>
+</html>

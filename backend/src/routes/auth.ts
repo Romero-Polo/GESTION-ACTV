@@ -53,4 +53,14 @@ router.get('/status', optionalAuth, authController.status);
  */
 router.post('/validate', authController.validate);
 
+// Test-only endpoint for E2E testing
+if (process.env.NODE_ENV === 'test') {
+  /**
+   * @route   POST /auth/mock-login
+   * @desc    Mock login for testing purposes only
+   * @access  Public (test environment only)
+   */
+  router.post('/mock-login', authController.mockLogin);
+}
+
 export default router;

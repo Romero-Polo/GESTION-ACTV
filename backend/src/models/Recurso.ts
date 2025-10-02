@@ -39,6 +39,27 @@ export class Recurso {
   @Length(1, 100)
   agrCoste: string;
 
+  // Sync-related fields
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  @IsOptional()
+  externalId?: string;
+
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  @IsOptional()
+  empresa?: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  @IsOptional()
+  categoria?: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  @IsOptional()
+  costeHora?: number;
+
+  @Column({ type: 'datetime', nullable: true })
+  @IsOptional()
+  lastSyncDate?: Date;
+
   @CreateDateColumn({ name: 'fecha_creacion' })
   fechaCreacion: Date;
 

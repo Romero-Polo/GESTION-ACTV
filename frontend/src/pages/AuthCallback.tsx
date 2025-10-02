@@ -31,7 +31,7 @@ export const AuthCallback: React.FC = () => {
         }
 
         // Validate token with backend
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/auth/validate`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/auth/validate`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -46,9 +46,8 @@ export const AuthCallback: React.FC = () => {
             setToken(token);
             setStatus('success');
 
-            setTimeout(() => {
-              navigate('/', { replace: true });
-            }, 2000);
+            // Redirect immediately for faster user experience
+            navigate('/', { replace: true });
           } else {
             setStatus('error');
             setErrorMessage('Token de autenticación inválido');

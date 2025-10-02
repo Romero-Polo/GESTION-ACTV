@@ -1,0 +1,79 @@
+# Root level dockerignore for the entire project
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+.github/
+
+# Development and IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment files
+.env*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+build/
+
+# Docker files
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Testing
+coverage/
+.nyc_output/
+*.test.*
+*.spec.*
+__tests__/
+test/
+tests/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+tmp/
+temp/
+*.tmp
+
+# Data and uploads
+data/
+uploads/
+backups/
+
+# Secrets
+secrets/
+
+# Monitoring
+monitoring/
+
+# Scripts that aren't needed in containers
+scripts/
+
+# SQL files
+*.sql

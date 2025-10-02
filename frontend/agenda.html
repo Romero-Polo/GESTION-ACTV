@@ -1,0 +1,3965 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista Agenda - Gestión de Actividades</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f9fafb;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        #headerCreateBtn {
+            font-weight: 600;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        #headerCreateBtn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .back-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #2563eb;
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        .controls {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .controls-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        input, select {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .timeline-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .timeline-header {
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timeline-title-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .timeline-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .current-date {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1f2937;
+            padding: 0.5rem 1rem;
+            background: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            min-width: 200px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .current-date:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-today {
+            background-color: #3b82f6;
+            color: white;
+            font-size: 0.875rem;
+        }
+        .btn-today:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-today {
+            background-color: #3b82f6;
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .btn-today:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-tomorrow {
+            background-color: #10b981;
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .btn-tomorrow:hover {
+            background-color: #059669;
+        }
+
+        .btn-nav-day {
+            background-color: #6b7280;
+            color: white;
+            font-size: 1rem;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 4px;
+        }
+
+        .btn-nav-day:hover {
+            background-color: #4b5563;
+            transform: scale(1.05);
+        }
+
+        .btn-yesterday {
+            background-color: #f59e0b;
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .btn-yesterday:hover {
+            background-color: #d97706;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .timeline-content {
+            position: relative;
+            overflow-x: auto;
+            max-height: 70vh;
+        }
+
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: 80px 200px 1fr;
+            grid-template-rows: auto 1fr;
+            min-width: 1720px;
+        }
+
+        .hour-header {
+            grid-column: 3;
+            display: flex;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            border-left: 1px solid #e5e7eb;
+            height: 40px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .hour-cell {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6b7280;
+            border-right: 1px solid #e5e7eb;
+            min-width: 60px;
+        }
+
+        .hour-cell:last-child {
+            border-right: none;
+        }
+
+        .resources-header {
+            grid-column: 2;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            position: sticky;
+            top: 0;
+            left: 80px;
+            z-index: 12;
+        }
+
+        .resources-column {
+            background: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+            position: sticky;
+            left: 80px;
+            z-index: 10;
+        }
+
+        .timeline-column {
+            position: relative;
+        }
+
+        .resource-row {
+            height: 60px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            background: white;
+            position: sticky;
+            left: 80px;
+            z-index: 10;
+        }
+
+        .resource-row:nth-child(even) {
+            background: #f9fafb;
+            position: sticky;
+            left: 80px;
+            z-index: 10;
+        }
+
+        .resource-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .resource-icon {
+            font-size: 1.2rem;
+        }
+
+        .actions-header {
+            grid-column: 1;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.75rem 0.5rem;
+            position: sticky;
+            top: 0;
+            left: 0;
+            z-index: 12;
+        }
+
+        .actions-column {
+            background: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+            position: sticky;
+            left: 0;
+            z-index: 10;
+        }
+
+        .action-row {
+            height: 60px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 0.5rem;
+            background: white;
+            position: sticky;
+            left: 0;
+            z-index: 10;
+        }
+
+        .action-row:nth-child(even) {
+            background: #f9fafb;
+            position: sticky;
+            left: 0;
+            z-index: 10;
+        }
+
+        .btn-create-activity {
+            width: 24px;
+            height: 24px;
+            border: none;
+            border-radius: 0;
+            background-color: transparent;
+            color: #6b7280;
+            font-size: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-create-activity:hover {
+            color: #4b5563;
+            transform: scale(1.1);
+        }
+
+        .resource-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resource-name {
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: #1f2937;
+        }
+
+        .resource-code {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .timeline-row {
+            height: 80px;
+            border-bottom: 1px solid #e5e7eb;
+            position: relative;
+            background: white;
+        }
+
+        .timeline-row:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .hour-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            display: flex;
+        }
+
+        .hour-marker {
+            flex: 1;
+            border-right: 1px solid #e5e7eb;
+            position: relative;
+            min-width: 60px;
+        }
+
+        .hour-label {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .activity-block {
+            position: absolute;
+            top: 10px;
+            height: 60px;
+            border-radius: 4px;
+            padding: 0.375rem 0.5rem;
+            font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .activity-block:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Estilos para actividades multi-día */
+        .multi-day-activity {
+            /* Sin bordes */
+        }
+
+        .multi-day-activity.start-day {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .multi-day-activity.end-day {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .multi-day-activity.middle-day {
+            border-radius: 0;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+        }
+
+        .activity-time {
+            font-size: 0.625rem;
+            opacity: 0.9;
+            text-align: center;
+        }
+
+        .activity-obra {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+            text-align: center;
+        }
+
+        /* Nota: Los colores de actividad se aplican dinámicamente desde la base de datos */
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            opacity: 1;
+            transform: translateX(0);
+            transition: all 0.3s ease;
+        }
+
+        .alert.hiding {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        #alertContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .alert-error {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-info {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #dbeafe;
+        }
+
+        .alert-warning {
+            background-color: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fed7aa;
+        }
+
+        .alert-success {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .time-selector-container {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .time-select {
+            width: auto;
+            min-width: 60px;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        .time-separator {
+            font-weight: bold;
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .controls-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .timeline-grid {
+                grid-template-columns: 60px 150px 1fr;
+            }
+
+            .resource-name {
+                font-size: 0.75rem;
+            }
+
+            .resource-code {
+                font-size: 0.625rem;
+            }
+        }
+
+        .version-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            background-color: #dbeafe;
+            color: #1e40af;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            margin-left: 12px;
+        }
+
+        .version-link:hover {
+            background-color: #bfdbfe;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>📅 Vista Agenda - Timeline de Actividades</h1>
+                    <a href="changelog.html" class="version-link" title="Ver registro de cambios">
+                        v1.6.1
+                    </a>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-success" onclick="window.location.href='/index.html'" style="background-color: #6b7280; border-color: #6b7280; color: white; height: 36px; min-width: 120px;">
+                        🏠 Dashboard
+                    </button>
+                    <button class="btn btn-primary" onclick="window.location.href='/report-agenda.html'" style="height: 36px; min-width: 110px;">
+                        📊 Informe
+                    </button>
+                    <button class="btn btn-success" onclick="openNewActivityModal()" id="headerCreateBtn" style="height: 36px; min-width: 160px;">
+                        ➕ Nueva Actividad
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Controles de Filtro -->
+            <div class="controls">
+                <div class="controls-row">
+                    <div class="form-group">
+                        <label for="fechaFiltro">Fecha</label>
+                        <input type="date" id="fechaFiltro" name="fechaFiltro">
+                    </div>
+                    <div class="form-group">
+                        <label for="obraFiltro">Obra</label>
+                        <select id="obraFiltro" name="obraFiltro">
+                            <option value="">Todas las obras</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipoFiltro">Tipo de Actividad</label>
+                        <select id="tipoFiltro" name="tipoFiltro">
+                            <option value="">Todos los tipos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary" onclick="aplicarFiltros()">
+                            🔍 Aplicar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenedor de Alertas -->
+            <div id="alertContainer"></div>
+
+            <!-- Timeline -->
+            <div class="timeline-container">
+                <div class="timeline-header">
+                    <div class="timeline-title-section">
+                        <div class="timeline-title">Timeline de Actividades por Recurso</div>
+                        <div class="date-navigation">
+                            <button class="btn btn-small btn-nav-day" onclick="irABeforeDay()" style="background-color: #d1d5db; border-color: #d1d5db; color: #374151; min-width: 115px;">
+                                ⏪ Anterior
+                            </button>
+                            <button class="btn btn-small btn-yesterday" onclick="irAAyer()" style="background-color: #d1d5db; border-color: #d1d5db; color: #374151; display: none;">
+                                ⬅️ Ayer
+                            </button>
+                            <button class="btn btn-small btn-today" onclick="irAHoy()" style="background-color: #d1d5db; border-color: #d1d5db; color: #374151; min-width: 90px;">
+                                📅 Hoy
+                            </button>
+                            <button class="btn btn-small btn-tomorrow" onclick="irAManana()" style="background-color: #d1d5db; border-color: #d1d5db; color: #374151; display: none;">
+                                Mañana ➡️
+                            </button>
+                            <button class="btn btn-small btn-nav-day" onclick="irANextDay()" style="background-color: #d1d5db; border-color: #d1d5db; color: #374151; min-width: 115px;">
+                                Siguiente ⏩
+                            </button>
+                            <button class="current-date" id="currentDateDisplay" onclick="openDatePicker()"></button>
+                            <input type="date" id="hiddenDatePicker" style="display: none;" onchange="onDateSelected(this.value)">
+                        </div>
+                    </div>
+                    <div id="timelineInfo" style="font-size: 0.875rem; color: #6b7280;"></div>
+                </div>
+                <div class="timeline-content">
+                    <div id="timelineGrid" class="timeline-grid">
+                        <!-- Contenido generado dinámicamente -->
+                    </div>
+                    <div id="loadingContainer" class="loading">
+                        <div class="loading-spinner"></div>
+                        Cargando actividades...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Edición de Actividad -->
+    <div id="editActivityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">✏️ Editar Actividad</div>
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+
+            <form id="editActivityForm">
+                <input type="hidden" id="editActivityId">
+
+                <!-- Información Básica -->
+                <div class="form-group">
+                    <div class="form-row">
+                        <div>
+                            <label for="editObra">Obra <span class="required">*</span></label>
+                            <select id="editObra" name="obraId" required>
+                                <option value="">Selecciona una obra...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="editRecurso">Recurso <span class="required">*</span></label>
+                            <select id="editRecurso" name="recursoId" required>
+                                <option value="">Selecciona un recurso...</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editTipoActividad">Tipo de Actividad <span class="required">*</span></label>
+                    <select id="editTipoActividad" name="tipoActividadId" required>
+                        <option value="">Selecciona un tipo...</option>
+                    </select>
+                </div>
+
+                <!-- Información Temporal -->
+                <div class="form-group">
+                    <div class="form-row">
+                        <div>
+                            <label for="editFechaInicio">Fecha de Inicio <span class="required">*</span></label>
+                            <input type="date" id="editFechaInicio" name="fechaInicio" required>
+                        </div>
+                        <div>
+                            <label for="editHoraInicio">Hora de Inicio <span class="required">*</span></label>
+                            <div class="time-selector-container">
+                                <select id="editHoraInicio_horas" class="time-select" required>
+                                    <option value="">HH</option>
+                                </select>
+                                <span class="time-separator">:</span>
+                                <select id="editHoraInicio_minutos" class="time-select" required>
+                                    <option value="">MM</option>
+                                    <option value="00" selected>00</option>
+                                    <option value="15">15</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                </select>
+                                <input type="hidden" id="editHoraInicio" name="horaInicio" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actividad Abierta -->
+                <div class="form-group">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="editActividadAbierta" onchange="toggleEditEndTime()">
+                        <label for="editActividadAbierta" style="margin: 0; cursor: pointer;">🔄 Actividad abierta (sin fecha de fin)</label>
+                    </div>
+                </div>
+
+                <div class="form-group" id="editEndTimeGroup">
+                    <div class="form-row">
+                        <div>
+                            <label for="editFechaFin">Fecha de Fin</label>
+                            <input type="date" id="editFechaFin" name="fechaFin">
+                        </div>
+                        <div>
+                            <label for="editHoraFin">Hora de Fin</label>
+                            <div class="time-selector-container">
+                                <select id="editHoraFin_horas" class="time-select">
+                                    <option value="">HH</option>
+                                </select>
+                                <span class="time-separator">:</span>
+                                <select id="editHoraFin_minutos" class="time-select">
+                                    <option value="">MM</option>
+                                    <option value="00">00</option>
+                                    <option value="15">15</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                </select>
+                                <input type="hidden" id="editHoraFin" name="horaFin">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="form-group">
+                    <label for="editObservaciones">Observaciones</label>
+                    <textarea id="editObservaciones" name="observaciones" placeholder="Detalles adicionales sobre la actividad (opcional)..."></textarea>
+                </div>
+
+
+                <!-- Acciones -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
+                        ❌ Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteActivity()" id="deleteActivityBtn">
+                        🗑️ Eliminar Actividad
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="saveEditBtn">
+                        💾 <u>G</u>uardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Crear Nueva Actividad -->
+    <div id="createActivityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">➕ Nueva Actividad</div>
+                <button class="close-btn" onclick="closeCreateModal()">&times;</button>
+            </div>
+
+            <form id="createActivityForm" onsubmit="submitNewActivity(event)">
+                <!-- Recurso -->
+                <div class="form-group">
+                    <label for="createRecurso">Recurso *</label>
+                    <input type="text" id="createRecursoDisplay" readonly style="background-color: #f3f4f6; color: #6b7280; display: none;">
+                    <select id="createRecursoSelect" name="recursoId" style="display: none;">
+                        <option value="">Selecciona un recurso...</option>
+                    </select>
+                    <input type="hidden" id="createRecurso" name="recursoId">
+                </div>
+
+                <!-- Obra -->
+                <div class="form-group">
+                    <label for="createObra">Obra *</label>
+                    <select id="createObra" name="obraId" required>
+                        <option value="">Selecciona una obra...</option>
+                    </select>
+                </div>
+
+                <!-- Tipo de Actividad -->
+                <div class="form-group">
+                    <label for="createTipoActividad">Tipo de Actividad *</label>
+                    <select id="createTipoActividad" name="tipoActividadId" required>
+                        <option value="">Selecciona un tipo...</option>
+                    </select>
+                </div>
+
+                <!-- Fecha y Hora de Inicio -->
+                <div class="form-group">
+                    <label>Fecha y Hora de Inicio *</label>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <input type="date" id="createFechaInicio" name="fechaInicio" required>
+                        </div>
+                        <div class="form-col">
+                            <div class="time-selector-container">
+                                <select class="time-select" id="createHoraInicio_horas" onchange="updateCreateEndTimeOptions()">
+                                    <option value="">HH</option>
+                                </select>
+                                <span class="time-separator">:</span>
+                                <select class="time-select" id="createHoraInicio_minutos" onchange="updateCreateEndTimeOptions()">
+                                    <option value="">MM</option>
+                                    <option value="00" selected>00</option>
+                                    <option value="15">15</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                </select>
+                                <input type="hidden" id="createHoraInicio" name="horaInicio">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actividad Abierta -->
+                <div class="form-group">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="createActividadAbierta" onchange="toggleCreateEndTime()">
+                        <label for="createActividadAbierta" style="margin: 0; cursor: pointer;">🔄 Actividad abierta (sin fecha de fin)</label>
+                    </div>
+                </div>
+
+                <!-- Fecha y Hora de Fin -->
+                <div class="form-group" id="createEndTimeGroup">
+                    <label>Fecha y Hora de Fin (Opcional)</label>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <input type="date" id="createFechaFin" name="fechaFin">
+                        </div>
+                        <div class="form-col">
+                            <div class="time-selector-container">
+                                <select class="time-select" id="createHoraFin_horas">
+                                    <option value="">HH</option>
+                                </select>
+                                <span class="time-separator">:</span>
+                                <select class="time-select" id="createHoraFin_minutos">
+                                    <option value="">MM</option>
+                                    <option value="00">00</option>
+                                    <option value="15">15</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                </select>
+                                <input type="hidden" id="createHoraFin" name="horaFin">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="form-group">
+                    <label for="createObservaciones">Observaciones</label>
+                    <textarea id="createObservaciones" name="observaciones" placeholder="Detalles adicionales sobre la actividad (opcional)..."></textarea>
+                </div>
+
+                <!-- Acciones -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">
+                        ❌ Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="saveCreateBtn">
+                        💾 <u>G</u>uardar Actividad
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+        <!-- Configuración centralizada -->
+    <script src="src/config.js"></script>
+
+    <script>
+        // Configuración
+        // API_BASE se carga automáticamente desde config.js
+        let API_BASE = window.API_BASE || (window.appConfig?.getApiUrl('') || 'http://localhost:3002');
+
+        // ===== SISTEMA DE COLA EN BACKGROUND =====
+        // Cola de operaciones para procesar en background
+        const operationQueue = [];
+        let isProcessingQueue = false;
+        let queueId = 0;
+
+        // Estados de operaciones
+        const OPERATION_STATUS = {
+            PENDING: 'pending',
+            PROCESSING: 'processing',
+            SUCCESS: 'success',
+            ERROR: 'error'
+        };
+
+        // Helper function to check if an activity is open
+        function isOpenActivity(activity) {
+            // An activity is considered open if:
+            // 1. horaFin is null, undefined, or 'null' (legacy behavior)
+            // 2. fechaFin is '2099-12-31' (new behavior)
+            return (!activity.horaFin || activity.horaFin === null || activity.horaFin === 'null') ||
+                   (activity.fechaFin === '2099-12-31');
+        }
+
+        // Helper function to validate that end date/time is not before start date/time
+        function validateDateTimeOrder(fechaInicio, horaInicio, fechaFin, horaFin) {
+            // Skip validation for open activities (fecha_fin = 2099-12-31)
+            if (fechaFin === '2099-12-31') {
+                return { isValid: true };
+            }
+
+            // Skip validation if fechaFin is null (activity without end)
+            if (!fechaFin) {
+                return { isValid: true };
+            }
+
+            try {
+                // Create Date objects for comparison
+                const startDateTime = new Date(`${fechaInicio}T${horaInicio}:00`);
+                const endDateTime = new Date(`${fechaFin}T${horaFin}:00`);
+
+                if (endDateTime < startDateTime) {
+                    return {
+                        isValid: false,
+                        message: '❌ La fecha y hora de fin no puede ser anterior a la fecha y hora de inicio',
+                        details: `Inicio: ${fechaInicio} ${horaInicio} - Fin: ${fechaFin} ${horaFin}`
+                    };
+                }
+
+                return { isValid: true };
+            } catch (error) {
+                console.error('Error validating date/time order:', error);
+                return {
+                    isValid: false,
+                    message: '❌ Error en el formato de fechas y horas',
+                    details: error.message
+                };
+            }
+        }
+
+        // Procesar cola en background
+        async function processQueue() {
+            if (isProcessingQueue || operationQueue.length === 0) return;
+
+            isProcessingQueue = true;
+
+            while (operationQueue.length > 0) {
+                const operation = operationQueue.shift();
+                operation.status = OPERATION_STATUS.PROCESSING;
+
+                try {
+                    console.log(`🔄 Processing background operation: ${operation.type} (ID: ${operation.id})`);
+                    const result = await operation.execute();
+                    operation.status = OPERATION_STATUS.SUCCESS;
+                    operation.result = result;
+
+                    // Ejecutar callback de éxito si existe
+                    if (operation.onSuccess) {
+                        operation.onSuccess(result);
+                    }
+
+                    console.log(`✅ Background operation completed: ${operation.type} (ID: ${operation.id})`);
+                } catch (error) {
+                    operation.status = OPERATION_STATUS.ERROR;
+                    operation.error = error;
+
+                    console.error(`❌ Background operation failed: ${operation.type} (ID: ${operation.id})`, error);
+
+                    // Ejecutar callback de error si existe
+                    if (operation.onError) {
+                        operation.onError(error);
+                    } else {
+                        // Mostrar error genérico si no hay callback
+                        showAlert(`❌ Error en operación en segundo plano: ${error.message}`, 'error');
+                    }
+                }
+
+                // Pausa removida para mayor velocidad de respuesta
+                // await new Promise(resolve => setTimeout(resolve, 50));
+            }
+
+            isProcessingQueue = false;
+        }
+
+        // Agregar operación a la cola
+        function addToQueue(operation) {
+            operation.id = ++queueId;
+            operation.status = OPERATION_STATUS.PENDING;
+            operation.timestamp = new Date();
+
+            operationQueue.push(operation);
+            console.log(`📋 Added to queue: ${operation.type} (ID: ${operation.id})`);
+
+            // Iniciar procesamiento de cola
+            processQueue();
+
+            return operation.id;
+        }
+
+        // Estado de la aplicación
+        let allActivities = [];
+        let allResources = [];
+        let allObras = [];
+        let allTiposActividad = [];
+        // Inicializar con el día de hoy
+        let currentDate = new Date().toISOString().split('T')[0];
+
+        // Calcular fechas basándose en hoy (+ 2 días y - 2 días)
+        const today = new Date();
+        const dayPlusTwo = new Date(today);
+        dayPlusTwo.setDate(today.getDate() + 1);
+        let nextDayValue = dayPlusTwo.toISOString().split('T')[0];
+
+        const dayMinusTwo = new Date(today);
+        dayMinusTwo.setDate(today.getDate() - 1);
+        let beforeDayValue = dayMinusTwo.toISOString().split('T')[0];
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+
+            // Event listener para el formulario de edición
+            document.getElementById('editActivityForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveEditActivity();
+            });
+
+            // Event listener para cerrar modales con tecla ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    // Verificar si hay algún modal abierto y cerrarlo
+                    const editModal = document.getElementById('editActivityModal');
+                    const createModal = document.getElementById('createActivityModal');
+
+                    if (editModal && editModal.classList.contains('active')) {
+                        closeEditModal();
+                    } else if (createModal && createModal.classList.contains('active')) {
+                        closeCreateModal();
+                    }
+                }
+
+                // Event listener para guardar con Alt+G
+                if (e.altKey && (e.key === 'g' || e.key === 'G' || e.keyCode === 71)) {
+                    e.preventDefault(); // Prevenir comportamiento por defecto del navegador
+
+                    // Verificar si hay algún modal abierto y hacer submit del formulario correspondiente
+                    const editModal = document.getElementById('editActivityModal');
+                    const createModal = document.getElementById('createActivityModal');
+
+                    if (editModal && editModal.classList.contains('active')) {
+                        // Trigger submit del formulario de edición
+                        document.getElementById('editActivityForm').dispatchEvent(new Event('submit'));
+                    } else if (createModal && createModal.classList.contains('active')) {
+                        // Trigger submit del formulario de creación
+                        document.getElementById('createActivityForm').dispatchEvent(new Event('submit'));
+                    }
+                }
+
+                // Event listener para crear nueva actividad con Alt+N
+                if (e.altKey && (e.key === 'n' || e.key === 'N' || e.keyCode === 78)) {
+                    e.preventDefault(); // Prevenir comportamiento por defecto del navegador
+
+                    // Solo abrir modal si no hay ningún modal abierto
+                    const editModal = document.getElementById('editActivityModal');
+                    const createModal = document.getElementById('createActivityModal');
+
+                    if (!editModal?.classList.contains('active') && !createModal?.classList.contains('active')) {
+                        openNewActivityModal();
+                    }
+                }
+            });
+        });
+
+        async function initializePage() {
+            // Establecer fecha actual
+            document.getElementById('fechaFiltro').value = currentDate;
+
+            // Actualizar display de fecha actual
+            updateCurrentDateDisplay();
+
+            // Establecer valores por defecto para selectores de minutos de hora inicial
+            const minuteSelectors = [
+                'editHoraInicio_minutos',
+                'createHoraInicio_minutos'
+            ];
+            minuteSelectors.forEach(selectorId => {
+                const selector = document.getElementById(selectorId);
+                if (selector && selector.value === '') {
+                    selector.value = '00';
+                }
+            });
+
+            try {
+                await loadData();
+                await buildTimeline(currentDate); // Filtrar actividades del día actual al cargar
+            } catch (error) {
+                showAlert('Error al cargar datos: ' + error.message, 'error');
+            }
+        }
+
+        function updateCurrentDateDisplay() {
+            const display = document.getElementById('currentDateDisplay');
+            if (!display) {
+                console.error('currentDateDisplay element not found!');
+                return;
+            }
+            console.log('📅 updateCurrentDateDisplay - currentDate value:', currentDate);
+            const date = new Date(currentDate + 'T00:00:00');
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            const formattedDate = date.toLocaleDateString('es-ES', options);
+            display.textContent = formattedDate;
+            console.log('📅 updateCurrentDateDisplay - formatted date:', formattedDate);
+        }
+
+        let navigating = false; // Prevent multiple clicks
+
+        function navegarDia(direccion) {
+            console.log('🔄 navegarDia called with direction:', direccion, 'current date:', currentDate);
+
+            if (navigating) {
+                console.log('⚠️ Navigation already in progress, ignoring click');
+                return;
+            }
+
+            navigating = true;
+
+            try {
+                const date = new Date(currentDate + 'T00:00:00');
+                console.log('📅 Original date object:', date);
+
+                date.setDate(date.getDate() + direccion);
+                console.log('📅 Date after adding', direccion, 'days:', date);
+
+                const newDate = date.toISOString().split('T')[0];
+                console.log('📅 New date formatted:', newDate);
+
+                currentDate = newDate;
+
+                // Actualizar el filtro de fecha
+                const fechaFiltro = document.getElementById('fechaFiltro');
+                if (fechaFiltro) {
+                    fechaFiltro.value = newDate;
+                    console.log('✅ Updated fechaFiltro to:', newDate);
+                } else {
+                    console.error('❌ fechaFiltro element not found');
+                }
+
+                // Actualizar display
+                updateCurrentDateDisplay();
+                console.log('✅ Updated date display');
+
+                // Aplicar filtros con la nueva fecha
+                aplicarFiltros();
+                console.log('✅ Applied filters');
+
+            } catch (error) {
+                console.error('❌ Error in navegarDia:', error);
+                showAlert('Error al navegar entre fechas', 'error');
+            } finally {
+                // Re-enable navigation immediately for faster response
+                navigating = false;
+                console.log('✅ Navigation re-enabled');
+            }
+        }
+
+        function irAHoy() {
+            console.log('🔄 irAHoy called');
+
+            if (navigating) {
+                console.log('⚠️ Navigation already in progress, ignoring click');
+                return;
+            }
+
+            navigating = true;
+
+            try {
+                const today = new Date();
+                const newDate = today.toISOString().split('T')[0];
+                console.log('📅 Today date formatted:', newDate);
+
+                currentDate = newDate;
+
+                // Update date filter
+                const fechaFiltro = document.getElementById('fechaFiltro');
+                if (fechaFiltro) {
+                    fechaFiltro.value = newDate;
+                    console.log('✅ Updated fechaFiltro to:', newDate);
+                }
+
+                // Update display
+                updateCurrentDateDisplay();
+                console.log('✅ Updated date display');
+
+                // Apply filters with new date
+                aplicarFiltros();
+                console.log('✅ Applied filters');
+
+                showAlert('Navegado a la fecha de hoy', 'success');
+
+            } catch (error) {
+                console.error('❌ Error in irAHoy:', error);
+                showAlert('Error al navegar a hoy', 'error');
+            } finally {
+                navigating = false;
+                console.log('✅ Navigation re-enabled');
+            }
+        }
+
+        function irAManana() {
+            console.log('🔄 irAManana called');
+
+            if (navigating) {
+                console.log('⚠️ Navigation already in progress, ignoring click');
+                return;
+            }
+
+            navigating = true;
+
+            try {
+                // Always get tomorrow relative to today's date (not current selected date)
+                const today = new Date();
+                const tomorrow = new Date(today);
+                tomorrow.setDate(today.getDate() + 1);
+                const newDate = tomorrow.toISOString().split('T')[0];
+                console.log('📅 Tomorrow date (day after today) formatted:', newDate);
+
+                currentDate = newDate;
+
+                // Update date filter
+                const fechaFiltro = document.getElementById('fechaFiltro');
+                if (fechaFiltro) {
+                    fechaFiltro.value = newDate;
+                    console.log('✅ Updated fechaFiltro to:', newDate);
+                }
+
+                // Update display
+                updateCurrentDateDisplay();
+                console.log('✅ Updated date display');
+
+                // Apply filters with new date
+                aplicarFiltros();
+                console.log('✅ Applied filters');
+
+                showAlert('Navegado a mañana', 'success');
+
+            } catch (error) {
+                console.error('❌ Error in irAManana:', error);
+                showAlert('Error al navegar a mañana', 'error');
+            } finally {
+                navigating = false;
+                console.log('✅ Navigation re-enabled');
+            }
+        }
+
+        function irAAyer() {
+            console.log('🔄 irAAyer called');
+
+            if (navigating) {
+                console.log('⚠️ Navigation already in progress, ignoring click');
+                return;
+            }
+
+            navigating = true;
+
+            try {
+                // Always get yesterday relative to today's date (not current selected date)
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(today.getDate() - 1);
+                const newDate = yesterday.toISOString().split('T')[0];
+                console.log('📅 Yesterday date (day before today) formatted:', newDate);
+
+                currentDate = newDate;
+
+                // Update date filter
+                const fechaFiltro = document.getElementById('fechaFiltro');
+                if (fechaFiltro) {
+                    fechaFiltro.value = newDate;
+                    console.log('✅ Updated fechaFiltro to:', newDate);
+                }
+
+                // Update display
+                updateCurrentDateDisplay();
+                console.log('✅ Updated date display');
+
+                // Apply filters with new date
+                aplicarFiltros();
+                console.log('✅ Applied filters');
+
+                showAlert('Navegado a ayer', 'success');
+
+            } catch (error) {
+                console.error('❌ Error in irAAyer:', error);
+                showAlert('Error al navegar a ayer', 'error');
+            } finally {
+                navigating = false;
+                console.log('✅ Navigation re-enabled');
+            }
+        }
+
+        async function irANextDay() {
+            console.log('🔄 irANextDay called - filtering by nextDayValue:', nextDayValue);
+
+            if (navigating) {
+                console.log('⚠️ Navigation already in progress, ignoring click');
+                return;
+            }
+
+            navigating = true;
+
+            try {
+                console.log('📅 Using nextDayValue for navigation:', nextDayValue);
+
+                // Use nextDayValue as the new currentDate
+                currentDate = nextDayValue;
+
+                // Update date filter
+                const fechaFiltro = document.getElementById('fechaFiltro');
+                if (fechaFiltro) {
+                    fechaFiltro.value = nextDayValue;
+                    console.log('✅ Updated fechaFiltro to:', nextDayValue);
+                }
+
+                // Update display
+                updateCurrentDateDisplay();
+                console.log('✅ Updated date display');
+
+                // Apply filters to filter content by nextDayValue
+                aplicarFiltros();
+                console.log('✅ Applied filters for nextDayValue');
+
+                showAlert(`Navegado a Next Day (${nextDayValue})`, 'success');
+
+            } catch (error) {
+                console.error('❌ Error in irANextDay:', error);
+                showAlert('Error al navegar a Next Day', 'error');
+            } finally {
+                navigating = false;
+                console.log('✅ Navigation re-enabled');
+            }
+        }
+
+        async function irABeforeDay() {
+            console.log('🔄 irABeforeDay called - filtering by beforeDayValue:', beforeDayValue);
+
+            if (navigating) {
+                console.log('⚠️ Navigation already in progress, ignoring click');
+                return;
+            }
+
+            navigating = true;
+
+            try {
+                console.log('📅 Using beforeDayValue for navigation:', beforeDayValue);
+
+                // Use beforeDayValue as the new currentDate
+                currentDate = beforeDayValue;
+
+                // Update date filter
+                const fechaFiltro = document.getElementById('fechaFiltro');
+                if (fechaFiltro) {
+                    fechaFiltro.value = beforeDayValue;
+                    console.log('✅ Updated fechaFiltro to:', beforeDayValue);
+                }
+
+                // Update display
+                updateCurrentDateDisplay();
+                console.log('✅ Updated date display');
+
+                // Apply filters to filter content by beforeDayValue
+                aplicarFiltros();
+                console.log('✅ Applied filters for beforeDayValue');
+
+                showAlert(`Navegado a Before Day (${beforeDayValue})`, 'success');
+
+            } catch (error) {
+                console.error('❌ Error in irABeforeDay:', error);
+                showAlert('Error al navegar a Before Day', 'error');
+            } finally {
+                navigating = false;
+                console.log('✅ Navigation re-enabled');
+            }
+        }
+
+        function openDatePicker() {
+            console.log('🔄 openDatePicker called');
+
+            if (navigating) {
+                console.log('⚠️ Navigation already in progress, ignoring click');
+                return;
+            }
+
+            try {
+                const dateInput = document.getElementById('hiddenDatePicker');
+                const currentDateBtn = document.getElementById('currentDateDisplay');
+                if (dateInput) {
+                    // Set current date as default
+                    dateInput.value = currentDate;
+
+                    // Trigger the date picker
+                    dateInput.showPicker();
+                    console.log('✅ Date picker opened with current date:', currentDate);
+                } else {
+                    console.error('❌ Date picker input not found');
+                }
+            } catch (error) {
+                console.error('❌ Error opening date picker:', error);
+                showAlert('Error al abrir el selector de fecha', 'error');
+            }
+        }
+
+        async function onDateSelected(selectedDate) {
+            console.log('🔄 onDateSelected called with date:', selectedDate);
+
+            if (navigating) {
+                console.log('⚠️ Navigation already in progress, ignoring date selection');
+                return;
+            }
+
+            if (!selectedDate) {
+                console.log('❌ No date selected');
+                return;
+            }
+
+            navigating = true;
+
+            try {
+                console.log('📅 Selected date:', selectedDate);
+                console.log('📅 Previous currentDate:', currentDate);
+
+                // Update currentDate with selected date
+                currentDate = selectedDate;
+
+                // Update date filter
+                const fechaFiltro = document.getElementById('fechaFiltro');
+                if (fechaFiltro) {
+                    fechaFiltro.value = selectedDate;
+                    console.log('✅ Updated fechaFiltro to:', selectedDate);
+                }
+
+                // Update display
+                updateCurrentDateDisplay();
+                console.log('✅ Updated date display');
+
+                // Apply filters with the selected date
+                aplicarFiltros();
+                console.log('✅ Applied filters for selected date');
+
+                showAlert(`Navegado a la fecha: ${selectedDate}`, 'success');
+
+            } catch (error) {
+                console.error('❌ Error processing selected date:', error);
+                showAlert('Error al procesar la fecha seleccionada', 'error');
+            } finally {
+                navigating = false;
+                console.log('✅ Navigation re-enabled');
+            }
+        }
+
+        async function loadData() {
+            showLoading(true);
+
+            try {
+                // Cargar todos los datos en paralelo
+                const [actividades, recursos, obras, tipos] = await Promise.all([
+                    fetch(`${API_BASE}/actividades`).then(r => r.json()),
+                    fetch(`${API_BASE}/recursos`).then(r => r.json()),
+                    fetch(`${API_BASE}/obras`).then(r => r.json()),
+                    fetch(`${API_BASE}/tipos-actividad`).then(r => r.json())
+                ]);
+
+                allActivities = actividades;
+                allResources = recursos;
+                allObras = obras;
+                allTiposActividad = tipos;
+
+                // Poblar filtros
+                populateFilters();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                throw error;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function populateFilters() {
+            // Poblar obras
+            const obraSelect = document.getElementById('obraFiltro');
+            obraSelect.innerHTML = '<option value="">Todas las obras</option>';
+            allObras.forEach(obra => {
+                const option = document.createElement('option');
+                option.value = obra.id;
+                option.textContent = `${obra.codigo} - ${obra.descripcion}`;
+                obraSelect.appendChild(option);
+            });
+
+            // Poblar tipos de actividad
+            const tipoSelect = document.getElementById('tipoFiltro');
+            tipoSelect.innerHTML = '<option value="">Todos los tipos</option>';
+            allTiposActividad.forEach(tipo => {
+                const option = document.createElement('option');
+                option.value = tipo.id;
+                option.textContent = `${tipo.codigo} - ${tipo.nombre}`;
+                tipoSelect.appendChild(option);
+            });
+        }
+
+        async function aplicarFiltros() {
+            const fecha = document.getElementById('fechaFiltro').value;
+            const obraId = document.getElementById('obraFiltro').value;
+            const tipoId = document.getElementById('tipoFiltro').value;
+
+            // Actualizar currentDate y el display
+            if (fecha) {
+                currentDate = fecha;
+                updateCurrentDateDisplay();
+                console.log('✅ Updated currentDateDisplay with filter date:', fecha);
+
+                // Actualizar beforeDayValue y nextDayValue basándose en la fecha del filtro
+                const filterDate = new Date(fecha + 'T00:00:00');
+
+                // Calcular la misma fecha (fecha filtrada - 2 + 2 = fecha filtrada)
+                const beforeDay = new Date(filterDate);
+                beforeDay.setDate(filterDate.getDate() - 2 + 2);
+                beforeDayValue = beforeDay.toISOString().split('T')[0];
+
+                // Calcular dos días después (fecha filtrada + 2)
+                const nextDay = new Date(filterDate);
+                nextDay.setDate(filterDate.getDate() + 2);
+                nextDayValue = nextDay.toISOString().split('T')[0];
+
+                console.log('📅 Updated beforeDayValue:', beforeDayValue);
+                console.log('📅 Updated nextDayValue:', nextDayValue);
+            } else {
+                currentDate = currentDate;
+            }
+
+            await buildTimeline(fecha, obraId, tipoId);
+        }
+
+        async function buildTimeline(fecha = null, obraId = null, tipoId = null) {
+            showLoading(true);
+
+            try {
+                // Filtrar actividades
+                const filteredActivities = filterActivities(fecha, obraId, tipoId);
+
+                // Filtrar recursos que tienen actividades
+                const resourcesWithActivities = getResourcesWithActivities(filteredActivities);
+
+                if (resourcesWithActivities.length === 0) {
+                    showNoData();
+                    return;
+                }
+
+                // Construir el timeline
+                buildTimelineGrid(resourcesWithActivities, filteredActivities);
+
+                // Actualizar información
+                updateTimelineInfo(filteredActivities, fecha);
+
+            } catch (error) {
+                showAlert('Error al construir timeline: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function filterActivities(fecha, obraId, tipoId) {
+            return allActivities.filter(activity => {
+                // Filtrar por fecha (considerar actividades multi-día)
+                if (fecha) {
+                    const fechaActual = new Date(fecha + 'T00:00:00');
+                    const fechaInicio = new Date(activity.fechaInicio + 'T00:00:00');
+                    const fechaFin = activity.fechaFin ? new Date(activity.fechaFin + 'T00:00:00') : fechaInicio;
+
+                    // La actividad debe aparecer si la fecha actual está dentro del rango [fechaInicio, fechaFin]
+                    if (fechaActual < fechaInicio || fechaActual > fechaFin) {
+                        return false;
+                    }
+                }
+
+                // Filtrar por obra
+                if (obraId && activity.obraId != obraId) {
+                    return false;
+                }
+
+                // Filtrar por tipo de actividad
+                if (tipoId && activity.tipoActividadId != tipoId) {
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        function getResourcesWithActivities(activities) {
+            const resourceIds = [...new Set(activities.map(a => a.recursoId))];
+            return allResources.filter(r => resourceIds.includes(r.id));
+        }
+
+        function buildTimelineGrid(resources, activities) {
+            const timelineGrid = document.getElementById('timelineGrid');
+
+            // Limpiar contenido anterior
+            timelineGrid.innerHTML = '';
+
+            // Crear header de acciones
+            const actionsHeader = document.createElement('div');
+            actionsHeader.className = 'actions-header';
+            actionsHeader.textContent = 'Acciones';
+
+            // Crear header de recursos
+            const resourcesHeader = document.createElement('div');
+            resourcesHeader.className = 'resources-header';
+            resourcesHeader.textContent = 'Recursos';
+
+            // Crear header de horas
+            const hoursHeader = createHoursHeader();
+
+            // Crear estructura del grid
+            const actionsColumn = document.createElement('div');
+            actionsColumn.className = 'actions-column';
+
+            const resourcesColumn = document.createElement('div');
+            resourcesColumn.className = 'resources-column';
+
+            const timelineColumn = document.createElement('div');
+            timelineColumn.className = 'timeline-column';
+
+            // Crear filas para cada recurso
+            resources.forEach((resource, index) => {
+                // Calcular actividades y altura para este recurso
+                const resourceActivities = activities.filter(a => a.recursoId === resource.id);
+                const activityLevels = calculateActivityLevels(resourceActivities);
+                const maxLevels = activityLevels.length > 0 ? Math.max(...activityLevels.map(al => al.level)) : 1;
+                const baseHeight = 80;
+                const levelHeight = 70;
+                const rowHeight = baseHeight + (maxLevels - 1) * levelHeight;
+
+                // Columna de acciones
+                const actionRow = createActionRow(resource, rowHeight);
+                actionsColumn.appendChild(actionRow);
+
+                // Columna de recursos
+                const resourceRow = createResourceRow(resource, rowHeight);
+                resourcesColumn.appendChild(resourceRow);
+
+                // Columna de timeline
+                const timelineRow = createTimelineRow(resource, activities, index, rowHeight);
+                timelineColumn.appendChild(timelineRow);
+            });
+
+            // Agregar elementos al grid en el orden correcto
+            timelineGrid.appendChild(actionsHeader);
+            timelineGrid.appendChild(resourcesHeader);
+            timelineGrid.appendChild(hoursHeader);
+            timelineGrid.appendChild(actionsColumn);
+            timelineGrid.appendChild(resourcesColumn);
+            timelineGrid.appendChild(timelineColumn);
+
+            // Scroll to center on 6:00-22:00 range after a brief delay to allow rendering
+            setTimeout(() => {
+                const timelineContent = document.querySelector('.timeline-content');
+                if (timelineContent) {
+                    // Each hour cell is 60px wide (min-width), starting hour 6 would be at position 6 * 60 = 360px
+                    // Center the 6:00-22:00 range (17 hours) in the visible area
+                    const hourCellWidth = 60; // Based on min-width: 60px in .hour-cell CSS
+                    const startHour = 6;
+                    const scrollPosition = startHour * hourCellWidth;
+                    timelineContent.scrollLeft = scrollPosition;
+                }
+            }, 100);
+        }
+
+        function createHoursHeader() {
+            const header = document.createElement('div');
+            header.className = 'hour-header';
+
+            for (let hour = 0; hour <= 23; hour++) {
+                const hourCell = document.createElement('div');
+                hourCell.className = 'hour-cell';
+                hourCell.textContent = `${hour.toString().padStart(2, '0')}:00`;
+                header.appendChild(hourCell);
+            }
+
+            return header;
+        }
+
+        function createActionRow(resource, height) {
+            const row = document.createElement('div');
+            row.className = 'action-row';
+            row.style.height = `${height}px`;
+
+            // Añadir botón de crear actividad
+            const createBtn = document.createElement('button');
+            createBtn.className = 'btn-create-activity';
+            createBtn.innerHTML = '+';
+            createBtn.title = `Crear actividad para ${resource.nombre}`;
+            createBtn.onclick = () => openCreateModal(resource);
+
+            row.appendChild(createBtn);
+            return row;
+        }
+
+        function createResourceRow(resource, height) {
+            const row = document.createElement('div');
+            row.className = 'resource-row';
+            row.style.height = `${height}px`;
+
+            const resourceInfo = document.createElement('div');
+            resourceInfo.className = 'resource-info';
+
+            const icon = document.createElement('span');
+            icon.className = 'resource-icon';
+            icon.textContent = resource.tipo === 'operario' ? '👷' : '🚛';
+
+            const details = document.createElement('div');
+            details.className = 'resource-details';
+
+            const name = document.createElement('div');
+            name.className = 'resource-name';
+            name.textContent = resource.nombre;
+
+            const code = document.createElement('div');
+            code.className = 'resource-code';
+            code.textContent = resource.codigo;
+
+            details.appendChild(name);
+            details.appendChild(code);
+            resourceInfo.appendChild(icon);
+            resourceInfo.appendChild(details);
+            row.appendChild(resourceInfo);
+
+            return row;
+        }
+
+        // Calcular niveles para actividades solapadas
+        function calculateActivityLevels(activities) {
+            // Filtrar actividades válidas y ordenarlas por hora de inicio
+            const validActivities = activities.filter(a => a.horaInicio)
+                .sort((a, b) => parseTime(a.horaInicio) - parseTime(b.horaInicio));
+
+            const levels = [];
+            const occupiedLevels = []; // Array de arrays para rastrear ocupación por nivel
+
+            validActivities.forEach(activity => {
+                const startTime = parseTime(activity.horaInicio);
+                const endTime = activity.horaFin ? parseTime(activity.horaFin) : startTime + 1;
+
+                // Encontrar el primer nivel disponible
+                let level = 1;
+                let levelFound = false;
+
+                while (!levelFound) {
+                    if (!occupiedLevels[level - 1]) {
+                        occupiedLevels[level - 1] = [];
+                    }
+
+                    // Verificar si este nivel está disponible en el rango de tiempo
+                    const hasConflict = occupiedLevels[level - 1].some(occupied => {
+                        return !(endTime <= occupied.start || startTime >= occupied.end);
+                    });
+
+                    if (!hasConflict) {
+                        // Nivel disponible, reservar este espacio
+                        occupiedLevels[level - 1].push({
+                            start: startTime,
+                            end: endTime,
+                            activity: activity
+                        });
+                        levels.push({
+                            activity: activity,
+                            level: level
+                        });
+                        levelFound = true;
+                    } else {
+                        level++;
+                    }
+                }
+            });
+
+            return levels;
+        }
+
+        function createTimelineRow(resource, activities, rowIndex, height) {
+            const row = document.createElement('div');
+            row.className = 'timeline-row';
+            row.style.height = `${height}px`;
+
+            // Crear marcadores de hora para esta fila
+            const hourMarkers = document.createElement('div');
+            hourMarkers.className = 'hour-markers';
+
+            for (let hour = 0; hour <= 23; hour++) {
+                const marker = document.createElement('div');
+                marker.className = 'hour-marker';
+                hourMarkers.appendChild(marker);
+            }
+
+            row.appendChild(hourMarkers);
+
+            // Obtener actividades de este recurso
+            const resourceActivities = activities.filter(a => a.recursoId === resource.id);
+
+            // Calcular niveles para evitar solapamientos
+            const activityLevels = calculateActivityLevels(resourceActivities);
+
+            // Crear bloques de actividad con posicionamiento multi-nivel
+            activityLevels.forEach(activityLevel => {
+                const block = createActivityBlock(activityLevel.activity, activityLevel.level, currentDate);
+                if (block) {
+                    row.appendChild(block);
+                }
+            });
+
+            return row;
+        }
+
+        // Función para calcular el color de texto apropiado basado en el brillo del fondo
+        function getContrastColor(hexColor) {
+            // Convertir hex a RGB
+            const hex = hexColor.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+
+            // Calcular luminancia usando la fórmula WCAG
+            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+            // Retornar blanco para fondos oscuros, negro para fondos claros
+            return luminance > 0.5 ? '#000000' : '#FFFFFF';
+        }
+
+        function createActivityBlock(activity, level = 1, currentViewDate = null) {
+            if (!activity.horaInicio) return null;
+
+            const block = document.createElement('div');
+            block.className = 'activity-block';
+
+            // Fechas de la actividad
+            const activityStartDate = activity.fechaInicio;
+            const activityEndDate = activity.fechaFin || activity.fechaInicio;
+            const viewDate = currentViewDate || new Date().toISOString().split('T')[0];
+
+            // Determinar si es actividad multi-día
+            const isMultiDay = activityStartDate !== activityEndDate;
+            const isStartDay = activityStartDate === viewDate;
+            const isEndDay = activityEndDate === viewDate;
+            const isMiddleDay = !isStartDay && !isEndDay && isMultiDay;
+
+            // Calcular horas de inicio y fin para el día actual
+            let displayStartHour, displayEndHour;
+
+            if (isStartDay) {
+                // Día de inicio: usar hora real de inicio
+                displayStartHour = parseTime(activity.horaInicio);
+                displayEndHour = isMultiDay ? 23.99 : (activity.horaFin ? parseTime(activity.horaFin) : displayStartHour + 1);
+            } else if (isEndDay) {
+                // Día de fin: desde las 00:00 hasta la hora real de fin
+                displayStartHour = 0;
+                displayEndHour = activity.horaFin ? parseTime(activity.horaFin) : 23.99;
+            } else if (isMiddleDay) {
+                // Día intermedio: todo el día visible (00:00 - 23:59)
+                displayStartHour = 0;
+                displayEndHour = 23.99;
+            } else {
+                // Día único: usar horas reales
+                displayStartHour = parseTime(activity.horaInicio);
+                displayEndHour = activity.horaFin ? parseTime(activity.horaFin) : displayStartHour + 1;
+            }
+
+            // Verificar si está dentro del rango visible (ahora 0-24)
+            if (displayStartHour > 24 || displayEndHour < 0) return null;
+
+            // Ajustar al rango visible (0-24)
+            displayStartHour = Math.max(0, Math.min(24, displayStartHour));
+            displayEndHour = Math.max(0, Math.min(24, displayEndHour));
+
+            const left = (displayStartHour / 24) * 100; // 24 horas visibles (0-23)
+            const width = Math.max(((displayEndHour - displayStartHour) / 24) * 100, 1); // Mínimo 1% de ancho
+
+            // Posicionamiento vertical según el nivel
+            const topOffset = 10 + (level - 1) * 70; // 70px de separación entre niveles
+
+            block.style.left = `${left}%`;
+            block.style.width = `${width}%`;
+            block.style.top = `${topOffset}px`;
+
+            // Añadir clase especial para actividades multi-día
+            if (isMultiDay) {
+                block.classList.add('multi-day-activity');
+                if (isStartDay) block.classList.add('start-day');
+                if (isEndDay) block.classList.add('end-day');
+                if (isMiddleDay) block.classList.add('middle-day');
+            }
+
+            // Aplicar color según tipo de actividad
+            // Buscar el tipo de actividad en la lista global usando el tipoActividadId
+            const tipoActividad = allTiposActividad.find(t => t.id === activity.tipoActividadId);
+            const tipoCode = tipoActividad?.codigo || 'default';
+            const tipoColor = tipoActividad?.color || '#6B7280'; // Color por defecto gris
+
+            // Aplicar color de fondo dinámicamente
+            block.style.backgroundColor = tipoColor;
+
+            // Calcular color de texto basado en el brillo del fondo
+            const textColor = getContrastColor(tipoColor);
+            block.style.color = textColor;
+
+            // Mantener la clase para otros estilos si es necesario
+            block.classList.add(`activity-${tipoCode}`);
+
+            // Contenido del bloque
+            const title = document.createElement('div');
+            title.className = 'activity-title';
+            title.textContent = tipoActividad?.nombre || 'Actividad';
+
+            const obra = document.createElement('div');
+            obra.className = 'activity-obra';
+            // Buscar la obra en la lista global usando el obraId
+            const obraData = allObras.find(o => o.id === activity.obraId);
+            obra.textContent = obraData?.codigo || '';
+
+            const time = document.createElement('div');
+            time.className = 'activity-time';
+            // Format time to remove seconds (HH:MM:SS -> HH:MM)
+            const formatTime = (timeStr) => {
+                if (!timeStr) return '';
+                return timeStr.substring(0, 5); // Extract HH:MM
+            };
+
+            // Format date to dd/mm/yyyy
+            const formatDate = (dateStr) => {
+                if (!dateStr) return '';
+                const date = new Date(dateStr);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            };
+
+            // Mostrar información de tiempo según el tipo de día
+            // Si la fecha fin es 2099-12-31, mostrar "abierta"
+            if (activity.fechaFin === '2099-12-31') {
+                if (isMultiDay) {
+                    // Para actividades multi-día abiertas, mostrar fecha inicial y hora → abierta
+                    if (isStartDay) {
+                        time.textContent = `${formatTime(activity.horaInicio)} → abierta`;
+                    } else if (isEndDay) {
+                        time.textContent = `(${formatDate(activityStartDate)}) → abierta`;
+                    } else if (isMiddleDay) {
+                        time.textContent = `(${formatDate(activityStartDate)} → abierta)`;
+                    }
+                } else {
+                    // Actividad de un solo día abierta
+                    time.textContent = 'abierta';
+                }
+            } else if (isMultiDay) {
+                if (isStartDay) {
+                    time.textContent = `${formatTime(activity.horaInicio)} → (${formatDate(activityEndDate)})`;
+                } else if (isEndDay) {
+                    time.textContent = `(${formatDate(activityStartDate)}) → ${activity.horaFin ? formatTime(activity.horaFin) : '23:59'}`;
+                } else if (isMiddleDay) {
+                    time.textContent = `(${formatDate(activityStartDate)} → ${formatDate(activityEndDate)})`;
+                }
+            } else {
+                // Actividad de un solo día
+                time.textContent = activity.horaFin ?
+                    `${formatTime(activity.horaInicio)} - ${formatTime(activity.horaFin)}` :
+                    `${formatTime(activity.horaInicio)}`;
+            }
+
+            block.appendChild(obra);
+            block.appendChild(title);
+            block.appendChild(time);
+
+            // Click para mostrar detalles
+            block.addEventListener('click', () => showActivityDetails(activity));
+
+            return block;
+        }
+
+        function parseTime(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours + (minutes / 60);
+        }
+
+        function showActivityDetails(activity) {
+            openEditModal(activity);
+        }
+
+        // Funciones del Modal de Edición
+        function openEditModal(activity) {
+            // Inicializar selectores de tiempo si no se han inicializado
+            if (!document.querySelector('#editHoraInicio_horas option[value="00"]')) {
+                initializeEditTimeSelectors();
+            }
+
+            // Cargar datos de apoyo y mostrar modal
+            loadEditModalData(activity);
+        }
+
+        function closeEditModal() {
+            document.getElementById('editActivityModal').classList.remove('active');
+
+            // Limpiar el formulario para descartar cambios no guardados
+            document.getElementById('editActivityForm').reset();
+            clearEditTimeSelectors();
+
+            // Resetear checkbox y mostrar sección de fecha fin
+            document.getElementById('editActividadAbierta').checked = false;
+            document.getElementById('editEndTimeGroup').style.display = 'block';
+        }
+
+        function toggleEditEndTime() {
+            const checkbox = document.getElementById('editActividadAbierta');
+            const endTimeGroup = document.getElementById('editEndTimeGroup');
+
+            if (checkbox.checked) {
+                // Ocultar fecha de fin y limpiar valores
+                endTimeGroup.style.display = 'none';
+                document.getElementById('editFechaFin').value = '';
+                document.getElementById('editHoraFin_horas').value = '';
+                document.getElementById('editHoraFin_minutos').value = '';
+                document.getElementById('editHoraFin').value = '';
+            } else {
+                // Mostrar fecha de fin
+                endTimeGroup.style.display = 'block';
+            }
+        }
+
+        function toggleCreateEndTime() {
+            const checkbox = document.getElementById('createActividadAbierta');
+            const endTimeGroup = document.getElementById('createEndTimeGroup');
+
+            if (checkbox.checked) {
+                // Ocultar fecha de fin y limpiar valores
+                endTimeGroup.style.display = 'none';
+                document.getElementById('createFechaFin').value = '';
+                document.getElementById('createHoraFin_horas').value = '';
+                document.getElementById('createHoraFin_minutos').value = '';
+                document.getElementById('createHoraFin').value = '';
+            } else {
+                // Mostrar fecha de fin
+                endTimeGroup.style.display = 'block';
+            }
+        }
+
+        function clearEditTimeSelectors() {
+            document.getElementById('editHoraInicio_horas').value = '';
+            document.getElementById('editHoraInicio_minutos').value = '00';
+            document.getElementById('editHoraFin_horas').value = '';
+            document.getElementById('editHoraFin_minutos').value = '';
+            document.getElementById('editHoraInicio').value = '';
+            document.getElementById('editHoraFin').value = '';
+        }
+
+        function initializeEditTimeSelectors() {
+            // Inicializar horas (00-23)
+            const horasSelect = document.getElementById('editHoraInicio_horas');
+            for (let i = 0; i < 24; i++) {
+                const option = document.createElement('option');
+                option.value = i.toString().padStart(2, '0');
+                option.textContent = i.toString().padStart(2, '0');
+                horasSelect.appendChild(option);
+            }
+
+            const horasFinSelect = document.getElementById('editHoraFin_horas');
+            for (let i = 0; i < 24; i++) {
+                const option = document.createElement('option');
+                option.value = i.toString().padStart(2, '0');
+                option.textContent = i.toString().padStart(2, '0');
+                horasFinSelect.appendChild(option);
+            }
+
+            // Event listeners para sincronizar selectores con campos hidden
+            setupEditTimeEventListeners();
+        }
+
+        function setupEditTimeEventListeners() {
+            function updateHiddenTime(prefix) {
+                const horas = document.getElementById(`${prefix}_horas`).value;
+                const minutos = document.getElementById(`${prefix}_minutos`).value;
+                const hiddenField = document.getElementById(prefix);
+
+                if (horas && minutos) {
+                    hiddenField.value = `${horas}:${minutos}`;
+                } else {
+                    hiddenField.value = '';
+                }
+            }
+
+            // Función para actualizar opciones de hora fin basado en hora inicio
+            function updateAgendaEndTimeOptions() {
+                const editHoraInicioHoras = document.getElementById('editHoraInicio_horas');
+                const editHoraInicioMinutos = document.getElementById('editHoraInicio_minutos');
+                const editHoraFinHoras = document.getElementById('editHoraFin_horas');
+                const editHoraFinMinutos = document.getElementById('editHoraFin_minutos');
+
+                const startHour = parseInt(editHoraInicioHoras.value);
+                const startMinute = parseInt(editHoraInicioMinutos.value);
+
+                if (isNaN(startHour) || isNaN(startMinute)) {
+                    return;
+                }
+
+                // Limpiar opciones actuales de hora fin
+                editHoraFinHoras.innerHTML = '<option value="">HH</option>';
+
+                // Agregar solo horas posteriores a la hora de inicio
+                for (let i = startHour; i < 24; i++) {
+                    const hora = i.toString().padStart(2, '0');
+                    const option = document.createElement('option');
+                    option.value = hora;
+                    option.textContent = hora;
+                    editHoraFinHoras.appendChild(option);
+                }
+
+                updateAgendaEndMinuteOptions();
+            }
+
+            function updateAgendaEndMinuteOptions() {
+                const editHoraInicioHoras = document.getElementById('editHoraInicio_horas');
+                const editHoraInicioMinutos = document.getElementById('editHoraInicio_minutos');
+                const editHoraFinHoras = document.getElementById('editHoraFin_horas');
+                const editHoraFinMinutos = document.getElementById('editHoraFin_minutos');
+
+                const startHour = parseInt(editHoraInicioHoras.value);
+                const startMinute = parseInt(editHoraInicioMinutos.value);
+                const endHour = parseInt(editHoraFinHoras.value);
+
+                if (isNaN(startHour) || isNaN(startMinute) || isNaN(endHour)) {
+                    return;
+                }
+
+                // Limpiar opciones de minutos
+                editHoraFinMinutos.innerHTML = '<option value="">MM</option>';
+
+                const validMinutes = ['00', '15', '30', '45'];
+
+                if (endHour === startHour) {
+                    // Misma hora: solo permitir minutos posteriores
+                    validMinutes.forEach(minute => {
+                        const minuteValue = parseInt(minute);
+                        if (minuteValue > startMinute) {
+                            const option = document.createElement('option');
+                            option.value = minute;
+                            option.textContent = minute;
+                            editHoraFinMinutos.appendChild(option);
+                        }
+                    });
+                } else {
+                    // Hora diferente: permitir todos los minutos
+                    validMinutes.forEach(minute => {
+                        const option = document.createElement('option');
+                        option.value = minute;
+                        option.textContent = minute;
+                        editHoraFinMinutos.appendChild(option);
+                    });
+                }
+            }
+
+            // Hora inicio - actualizar hidden field y opciones de fin
+            document.getElementById('editHoraInicio_horas').addEventListener('change', () => {
+                updateHiddenTime('editHoraInicio');
+                updateAgendaEndTimeOptions();
+            });
+            document.getElementById('editHoraInicio_minutos').addEventListener('change', () => {
+                updateHiddenTime('editHoraInicio');
+                updateAgendaEndTimeOptions();
+            });
+
+            // Hora fin - actualizar hidden field y minutos según hora seleccionada
+            document.getElementById('editHoraFin_horas').addEventListener('change', () => {
+                // Auto-establecer minutos a "00" cuando se selecciona una hora fin
+                const horaFinMinutos = document.getElementById('editHoraFin_minutos');
+                const horaFinHoras = document.getElementById('editHoraFin_horas');
+                if (horaFinHoras.value && horaFinMinutos.value !== '00') {
+                    horaFinMinutos.value = '00';
+                    console.log('🕐 Auto-establecidos minutos de hora fin (EDIT) a 00');
+                }
+                updateHiddenTime('editHoraFin');
+                updateAgendaEndMinuteOptions();
+                autoSetEditEndDate();
+            });
+            document.getElementById('editHoraFin_minutos').addEventListener('change', () => {
+                updateHiddenTime('editHoraFin');
+                autoSetEditEndDate();
+            });
+        }
+
+        // Función para auto-establecer fecha fin en modal de edición
+        function autoSetEditEndDate() {
+            const horaFinHoras = document.getElementById('editHoraFin_horas');
+            const horaFinMinutos = document.getElementById('editHoraFin_minutos');
+            const fechaFin = document.getElementById('editFechaFin');
+            const fechaInicio = document.getElementById('editFechaInicio');
+
+            // Si se selecciona alguna hora fin y no hay fecha fin establecida
+            if ((horaFinHoras.value || horaFinMinutos.value) && !fechaFin.value) {
+                // Usar la fecha de inicio, o la fecha actual si no hay fecha de inicio
+                const fechaAUsar = fechaInicio.value || new Date().toISOString().split('T')[0];
+                fechaFin.value = fechaAUsar;
+
+                console.log('📅 Auto-establecida fecha fin (EDIT):', fechaAUsar, 'debido a selección de hora fin');
+            }
+        }
+
+        // Función para normalizar formato de tiempo
+        function normalizeTimeFormat(timeString) {
+            if (!timeString) return '';
+
+            // Si ya está en formato HH:MM, devolverlo tal como está
+            if (timeString.match(/^\d{2}:\d{2}$/)) {
+                return timeString;
+            }
+
+            // Si está en formato HH:MM:SS, recortar los segundos
+            if (timeString.match(/^\d{2}:\d{2}:\d{2}$/)) {
+                return timeString.substring(0, 5);
+            }
+
+            // Si tiene formato de timestamp, extraer solo la hora
+            if (timeString.includes('T')) {
+                const timePart = timeString.split('T')[1];
+                if (timePart) {
+                    return timePart.substring(0, 5);
+                }
+            }
+
+            return timeString;
+        }
+
+        function setEditTimeSelectors(fieldPrefix, timeValue) {
+            if (!timeValue) return;
+
+            // Normalizar el formato de tiempo antes de procesar
+            const normalizedTime = normalizeTimeFormat(timeValue);
+            const [hours, minutes] = normalizedTime.split(':');
+
+            const horasSelect = document.getElementById(`${fieldPrefix}_horas`);
+            const minutosSelect = document.getElementById(`${fieldPrefix}_minutos`);
+            const hiddenField = document.getElementById(fieldPrefix);
+
+            if (horasSelect && minutosSelect) {
+                horasSelect.value = hours;
+                minutosSelect.value = minutes;
+                hiddenField.value = normalizedTime;
+            }
+        }
+
+        async function loadEditModalData(activity) {
+            try {
+                // Cargar datos de apoyo
+                const [obrasResponse, recursosResponse, tiposResponse] = await Promise.all([
+                    fetch(`${API_BASE}/obras`),
+                    fetch(`${API_BASE}/recursos`),
+                    fetch(`${API_BASE}/tipos-actividad`)
+                ]);
+
+                const obras = await obrasResponse.json();
+                const recursos = await recursosResponse.json();
+                const tipos = await tiposResponse.json();
+
+                // Poblar selectores
+                populateSelect('editObra', obras, 'id', 'descripcion');
+                populateSelect('editRecurso', recursos, 'id', 'nombre');
+                populateSelect('editTipoActividad', tipos, 'id', 'nombre');
+
+                // Llenar formulario con datos de la actividad
+                populateEditForm(activity);
+
+                // Mostrar modal
+                document.getElementById('editActivityModal').classList.add('active');
+
+            } catch (error) {
+                console.error('Error cargando datos del modal:', error);
+                showAlert('Error al cargar los datos para editar', 'error');
+            }
+        }
+
+        function populateSelect(selectId, data, valueField, textField) {
+            const select = document.getElementById(selectId);
+            // Mantener la primera opción
+            const firstOption = select.querySelector('option[value=""]');
+            select.innerHTML = '';
+            if (firstOption) select.appendChild(firstOption);
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item[valueField];
+                option.textContent = item[textField];
+                select.appendChild(option);
+            });
+        }
+
+        function populateEditForm(activity) {
+            // Campos básicos
+            document.getElementById('editActivityId').value = activity.id;
+            document.getElementById('editObra').value = activity.obraId;
+            document.getElementById('editRecurso').value = activity.recursoId;
+            document.getElementById('editTipoActividad').value = activity.tipoActividadId;
+
+            // Fechas
+            if (activity.fechaInicio) {
+                document.getElementById('editFechaInicio').value = activity.fechaInicio.split('T')[0];
+            }
+            if (activity.fechaFin) {
+                document.getElementById('editFechaFin').value = activity.fechaFin.split('T')[0];
+            }
+
+            // Horas
+            if (activity.horaInicio) {
+                setEditTimeSelectors('editHoraInicio', activity.horaInicio);
+            }
+            if (activity.horaFin) {
+                setEditTimeSelectors('editHoraFin', activity.horaFin);
+            }
+
+            // Observaciones
+            document.getElementById('editObservaciones').value = (activity.observaciones && activity.observaciones !== 'null') ? activity.observaciones : '';
+
+            // Actividad abierta (checkbox)
+            const isOpen = isOpenActivity(activity);
+            document.getElementById('editActividadAbierta').checked = isOpen;
+
+            // Ocultar/mostrar sección de fecha fin según el estado
+            const endTimeGroup = document.getElementById('editEndTimeGroup');
+            if (isOpen) {
+                endTimeGroup.style.display = 'none';
+            } else {
+                endTimeGroup.style.display = 'block';
+            }
+        }
+
+        async function saveEditActivity() {
+            const form = document.getElementById('editActivityForm');
+            const formData = new FormData(form);
+            const activityId = document.getElementById('editActivityId').value;
+
+            // ===== VALIDACIÓN ROBUSTA DE CAMPOS REQUERIDOS =====
+            const obraIdRaw = formData.get('obraId');
+            const recursoIdRaw = formData.get('recursoId');
+            const tipoActividadIdRaw = formData.get('tipoActividadId');
+            const fechaInicio = formData.get('fechaInicio');
+            const horaInicio = formData.get('horaInicio');
+
+            // Validar que todos los campos requeridos tengan valores válidos
+            if (!obraIdRaw || obraIdRaw === '' || isNaN(parseInt(obraIdRaw))) {
+                showAlert('❌ Error: Debe seleccionar una obra válida', 'error');
+                return;
+            }
+
+            if (!recursoIdRaw || recursoIdRaw === '' || isNaN(parseInt(recursoIdRaw))) {
+                showAlert('❌ Error: Debe seleccionar un recurso válido', 'error');
+                return;
+            }
+
+            if (!tipoActividadIdRaw || tipoActividadIdRaw === '' || isNaN(parseInt(tipoActividadIdRaw))) {
+                showAlert('❌ Error: Debe seleccionar un tipo de actividad válido', 'error');
+                return;
+            }
+
+            if (!fechaInicio || fechaInicio === '') {
+                showAlert('❌ Error: Debe especificar una fecha de inicio', 'error');
+                return;
+            }
+
+            if (!horaInicio || horaInicio === '') {
+                showAlert('❌ Error: Debe especificar una hora de inicio', 'error');
+                return;
+            }
+
+            if (!activityId || activityId === '') {
+                showAlert('❌ Error: ID de actividad no válido', 'error');
+                return;
+            }
+
+            // Verificar si la actividad está marcada como abierta
+            const isOpenActivity = document.getElementById('editActividadAbierta').checked;
+
+            // Construir objeto de datos validados
+            const data = {
+                obraId: parseInt(obraIdRaw),
+                recursoId: parseInt(recursoIdRaw),
+                tipoActividadId: parseInt(tipoActividadIdRaw),
+                fechaInicio: fechaInicio,
+                horaInicio: normalizeTimeFormat(horaInicio),
+                // Si es actividad abierta, establecer fecha fin a 31/12/2099 y hora fin a 00:00
+                fechaFin: isOpenActivity ? '2099-12-31' : (formData.get('fechaFin') || null),
+                horaFin: isOpenActivity ? '00:00' : (formData.get('horaFin') ? normalizeTimeFormat(formData.get('horaFin')) : null),
+                observaciones: formData.get('observaciones') || ''
+            };
+
+            // Validar orden de fechas y horas
+            const dateTimeValidation = validateDateTimeOrder(data.fechaInicio, data.horaInicio, data.fechaFin, data.horaFin);
+            if (!dateTimeValidation.isValid) {
+                showAlert(dateTimeValidation.message, 'error');
+                console.error('Validation error:', dateTimeValidation.details);
+                return;
+            }
+
+            // Log para debugging
+            if (isOpenActivity) {
+                console.log('🔄 Actividad marcada como ABIERTA - Fecha fin: 2099-12-31, Hora fin: 00:00');
+            }
+
+            console.log('Editing activity (validated):', { activityId, data });
+
+            // Verificar colisiones antes de enviar (excluyendo la actividad actual)
+            const collisionCheck = checkActivityCollision(data, parseInt(activityId));
+
+            // Manejar diferentes tipos de respuestas de la verificación
+            if (collisionCheck.hasCollision) {
+                if (collisionCheck.type === 'open_activity_future_conflict') {
+                    const conflict = collisionCheck.conflictDetails;
+                    const errorMessage = `🚫 ${conflict.message}
+
+${conflict.description}
+
+────────────────────────────────
+
+👤 Recurso: ${conflict.recursoInfo}
+
+📅 Actividad futura encontrada: ${conflict.futureActivityTime}
+
+🔄 Actividad solicitada: ${conflict.requestedTime}
+
+────────────────────────────────
+
+Para crear una actividad abierta, primero debe eliminar o mover las actividades posteriores del mismo recurso.`;
+
+                    showAlert(errorMessage, 'error');
+                    return;
+                } else if (collisionCheck.type === 'time_overlap') {
+                    const conflict = collisionCheck.conflictDetails;
+                    const errorMessage = `❌ CONFLICTO DE RECURSO DETECTADO
+
+El recurso seleccionado ya tiene otra actividad asignada en ese horario:
+
+────────────────────────────────
+
+👤 Recurso: ${conflict.recursoInfo}
+
+🏗️ Obra actual: ${conflict.obraInfo}
+
+📋 Actividad existente: ${conflict.tipoInfo}
+
+⏰ Horario ocupado: ${conflict.conflictTime}
+
+🔄 Horario solicitado: ${conflict.requestedTime}
+
+────────────────────────────────
+
+Un recurso no puede estar en dos sitios a la vez. Por favor, modifique el horario o seleccione otro recurso.`;
+
+                    showAlert(errorMessage, 'error');
+                    return;
+                }
+            }
+
+            // Manejar información de cierre automático de actividad abierta
+            if (collisionCheck.type === 'open_activity_will_close') {
+                const autoClose = collisionCheck.autoCloseInfo;
+                const confirmMessage = `⚠️ ${autoClose.message}
+
+${autoClose.description}
+
+────────────────────────────────
+
+👤 Recurso: ${autoClose.recursoInfo}
+
+🏗️ Obra actual: ${autoClose.obraInfo}
+
+📋 Actividad abierta: ${autoClose.tipoInfo}
+
+⏰ Actividad actual: ${autoClose.currentOpenTime}
+
+🔒 Se cerrará en: ${autoClose.willCloseAt}
+
+🆕 Nueva actividad: ${autoClose.newActivityTime}
+
+────────────────────────────────
+
+¿Desea continuar? La actividad abierta se cerrará automáticamente.`;
+
+                if (!confirm(confirmMessage)) {
+                    return; // Usuario canceló
+                }
+
+                // Marcar que se debe cerrar la actividad abierta anterior
+                window.activityToAutoClose = autoClose.openActivity;
+            }
+
+            // ===== RESPUESTA INMEDIATA AL USUARIO =====
+            // Cerrar modal inmediatamente para dar sensación de velocidad
+            closeEditModal();
+
+            // Mostrar mensaje de éxito inmediato
+            showAlert('✅ Cambios enviados correctamente - Procesando en segundo plano...', 'success');
+
+            // Actualización optimista: actualizar inmediatamente en la UI
+            const activityIndex = allActivities.findIndex(a => a.id == activityId);
+            if (activityIndex !== -1) {
+                const originalActivity = { ...allActivities[activityIndex] };
+                allActivities[activityIndex] = { ...allActivities[activityIndex], ...data, id: parseInt(activityId) };
+
+                // Actualizar timeline inmediatamente con datos optimistas
+                aplicarFiltros();
+
+                // ===== PROCESAMIENTO EN BACKGROUND =====
+                // Agregar operación a la cola para procesar en segundo plano
+                const operationId = addToQueue({
+                    type: 'UPDATE_ACTIVITY',
+                    description: `Actualizar actividad ID: ${activityId}`,
+                    execute: async () => {
+                        const response = await fetch(`${API_BASE}/actividades/${activityId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        });
+
+                        const result = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(result.error || `HTTP error! status: ${response.status}`);
+                        }
+
+                        return result;
+                    },
+                    onSuccess: async (result) => {
+                        // Confirmación de que se guardó correctamente en servidor
+                        console.log('✅ Activity updated successfully on server:', result);
+                        showAlert('✅ Actividad actualizada y guardada correctamente', 'success');
+
+                        // Refrescar datos automáticamente para asegurar sincronización
+                        try {
+                            console.log('🔄 Refrescando vista automáticamente...');
+                            const actividades = await fetch(`${API_BASE}/actividades`).then(r => r.json());
+                            allActivities = actividades;
+                            await aplicarFiltros();
+                            console.log('✅ Vista actualizada automáticamente');
+                        } catch (refreshError) {
+                            console.error('⚠️ Error al refrescar vista automáticamente:', refreshError);
+                            showAlert('⚠️ Los cambios se guardaron pero no se pudo actualizar la vista automáticamente. Recarga la página para ver los cambios.', 'warning');
+                        }
+                    },
+                    onError: (error) => {
+                        console.error('Background edit operation failed:', error);
+
+                        // Revertir cambios optimistas en caso de error
+                        if (activityIndex !== -1) {
+                            allActivities[activityIndex] = originalActivity;
+                            aplicarFiltros();
+                        }
+
+                        showAlert(`❌ Error al guardar cambios: ${error.message}`, 'error');
+                    }
+                });
+
+                console.log(`📋 Activity edit queued with ID: ${operationId}`);
+            } else {
+                showAlert('❌ Error: No se pudo encontrar la actividad a editar', 'error');
+            }
+        }
+
+        function confirmDeleteActivity() {
+            const activityId = document.getElementById('editActivityId').value;
+
+            // Buscar la actividad para mostrar información en la confirmación
+            const activity = allActivities.find(a => a.id == activityId);
+            if (!activity) {
+                showAlert('❌ Error: No se pudo encontrar la actividad', 'error');
+                return;
+            }
+
+            // Construir mensaje de confirmación con detalles de la actividad
+            const obra = allObras.find(o => o.id == activity.obraId);
+            const recurso = allResources.find(r => r.id == activity.recursoId);
+            const tipo = allTiposActividad.find(t => t.id == activity.tipoActividadId);
+
+            const confirmMessage = `¿Estás seguro de que deseas ELIMINAR esta actividad?
+
+📋 DETALLES DE LA ACTIVIDAD:
+• Obra: ${obra ? `${obra.codigo} - ${obra.descripcion}` : 'Sin asignar'}
+• Recurso: ${recurso ? `${recurso.nombre} (${recurso.codigo})` : 'Sin asignar'}
+• Tipo: ${tipo ? `${tipo.codigo} - ${tipo.nombre}` : 'Sin asignar'}
+• Fecha: ${activity.fechaInicio}
+• Hora: ${activity.horaInicio}${activity.horaFin ? ` - ${activity.horaFin}` : ''}
+
+⚠️ ESTA ACCIÓN NO SE PUEDE DESHACER ⚠️`;
+
+            if (confirm(confirmMessage)) {
+                deleteActivity(activityId);
+            }
+        }
+
+        async function deleteActivity(activityId) {
+            // Find the activity to delete for optimistic UI update
+            const activityIndex = allActivities.findIndex(a => a.id == activityId);
+            const activityToDelete = activityIndex !== -1 ? {...allActivities[activityIndex]} : null;
+
+            // Immediate UI response - close modal and update UI optimistically
+            closeEditModal();
+
+            if (activityToDelete) {
+                // Remove from local array immediately (optimistic update)
+                allActivities.splice(activityIndex, 1);
+                // Update UI immediately
+                aplicarFiltros();
+                showAlert('✅ Actividad eliminada - Procesando en segundo plano...', 'success');
+            }
+
+            // Add delete operation to background queue
+            const operationId = addToQueue({
+                type: 'DELETE_ACTIVITY',
+                description: `Eliminando actividad: ${activityToDelete ? activityToDelete.tipo_actividad : activityId}`,
+                execute: async () => {
+                    console.log(`🗑️ Executing background delete for activity: ${activityId}`);
+
+                    const response = await fetch(`${API_BASE}/actividades/${activityId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) {
+                        const result = await response.json().catch(() => ({}));
+                        throw new Error(result.error || 'Error desconocido al eliminar');
+                    }
+
+                    return { success: true, activityId };
+                },
+                onSuccess: async (result) => {
+                    // Confirmación de que se eliminó correctamente en servidor
+                    console.log('✅ Activity deleted successfully on server:', result);
+                    showAlert('✅ Actividad eliminada correctamente', 'success');
+
+                    // Refrescar datos automáticamente para asegurar sincronización
+                    try {
+                        console.log('🔄 Refrescando vista automáticamente después de eliminar actividad...');
+                        const actividades = await fetch(`${API_BASE}/actividades`).then(r => r.json());
+                        allActivities = actividades;
+                        await aplicarFiltros();
+                        console.log('✅ Vista actualizada automáticamente');
+                    } catch (refreshError) {
+                        console.error('⚠️ Error al refrescar vista automáticamente:', refreshError);
+                        // Fallback: reload everything if refresh fails
+                        try {
+                            await loadData();
+                            await aplicarFiltros();
+                        } catch (fallbackError) {
+                            console.error('❌ Error en fallback refresh:', fallbackError);
+                            showAlert('⚠️ La actividad se eliminó pero no se pudo actualizar la vista automáticamente. Recarga la página para ver los cambios.', 'warning');
+                        }
+                    }
+                },
+                onError: (error) => {
+                    console.error('Background delete operation failed:', error);
+
+                    // Rollback: restore the deleted activity
+                    if (activityToDelete) {
+                        allActivities.splice(activityIndex, 0, activityToDelete);
+                        aplicarFiltros(); // Update UI to show restored activity
+                    }
+
+                    showAlert(`❌ Error al eliminar actividad: ${error.message}`, 'error');
+                }
+            });
+
+            console.log(`🗑️ Activity deletion queued with ID: ${operationId}`);
+        }
+
+        function updateTimelineInfo(activities, fecha) {
+            const info = document.getElementById('timelineInfo');
+
+            let fechaText = 'todas las fechas';
+
+            if (fecha) {
+                const fechaObj = new Date(fecha + 'T00:00:00');
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+
+                const fechaStr = fecha;
+                const todayStr = today.toISOString().split('T')[0];
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+                const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+                if (fechaStr === todayStr) {
+                    fechaText = 'hoy (' + fechaObj.toLocaleDateString('es-ES', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long'
+                    }) + ')';
+                } else if (fechaStr === yesterdayStr) {
+                    fechaText = 'ayer (' + fechaObj.toLocaleDateString('es-ES', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long'
+                    }) + ')';
+                } else if (fechaStr === tomorrowStr) {
+                    fechaText = 'mañana (' + fechaObj.toLocaleDateString('es-ES', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long'
+                    }) + ')';
+                } else {
+                    fechaText = fechaObj.toLocaleDateString('es-ES', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                }
+            }
+
+            info.textContent = `${activities.length} actividades para ${fechaText}`;
+
+            console.log('📅 Timeline info updated:', `${activities.length} actividades para ${fechaText}`);
+        }
+
+        function showLoading(show) {
+            console.log(`🔄 showLoading called with: ${show}`);
+            const loading = document.getElementById('loadingContainer');
+            const timeline = document.getElementById('timelineGrid');
+
+            console.log(`📍 Elements found - loading: ${!!loading}, timeline: ${!!timeline}`);
+
+            if (show) {
+                console.log('📱 Showing loading spinner');
+                loading.style.display = 'flex';
+                timeline.style.display = 'none';
+            } else {
+                console.log('✅ Hiding loading spinner, showing timeline');
+                loading.style.display = 'none';
+                timeline.style.display = 'grid';
+            }
+        }
+
+        function showNoData() {
+            const timelineGrid = document.getElementById('timelineGrid');
+            timelineGrid.innerHTML = `
+                <div class="no-data">
+                    <h3>No hay actividades para mostrar</h3>
+                    <p>Prueba ajustando los filtros o selecciona una fecha diferente.</p>
+                </div>
+            `;
+        }
+
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alertContainer');
+            let alertClass = 'alert-info';
+            if (type === 'error') alertClass = 'alert-error';
+            else if (type === 'warning') alertClass = 'alert-warning';
+            else if (type === 'success') alertClass = 'alert-success';
+
+            const alertElement = document.createElement('div');
+            alertElement.className = `alert ${alertClass}`;
+
+            // Para warnings y errors, añadir botón de cerrar manual
+            if (type === 'warning' || type === 'error') {
+                alertElement.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+                        <div style="flex: 1;">${message}</div>
+                        <button onclick="closeAlert(this)" style="
+                            background: rgba(255,255,255,0.2);
+                            border: 1px solid rgba(255,255,255,0.3);
+                            color: inherit;
+                            border-radius: 4px;
+                            padding: 0.25rem 0.5rem;
+                            cursor: pointer;
+                            font-size: 0.75rem;
+                            flex-shrink: 0;
+                        " title="Cerrar aviso">
+                            ✕
+                        </button>
+                    </div>
+                `;
+                // No auto-hide para warnings y errors
+            } else {
+                alertElement.innerHTML = message;
+                // Auto-hide después de 4 segundos para otros tipos
+                setTimeout(() => {
+                    alertElement.classList.add('hiding');
+                    setTimeout(() => {
+                        if (alertElement.parentNode) {
+                            alertElement.parentNode.removeChild(alertElement);
+                        }
+                    }, 300);
+                }, 4000);
+            }
+
+            container.appendChild(alertElement);
+        }
+
+        // Función para cerrar alertas manualmente
+        function closeAlert(button) {
+            const alertElement = button.closest('.alert');
+            if (alertElement) {
+                alertElement.classList.add('hiding');
+                setTimeout(() => {
+                    if (alertElement.parentNode) {
+                        alertElement.parentNode.removeChild(alertElement);
+                    }
+                }, 300);
+            }
+        }
+
+        // FUNCIONES PARA CREAR NUEVA ACTIVIDAD
+
+        function openNewActivityModal() {
+            try {
+                console.log('Opening new activity modal from header button');
+
+                // Limpiar y resetear el formulario
+                console.log('Clearing time selectors...');
+                clearCreateTimeSelectors();
+
+                console.log('Resetting form...');
+                const form = document.getElementById('createActivityForm');
+                if (!form) {
+                    throw new Error('Create activity form not found');
+                }
+                form.reset();
+
+                // Configurar para selección libre de recurso
+                console.log('Configuring resource display...');
+                const recursoDisplay = document.getElementById('createRecursoDisplay');
+                const recursoSelect = document.getElementById('createRecursoSelect');
+                const recursoHidden = document.getElementById('createRecurso');
+
+                if (!recursoDisplay || !recursoSelect || !recursoHidden) {
+                    throw new Error('Resource form elements not found');
+                }
+
+                recursoDisplay.style.display = 'none';
+                recursoSelect.style.display = 'block';
+
+                // IMPORTANTE: Limpiar el campo hidden para evitar conflictos
+                recursoHidden.value = '';
+                recursoDisplay.value = '';
+
+                // Establecer fecha actual por defecto
+                console.log('Setting default date...');
+                const fechaInicio = document.getElementById('createFechaInicio');
+                if (!fechaInicio) {
+                    throw new Error('Create fecha inicio field not found');
+                }
+
+                const today = new Date().toISOString().split('T')[0];
+                fechaInicio.value = today;
+
+                // Cargar datos de apoyo y mostrar modal
+                console.log('Loading modal data...');
+                loadCreateModalData();
+
+                console.log('✅ New activity modal opened from header');
+            } catch (error) {
+                console.error('❌ Error in openNewActivityModal:', error);
+                alert(`Error al abrir el modal: ${error.message}`);
+            }
+        }
+
+        function openCreateModal(resource) {
+            console.log('Opening create modal for resource:', resource);
+
+            // Limpiar y resetear el formulario primero
+            clearCreateTimeSelectors();
+            document.getElementById('createActivityForm').reset();
+
+            // Configurar para recurso pre-seleccionado
+            document.getElementById('createRecursoDisplay').style.display = 'block';
+            document.getElementById('createRecursoSelect').style.display = 'none';
+            document.getElementById('createRecursoDisplay').value = `${resource.nombre} (${resource.codigo})`;
+            document.getElementById('createRecurso').value = resource.id;
+
+            // IMPORTANTE: Limpiar el dropdown de recursos para evitar conflictos
+            document.getElementById('createRecursoSelect').value = '';
+
+            // Establecer la fecha actual por defecto
+            document.getElementById('createFechaInicio').value = currentDate;
+
+            // Cargar datos de apoyo y mostrar modal
+            loadCreateModalData();
+
+            console.log(`✅ Modal opened for resource: ${resource.nombre} (ID: ${resource.id})`);
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createActivityModal').classList.remove('active');
+
+            // Limpiar el formulario
+            document.getElementById('createActivityForm').reset();
+            clearCreateTimeSelectors();
+
+            // Resetear checkbox y mostrar sección de fecha fin
+            document.getElementById('createActividadAbierta').checked = false;
+            document.getElementById('createEndTimeGroup').style.display = 'block';
+        }
+
+        async function loadCreateModalData() {
+            try {
+                console.log('Loading create modal data...');
+
+                // Verificar que los datos están cargados
+                if (!allObras || !allTiposActividad || !allResources) {
+                    throw new Error('Los datos maestros no están cargados');
+                }
+
+                // Inicializar selectores de tiempo
+                console.log('Initializing time selectors...');
+                initializeCreateTimeSelectors();
+
+                // Poblar obras
+                console.log('Populating obras...');
+                const obraSelect = document.getElementById('createObra');
+                if (!obraSelect) {
+                    throw new Error('Select element createObra not found');
+                }
+                obraSelect.innerHTML = '<option value="">Selecciona una obra...</option>';
+                allObras.forEach(obra => {
+                    const option = document.createElement('option');
+                    option.value = obra.id;
+                    option.textContent = `${obra.codigo} - ${obra.descripcion}`;
+                    obraSelect.appendChild(option);
+                });
+
+                // Auto-seleccionar la primera obra si existe
+                if (allObras.length > 0) {
+                    obraSelect.value = allObras[0].id;
+                }
+
+                // Poblar tipos de actividad
+                console.log('Populating tipos actividad...');
+                const tipoSelect = document.getElementById('createTipoActividad');
+                if (!tipoSelect) {
+                    throw new Error('Select element createTipoActividad not found');
+                }
+                tipoSelect.innerHTML = '<option value="">Selecciona un tipo...</option>';
+                allTiposActividad.forEach(tipo => {
+                    const option = document.createElement('option');
+                    option.value = tipo.id;
+                    option.textContent = `${tipo.codigo} - ${tipo.nombre}`;
+                    tipoSelect.appendChild(option);
+                });
+
+                // Auto-seleccionar el primer tipo si existe
+                if (allTiposActividad.length > 0) {
+                    tipoSelect.value = allTiposActividad[0].id;
+                }
+
+                // Poblar recursos si el selector está visible
+                console.log('Populating recursos...');
+                const recursoSelect = document.getElementById('createRecursoSelect');
+                if (!recursoSelect) {
+                    throw new Error('Select element createRecursoSelect not found');
+                }
+
+                if (recursoSelect.style.display !== 'none') {
+                    recursoSelect.innerHTML = '<option value="">Selecciona un recurso...</option>';
+                    allResources.forEach(recurso => {
+                        const option = document.createElement('option');
+                        option.value = recurso.id;
+                        option.textContent = `${recurso.codigo} - ${recurso.nombre}`;
+                        recursoSelect.appendChild(option);
+                    });
+
+                    // Auto-seleccionar el primer recurso si existe
+                    if (allResources.length > 0) {
+                        recursoSelect.value = allResources[0].id;
+                        const hiddenRecurso = document.getElementById('createRecurso');
+                        if (hiddenRecurso) {
+                            hiddenRecurso.value = allResources[0].id;
+                        }
+                    }
+
+                    // Event listener para sincronizar con campo hidden
+                    recursoSelect.addEventListener('change', function() {
+                        const hiddenRecurso = document.getElementById('createRecurso');
+                        if (hiddenRecurso) {
+                            hiddenRecurso.value = this.value;
+                        }
+                    });
+                }
+
+                // Mostrar modal
+                console.log('Showing modal...');
+                const modal = document.getElementById('createActivityModal');
+                if (!modal) {
+                    throw new Error('Create activity modal not found');
+                }
+                modal.classList.add('active');
+                console.log('✅ Modal shown successfully');
+
+            } catch (error) {
+                console.error('Error cargando datos del modal de crear:', error);
+                showAlert('Error al cargar datos para crear actividad', 'error');
+            }
+        }
+
+        function initializeCreateTimeSelectors() {
+            // Poblar horas de inicio (00-23)
+            const horaInicioSelect = document.getElementById('createHoraInicio_horas');
+            horaInicioSelect.innerHTML = '<option value="">HH</option>';
+            for (let i = 0; i < 24; i++) {
+                const hora = i.toString().padStart(2, '0');
+                const option = document.createElement('option');
+                option.value = hora;
+                option.textContent = hora;
+                horaInicioSelect.appendChild(option);
+            }
+
+            // Event listeners para sincronizar campos hidden
+            syncCreateTimeFields();
+        }
+
+        function syncCreateTimeFields() {
+            const horaInicioHoras = document.getElementById('createHoraInicio_horas');
+            const horaInicioMinutos = document.getElementById('createHoraInicio_minutos');
+            const horaFinHoras = document.getElementById('createHoraFin_horas');
+            const horaFinMinutos = document.getElementById('createHoraFin_minutos');
+
+            function updateHiddenFields() {
+                // Hora inicio
+                const startHour = horaInicioHoras.value;
+                const startMinute = horaInicioMinutos.value;
+                if (startHour && startMinute) {
+                    document.getElementById('createHoraInicio').value = `${startHour}:${startMinute}`;
+                } else {
+                    document.getElementById('createHoraInicio').value = '';
+                }
+
+                // Hora fin
+                const endHour = horaFinHoras.value;
+                const endMinute = horaFinMinutos.value;
+                if (endHour && endMinute) {
+                    document.getElementById('createHoraFin').value = `${endHour}:${endMinute}`;
+                } else {
+                    document.getElementById('createHoraFin').value = '';
+                }
+            }
+
+            function autoSetCreateEndDate() {
+                const fechaFin = document.getElementById('createFechaFin');
+                const fechaInicio = document.getElementById('createFechaInicio');
+
+                // Si se selecciona alguna hora fin y no hay fecha fin establecida
+                if ((horaFinHoras.value || horaFinMinutos.value) && !fechaFin.value) {
+                    // Usar la fecha de inicio, o la fecha actual si no hay fecha de inicio
+                    const fechaAUsar = fechaInicio.value || new Date().toISOString().split('T')[0];
+                    fechaFin.value = fechaAUsar;
+
+                    console.log('📅 Auto-establecida fecha fin (CREATE):', fechaAUsar, 'debido a selección de hora fin');
+                }
+            }
+
+            horaInicioHoras.addEventListener('change', updateHiddenFields);
+            horaInicioMinutos.addEventListener('change', updateHiddenFields);
+            horaFinHoras.addEventListener('change', function() {
+                // Auto-establecer minutos a "00" cuando se selecciona una hora fin
+                if (horaFinHoras.value && horaFinMinutos.value !== '00') {
+                    horaFinMinutos.value = '00';
+                    console.log('🕐 Auto-establecidos minutos de hora fin a 00');
+                }
+                updateHiddenFields();
+                autoSetCreateEndDate();
+            });
+            horaFinMinutos.addEventListener('change', function() {
+                updateHiddenFields();
+                autoSetCreateEndDate();
+            });
+        }
+
+        function updateCreateEndTimeOptions() {
+            const horaInicioHoras = document.getElementById('createHoraInicio_horas');
+            const horaInicioMinutos = document.getElementById('createHoraInicio_minutos');
+            const horaFinHoras = document.getElementById('createHoraFin_horas');
+
+            const startHour = parseInt(horaInicioHoras.value);
+            const startMinute = parseInt(horaInicioMinutos.value);
+
+            if (isNaN(startHour) || isNaN(startMinute)) return;
+
+            // Clear current end time options
+            horaFinHoras.innerHTML = '<option value="">HH</option>';
+
+            // Add only hours after start time
+            for (let i = startHour; i < 24; i++) {
+                const hora = i.toString().padStart(2, '0');
+                const option = document.createElement('option');
+                option.value = hora;
+                option.textContent = hora;
+                horaFinHoras.appendChild(option);
+            }
+
+            // Clear selected end time if it's invalid
+            const currentEndHour = parseInt(horaFinHoras.value);
+            if (!isNaN(currentEndHour) && currentEndHour <= startHour) {
+                horaFinHoras.value = '';
+                document.getElementById('createHoraFin_minutos').value = '';
+                document.getElementById('createHoraFin').value = '';
+            }
+        }
+
+        function clearCreateTimeSelectors() {
+            document.getElementById('createHoraInicio_horas').value = '';
+            document.getElementById('createHoraInicio_minutos').value = '00';
+            document.getElementById('createHoraFin_horas').value = '';
+            document.getElementById('createHoraFin_minutos').value = '';
+            document.getElementById('createHoraInicio').value = '';
+            document.getElementById('createHoraFin').value = '';
+        }
+
+        function checkActivityCollision(newActivity, excludeActivityId = null) {
+            console.log('🔍 Checking resource collision for:', newActivity);
+
+            const isNewActivityOpen = isOpenActivity(newActivity);
+
+            // ===== VERIFICACIONES PARA ACTIVIDADES ABIERTAS =====
+
+            // 1. Si la nueva actividad es abierta: verificar que no hay actividades futuras del mismo recurso
+            if (isNewActivityOpen) {
+                console.log('🔄 New activity is OPEN - checking for future activities...');
+
+                const futureActivities = allActivities.filter(activity =>
+                    activity.recursoId === newActivity.recursoId &&
+                    (excludeActivityId ? activity.id !== excludeActivityId : true) &&
+                    (
+                        // Actividades en fechas posteriores
+                        activity.fechaInicio > newActivity.fechaInicio ||
+                        // Actividades en la misma fecha pero con hora posterior
+                        (activity.fechaInicio === newActivity.fechaInicio &&
+                         activity.horaInicio > newActivity.horaInicio)
+                    )
+                );
+
+                if (futureActivities.length > 0) {
+                    const futureActivity = futureActivities[0];
+                    const recurso = allResources.find(r => r.id == futureActivity.recursoId);
+
+                    return {
+                        hasCollision: true,
+                        isValid: false,
+                        type: 'open_activity_future_conflict',
+                        conflictDetails: {
+                            message: 'ACTIVIDAD ABIERTA NO PUEDE TENER ACTIVIDADES FUTURAS',
+                            description: `Una actividad abierta (sin fecha de fin) debe ser la última actividad del recurso.\n\nSe encontraron ${futureActivities.length} actividad(es) posterior(es) del mismo recurso.`,
+                            conflictingActivity: futureActivity,
+                            recursoInfo: recurso ? `${recurso.codigo} - ${recurso.nombre}` : 'Recurso desconocido',
+                            futureActivityTime: `${futureActivity.fechaInicio} ${futureActivity.horaInicio}`,
+                            requestedTime: `${newActivity.fechaInicio} ${newActivity.horaInicio} (ABIERTA)`
+                        }
+                    };
+                }
+            }
+
+            // 2. Si hay una actividad abierta anterior: informar que se cerrará automáticamente
+            console.log('🔍 Verificando actividades abiertas anteriores...');
+            console.log('Nueva actividad:', { recursoId: newActivity.recursoId, obraId: newActivity.obraId, fecha: newActivity.fechaInicio, hora: newActivity.horaInicio });
+
+            const openActivitiesBefore = allActivities.filter(activity => {
+                const matchesResource = activity.recursoId === newActivity.recursoId;
+                const matchesObra = activity.obraId === newActivity.obraId;
+                const notExcluded = excludeActivityId ? activity.id !== excludeActivityId : true;
+                const isActivityOpen = isOpenActivity(activity);
+                const isEarlierDate = activity.fechaInicio < newActivity.fechaInicio;
+                const isSameDateEarlierTime = activity.fechaInicio === newActivity.fechaInicio && activity.horaInicio < newActivity.horaInicio;
+                const isEarlierTime = isEarlierDate || isSameDateEarlierTime;
+
+                const matches = matchesResource && matchesObra && notExcluded && isActivityOpen && isEarlierTime;
+
+                if (matchesResource && matchesObra && isActivityOpen) {
+                    console.log('Actividad abierta candidata:', {
+                        id: activity.id,
+                        fecha: activity.fechaInicio,
+                        hora: activity.horaInicio,
+                        horaFin: activity.horaFin,
+                        matchesResource,
+                        matchesObra,
+                        notExcluded,
+                        isOpenActivity,
+                        isEarlierTime,
+                        matches
+                    });
+                }
+
+                return matches;
+            });
+
+            console.log(`🔍 Encontradas ${openActivitiesBefore.length} actividades abiertas anteriores`);
+
+            if (openActivitiesBefore.length > 0) {
+                const openActivity = openActivitiesBefore[0];
+                const recurso = allResources.find(r => r.id == openActivity.recursoId);
+                const obra = allObras.find(o => o.id == openActivity.obraId);
+                const tipo = allTiposActividad.find(t => t.id == openActivity.tipoActividadId);
+
+                return {
+                    hasCollision: false, // No es realmente una colisión, es una advertencia
+                    isValid: true,
+                    type: 'open_activity_will_close',
+                    autoCloseInfo: {
+                        message: 'ACTIVIDAD ABIERTA ANTERIOR SE CERRARÁ AUTOMÁTICAMENTE',
+                        description: `Se detectó una actividad abierta anterior del mismo recurso.\n\nEsta actividad se cerrará automáticamente estableciendo su fecha de fin como la fecha de inicio de la nueva actividad.`,
+                        openActivity: openActivity,
+                        recursoInfo: recurso ? `${recurso.codigo} - ${recurso.nombre}` : 'Recurso desconocido',
+                        obraInfo: obra ? `${obra.codigo} - ${obra.descripcion}` : 'Obra desconocida',
+                        tipoInfo: tipo ? `${tipo.codigo} - ${tipo.nombre}` : 'Tipo desconocido',
+                        currentOpenTime: `${openActivity.fechaInicio} ${openActivity.horaInicio} - ABIERTA`,
+                        willCloseAt: `${newActivity.fechaInicio} ${newActivity.horaInicio}`,
+                        newActivityTime: `${newActivity.fechaInicio} ${newActivity.horaInicio} - ${newActivity.horaFin || 'ABIERTA'}`
+                    }
+                };
+            }
+
+            // ===== VERIFICACIONES NORMALES DE SOLAPAMIENTO =====
+
+            // Buscar actividades del mismo recurso en la misma fecha
+            const sameResourceActivities = allActivities.filter(activity =>
+                activity.recursoId === newActivity.recursoId &&
+                activity.fechaInicio === newActivity.fechaInicio &&
+                (excludeActivityId ? activity.id !== excludeActivityId : true) // Excluir la actividad actual si se está editando
+            );
+
+            console.log(`Found ${sameResourceActivities.length} activities for same resource and date`);
+
+            if (sameResourceActivities.length === 0) {
+                return { hasCollision: false, isValid: true };
+            }
+
+            const newStart = new Date(`${newActivity.fechaInicio}T${newActivity.horaInicio}`);
+            const newEnd = newActivity.horaFin ?
+                new Date(`${newActivity.fechaFin || newActivity.fechaInicio}T${newActivity.horaFin}`) :
+                new Date(newStart.getTime() + 60 * 60 * 1000); // Default 1 hour if no end time
+
+            console.log(`New activity time range: ${newStart.toLocaleTimeString()} - ${newEnd.toLocaleTimeString()}`);
+
+            // Verificar solapamiento con actividades existentes del mismo recurso
+            for (const existingActivity of sameResourceActivities) {
+                const existingStart = new Date(`${existingActivity.fechaInicio}T${existingActivity.horaInicio}`);
+                const existingEnd = existingActivity.horaFin ?
+                    new Date(`${existingActivity.fechaFin || existingActivity.fechaInicio}T${existingActivity.horaFin}`) :
+                    new Date(existingStart.getTime() + 60 * 60 * 1000);
+
+                console.log(`Existing activity ${existingActivity.id} time range: ${existingStart.toLocaleTimeString()} - ${existingEnd.toLocaleTimeString()}`);
+
+                // Verificar si hay solapamiento temporal
+                if (newStart < existingEnd && newEnd > existingStart) {
+                    console.log('🚫 Resource collision detected with existing activity:', existingActivity);
+
+                    // Obtener información del recurso, obra y tipo para el mensaje de error
+                    const recurso = allResources.find(r => r.id == existingActivity.recursoId);
+                    const obra = allObras.find(o => o.id == existingActivity.obraId);
+                    const tipo = allTiposActividad.find(t => t.id == existingActivity.tipoActividadId);
+
+                    return {
+                        hasCollision: true,
+                        isValid: false,
+                        type: 'time_overlap',
+                        conflictDetails: {
+                            conflictingActivity: existingActivity,
+                            recursoInfo: recurso ? `${recurso.codigo} - ${recurso.nombre}` : 'Recurso desconocido',
+                            obraInfo: obra ? `${obra.codigo} - ${obra.descripcion}` : 'Obra desconocida',
+                            tipoInfo: tipo ? `${tipo.codigo} - ${tipo.nombre}` : 'Tipo desconocido',
+                            conflictTime: `${existingActivity.horaInicio} - ${existingActivity.horaFin || 'Sin fin'}`,
+                            requestedTime: `${newActivity.horaInicio} - ${newActivity.horaFin || 'Sin fin'}`
+                        }
+                    };
+                }
+            }
+
+            console.log('✅ No resource collision detected');
+            return { hasCollision: false, isValid: true };
+        }
+
+        async function submitNewActivity(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+
+            // ===== VALIDACIÓN ROBUSTA DE CAMPOS REQUERIDOS =====
+            const obraIdRaw = formData.get('obraId');
+            const tipoActividadIdRaw = formData.get('tipoActividadId');
+            const fechaInicio = formData.get('fechaInicio');
+            const horaInicio = formData.get('horaInicio');
+
+            // Para recursoId, verificar ambos campos debido al dual-mode
+            let recursoIdRaw = formData.get('recursoId');
+
+            // Si el dropdown está oculto, usar el valor del campo hidden
+            const recursoSelect = document.getElementById('createRecursoSelect');
+            const recursoHidden = document.getElementById('createRecurso');
+
+            if (recursoSelect.style.display === 'none' && recursoHidden.value) {
+                recursoIdRaw = recursoHidden.value;
+                console.log('Using hidden resource field:', recursoIdRaw);
+            } else if (recursoSelect.style.display !== 'none' && recursoSelect.value) {
+                recursoIdRaw = recursoSelect.value;
+                console.log('Using visible resource dropdown:', recursoIdRaw);
+            }
+
+            // Validar que todos los campos requeridos tengan valores válidos
+            if (!obraIdRaw || obraIdRaw === '' || isNaN(parseInt(obraIdRaw))) {
+                showAlert('❌ Error: Debe seleccionar una obra válida', 'error');
+                return;
+            }
+
+            if (!recursoIdRaw || recursoIdRaw === '' || isNaN(parseInt(recursoIdRaw))) {
+                showAlert('❌ Error: Debe seleccionar un recurso válido', 'error');
+                console.log('Resource validation failed. Hidden value:', recursoHidden.value, 'Select value:', recursoSelect.value);
+                return;
+            }
+
+            if (!tipoActividadIdRaw || tipoActividadIdRaw === '' || isNaN(parseInt(tipoActividadIdRaw))) {
+                showAlert('❌ Error: Debe seleccionar un tipo de actividad válido', 'error');
+                return;
+            }
+
+            if (!fechaInicio || fechaInicio === '') {
+                showAlert('❌ Error: Debe especificar una fecha de inicio', 'error');
+                return;
+            }
+
+            if (!horaInicio || horaInicio === '') {
+                showAlert('❌ Error: Debe especificar una hora de inicio', 'error');
+                return;
+            }
+
+            // Verificar si la actividad está marcada como abierta
+            const isOpenActivity = document.getElementById('createActividadAbierta').checked;
+
+            // Construir datos validados
+            const activityData = {
+                obraId: parseInt(obraIdRaw),
+                recursoId: parseInt(recursoIdRaw),
+                tipoActividadId: parseInt(tipoActividadIdRaw),
+                fechaInicio: fechaInicio,
+                horaInicio: horaInicio,
+                // Si es actividad abierta, establecer fecha fin a 31/12/2099 y hora fin a 00:00
+                fechaFin: isOpenActivity ? '2099-12-31' : (formData.get('fechaFin') || null),
+                horaFin: isOpenActivity ? '00:00' : (formData.get('horaFin') || null),
+                observaciones: formData.get('observaciones') || ''
+            };
+
+            // Validar orden de fechas y horas
+            const dateTimeValidation = validateDateTimeOrder(activityData.fechaInicio, activityData.horaInicio, activityData.fechaFin, activityData.horaFin);
+            if (!dateTimeValidation.isValid) {
+                showAlert(dateTimeValidation.message, 'error');
+                console.error('Validation error:', dateTimeValidation.details);
+                return;
+            }
+
+            // Log para debugging
+            if (isOpenActivity) {
+                console.log('🔄 Nueva actividad marcada como ABIERTA - Fecha fin: 2099-12-31, Hora fin: 00:00');
+            }
+
+            console.log('Creating activity (validated):', activityData);
+
+            // Verificar colisiones antes de enviar
+            const collisionCheck = checkActivityCollision(activityData);
+
+            // Manejar diferentes tipos de respuestas de la verificación
+            if (collisionCheck.hasCollision) {
+                if (collisionCheck.type === 'open_activity_future_conflict') {
+                    const conflict = collisionCheck.conflictDetails;
+                    const errorMessage = `🚫 ${conflict.message}
+
+${conflict.description}
+
+────────────────────────────────
+
+👤 Recurso: ${conflict.recursoInfo}
+
+📅 Actividad futura encontrada: ${conflict.futureActivityTime}
+
+🔄 Actividad solicitada: ${conflict.requestedTime}
+
+────────────────────────────────
+
+Para crear una actividad abierta, primero debe eliminar o mover las actividades posteriores del mismo recurso.`;
+
+                    showAlert(errorMessage, 'error');
+                    return;
+                } else if (collisionCheck.type === 'time_overlap') {
+                    const conflict = collisionCheck.conflictDetails;
+                    const errorMessage = `❌ CONFLICTO DE RECURSO DETECTADO
+
+El recurso seleccionado ya tiene otra actividad asignada en ese horario:
+
+────────────────────────────────
+
+👤 Recurso: ${conflict.recursoInfo}
+
+🏗️ Obra actual: ${conflict.obraInfo}
+
+📋 Actividad existente: ${conflict.tipoInfo}
+
+⏰ Horario ocupado: ${conflict.conflictTime}
+
+🔄 Horario solicitado: ${conflict.requestedTime}
+
+────────────────────────────────
+
+Un recurso no puede estar en dos sitios a la vez. Por favor, modifique el horario o seleccione otro recurso.`;
+
+                    showAlert(errorMessage, 'error');
+                    return;
+                }
+            }
+
+            // Manejar información de cierre automático de actividad abierta
+            if (collisionCheck.type === 'open_activity_will_close') {
+                const autoClose = collisionCheck.autoCloseInfo;
+                const confirmMessage = `⚠️ ${autoClose.message}
+
+${autoClose.description}
+
+────────────────────────────────
+
+👤 Recurso: ${autoClose.recursoInfo}
+
+🏗️ Obra actual: ${autoClose.obraInfo}
+
+📋 Actividad abierta: ${autoClose.tipoInfo}
+
+⏰ Actividad actual: ${autoClose.currentOpenTime}
+
+🔒 Se cerrará en: ${autoClose.willCloseAt}
+
+🆕 Nueva actividad: ${autoClose.newActivityTime}
+
+────────────────────────────────
+
+¿Desea continuar? La actividad abierta se cerrará automáticamente.`;
+
+                if (!confirm(confirmMessage)) {
+                    return; // Usuario canceló
+                }
+
+                // Marcar que se debe cerrar la actividad abierta anterior
+                window.activityToAutoClose = autoClose.openActivity;
+            }
+
+            // ===== RESPUESTA INMEDIATA AL USUARIO =====
+            // Cerrar modal inmediatamente para dar sensación de velocidad
+            closeCreateModal();
+
+            // Mostrar mensaje de éxito inmediato
+            showAlert('✅ Actividad enviada correctamente - Procesando en segundo plano...', 'success');
+
+            // ===== PROCESAMIENTO EN BACKGROUND =====
+            // Agregar operación a la cola para procesar en segundo plano
+            const operationId = addToQueue({
+                type: 'CREATE_ACTIVITY',
+                description: `Crear actividad: ${activityData.fechaInicio} ${activityData.horaInicio}`,
+                execute: async () => {
+                    const response = await fetch(`${API_BASE}/actividades`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(activityData)
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.error || `HTTP error! status: ${response.status}`);
+                    }
+
+                    return result;
+                },
+                onSuccess: async (result) => {
+                    // Confirmación de que se guardó correctamente en servidor
+                    console.log('✅ Activity created successfully on server:', result);
+                    showAlert('✅ Actividad creada y guardada correctamente', 'success');
+
+                    // Refrescar datos automáticamente para asegurar sincronización
+                    try {
+                        console.log('🔄 Refrescando vista automáticamente después de crear actividad...');
+                        const actividades = await fetch(`${API_BASE}/actividades`).then(r => r.json());
+                        allActivities = actividades;
+                        await aplicarFiltros();
+                        console.log('✅ Vista actualizada automáticamente');
+                    } catch (refreshError) {
+                        console.error('⚠️ Error al refrescar vista automáticamente:', refreshError);
+                        // Fallback: reload everything if refresh fails
+                        try {
+                            await loadData();
+                            await aplicarFiltros();
+                        } catch (fallbackError) {
+                            console.error('❌ Error en fallback refresh:', fallbackError);
+                            showAlert('⚠️ La actividad se guardó pero no se pudo actualizar la vista automáticamente. Recarga la página para ver los cambios.', 'warning');
+                        }
+                    }
+                },
+                onError: (error) => {
+                    console.error('Background create operation failed:', error);
+                    showAlert(`❌ Error al guardar actividad: ${error.message}`, 'error');
+                }
+            });
+
+            console.log(`📋 Activity creation queued with ID: ${operationId}`);
+        }
+
+        // ========== DEBUG PANEL FUNCTIONS ==========
+        function refreshDebugPanel() {
+            try {
+                // currentDate
+                document.getElementById('debug-currentDate').textContent = currentDate || 'undefined';
+
+                // fechaFiltro.value
+                const fechaFiltro = document.getElementById('fechaFiltro');
+                document.getElementById('debug-fechaFiltro').textContent = fechaFiltro ? fechaFiltro.value : 'element not found';
+
+                // currentDateDisplay content
+                const currentDateDisplay = document.getElementById('currentDateDisplay');
+                document.getElementById('debug-currentDateDisplay').textContent = currentDateDisplay ? currentDateDisplay.textContent : 'element not found';
+
+                // navigating status
+                document.getElementById('debug-navigating').textContent = navigating ? 'true' : 'false';
+
+                // allActivities length
+                document.getElementById('debug-allActivities').textContent = typeof allActivities !== 'undefined' ? allActivities.length : 'undefined';
+
+                // allObras length
+                document.getElementById('debug-allObras').textContent = typeof allObras !== 'undefined' ? allObras.length : 'undefined';
+
+                // allResources length
+                document.getElementById('debug-allResources').textContent = typeof allResources !== 'undefined' ? allResources.length : 'undefined';
+
+                // allTiposActividad length
+                document.getElementById('debug-allTiposActividad').textContent = typeof allTiposActividad !== 'undefined' ? allTiposActividad.length : 'undefined';
+
+                // obraFiltro.value
+                const obraFiltro = document.getElementById('obraFiltro');
+                document.getElementById('debug-obraFiltro').textContent = obraFiltro ? obraFiltro.value : 'element not found';
+
+                // tipoFiltro.value
+                const tipoFiltro = document.getElementById('tipoFiltro');
+                document.getElementById('debug-tipoFiltro').textContent = tipoFiltro ? tipoFiltro.value : 'element not found';
+
+                // Real date (now)
+                document.getElementById('debug-realDate').textContent = new Date().toISOString().split('T')[0];
+
+                // nextDayValue
+                document.getElementById('debug-nextDayValue').textContent = typeof nextDayValue !== 'undefined' ? nextDayValue : 'undefined';
+
+                // beforeDayValue
+                document.getElementById('debug-beforeDayValue').textContent = typeof beforeDayValue !== 'undefined' ? beforeDayValue : 'undefined';
+
+                console.log('🐛 Debug panel refreshed');
+            } catch (error) {
+                console.error('❌ Error refreshing debug panel:', error);
+            }
+        }
+
+        function toggleDebugPanel() {
+            const panel = document.getElementById('debugPanel');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                refreshDebugPanel();
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        // Auto-refresh debug panel every 2 seconds
+        setInterval(refreshDebugPanel, 2000);
+
+        // Initial refresh when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(refreshDebugPanel, 1000);
+        });
+    </script>
+
+    <!-- Debug Variables Panel -->
+    <div id="debugPanel" style="position: fixed; bottom: 60px; right: 10px; background: #1f2937; color: #e5e7eb; padding: 15px; border-radius: 8px; border: 1px solid #374151; width: 350px; font-family: 'Courier New', monospace; font-size: 12px; z-index: 1001; max-height: 400px; overflow-y: auto; display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h4 style="margin: 0; color: #f59e0b;">🐛 Variables Debug</h4>
+            <div>
+                <button onclick="refreshDebugPanel()" style="background: #10b981; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; margin-right: 5px;">🔄 Refresh</button>
+                <button onclick="toggleDebugPanel()" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px;">✕</button>
+            </div>
+        </div>
+
+        <div id="debugContent">
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">currentDate:</strong> <span id="debug-currentDate">-</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">fechaFiltro.value:</strong> <span id="debug-fechaFiltro">-</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">currentDateDisplay:</strong> <span id="debug-currentDateDisplay">-</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">navigating:</strong> <span id="debug-navigating">-</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">allActivities.length:</strong> <span id="debug-allActivities">-</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">allObras.length:</strong> <span id="debug-allObras">-</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">allResources.length:</strong> <span id="debug-allResources">-</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">allTiposActividad.length:</strong> <span id="debug-allTiposActividad">-</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">obraFiltro.value:</strong> <span id="debug-obraFiltro">-</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">tipoFiltro.value:</strong> <span id="debug-tipoFiltro">-</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">Real Date (now):</strong> <span id="debug-realDate">-</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">nextDayValue:</strong> <span id="debug-nextDayValue">-</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong style="color: #60a5fa;">beforeDayValue:</strong> <span id="debug-beforeDayValue">-</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer de información de conexión -->
+    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #1f2937; color: #9ca3af; padding: 8px 16px; font-size: 11px; border-top: 1px solid #374151; z-index: 1000;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Frontend: http://localhost:5173</span>
+                <span>Backend: <span id="apiBaseUrl">http://localhost:3002</span></span>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Última llamada: <span id="lastApiCall">Ninguna</span></span>
+                <span id="apiStatus" style="padding: 2px 6px; border-radius: 3px; background-color: #374151;">Esperando...</span>
+                <button onclick="toggleDebugPanel()" style="padding: 2px 6px; border-radius: 3px; background-color: #374151; border: 1px solid #6b7280; color: #9ca3af; font-size: 11px; cursor: pointer;" title="Mostrar/ocultar panel de debug">🐛 Debug</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script para monitorear llamadas API -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Actualizar la URL del API en el footer
+            const apiBaseElement = document.getElementById('apiBaseUrl');
+            if (apiBaseElement && typeof API_BASE !== 'undefined') {
+                apiBaseElement.textContent = API_BASE;
+            }
+
+            // Interceptar llamadas fetch para mostrar actividad de API
+            const originalFetch = window.fetch;
+            const lastApiCallElement = document.getElementById('lastApiCall');
+            const apiStatusElement = document.getElementById('apiStatus');
+
+            window.fetch = async function(...args) {
+                const [url, options] = args;
+
+                // Solo mostrar llamadas que vayan al API backend
+                if (typeof url === 'string' && (url.includes('localhost:300') || url.includes(API_BASE))) {
+                    const method = options?.method || 'GET';
+                    const endpoint = url.replace(API_BASE, '').split('?')[0];
+
+                    // Mostrar llamada en progreso
+                    lastApiCallElement.textContent = `${method} ${endpoint}`;
+                    apiStatusElement.textContent = 'Cargando...';
+                    apiStatusElement.style.backgroundColor = '#f59e0b';
+
+                    try {
+                        const response = await originalFetch(...args);
+
+                        // Mostrar resultado
+                        const status = response.ok ? 'OK' : `Error ${response.status}`;
+                        apiStatusElement.textContent = status;
+                        apiStatusElement.style.backgroundColor = response.ok ? '#10b981' : '#ef4444';
+
+                        // Resetear después de 2 segundos
+                        setTimeout(() => {
+                            if (apiStatusElement.textContent === status) {
+                                apiStatusElement.textContent = 'Listo';
+                                apiStatusElement.style.backgroundColor = '#374151';
+                            }
+                        }, 2000);
+
+                        return response;
+                    } catch (error) {
+                        apiStatusElement.textContent = 'Error de red';
+                        apiStatusElement.style.backgroundColor = '#ef4444';
+                        setTimeout(() => {
+                            apiStatusElement.textContent = 'Error';
+                            apiStatusElement.style.backgroundColor = '#374151';
+                        }, 3000);
+                        throw error;
+                    }
+                }
+
+                return originalFetch(...args);
+            };
+        });
+    </script>
+</body>
+</html>

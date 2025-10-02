@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Actividad - Gestión de Actividades</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f9fafb;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .back-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #2563eb;
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #d1fae5;
+        }
+
+        .alert-error {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .help-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .current-time {
+            background: #f0f9ff;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #0369a1;
+            margin-top: 0.25rem;
+        }
+
+        .time-selector-container {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .time-select {
+            width: auto;
+            min-width: 60px;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        .time-separator {
+            font-weight: bold;
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .container {
+                padding: 0 10px;
+            }
+        }
+
+        /* Toast Alert Styles */
+        #alertContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideInRight 0.3s ease-out;
+            position: relative;
+        }
+
+        .alert-success {
+            background-color: #10b981;
+            color: white;
+            border: 1px solid #059669;
+        }
+
+        .alert-error {
+            background-color: #ef4444;
+            color: white;
+            border: 1px solid #dc2626;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .alert.hiding {
+            animation: slideOutRight 0.3s ease-in;
+        }
+
+        .version-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            background-color: #dbeafe;
+            color: #1e40af;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            margin-left: 12px;
+        }
+
+        .version-link:hover {
+            background-color: #bfdbfe;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Alert Container -->
+    <div id="alertContainer"></div>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>🏗️ Gestión de Actividades</h1>
+                    <a href="changelog.html" class="version-link" title="Ver registro de cambios">
+                        v1.6.1
+                    </a>
+                </div>
+                <button class="btn btn-secondary" onclick="window.location.href='/index.html'">
+                    🏠 Dashboard
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="form-card">
+                <div class="form-header">
+                    <h2>📝 Nueva Actividad</h2>
+                    <p>Registra una nueva actividad laboral en el sistema</p>
+                </div>
+
+
+                <form id="activityForm">
+                    <!-- Información Básica -->
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="obra">Obra <span class="required">*</span></label>
+                                <select id="obra" name="obraId" required>
+                                    <option value="">Selecciona una obra...</option>
+                                </select>
+                                <div class="help-text">Selecciona la obra donde se realizará la actividad</div>
+                            </div>
+                            <div>
+                                <label for="recurso">Recurso <span class="required">*</span></label>
+                                <select id="recurso" name="recursoId" required>
+                                    <option value="">Selecciona un recurso...</option>
+                                </select>
+                                <div class="help-text">Operario o máquina que realizará la actividad</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipoActividad">Tipo de Actividad <span class="required">*</span></label>
+                        <select id="tipoActividad" name="tipoActividadId" required>
+                            <option value="">Selecciona un tipo...</option>
+                        </select>
+                        <div class="help-text">Tipo de trabajo que se va a realizar</div>
+                    </div>
+
+                    <!-- Información Temporal -->
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="fechaInicio">Fecha de Inicio <span class="required">*</span></label>
+                                <input type="date" id="fechaInicio" name="fechaInicio" required>
+                                <div class="help-text">Fecha cuando comienza la actividad</div>
+                            </div>
+                            <div>
+                                <label for="horaInicio">Hora de Inicio <span class="required">*</span></label>
+                                <div class="time-selector-container">
+                                    <select id="horaInicio_horas" class="time-select" required>
+                                        <option value="">HH</option>
+                                    </select>
+                                    <span class="time-separator">:</span>
+                                    <select id="horaInicio_minutos" class="time-select" required>
+                                        <option value="">MM</option>
+                                        <option value="00" selected>00</option>
+                                        <option value="15">15</option>
+                                        <option value="30">30</option>
+                                        <option value="45">45</option>
+                                    </select>
+                                    <input type="hidden" id="horaInicio" name="horaInicio" required>
+                                </div>
+                                <div class="help-text">Solo se permiten intervalos de 15 minutos</div>
+                                <div class="current-time" id="currentTime"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="fechaFin">Fecha de Fin</label>
+                                <input type="date" id="fechaFin" name="fechaFin">
+                                <div class="help-text">Dejar vacío si la jornada está abierta</div>
+                            </div>
+                            <div>
+                                <label for="horaFin">Hora de Fin</label>
+                                <div class="time-selector-container">
+                                    <select id="horaFin_horas" class="time-select">
+                                        <option value="">HH</option>
+                                    </select>
+                                    <span class="time-separator">:</span>
+                                    <select id="horaFin_minutos" class="time-select">
+                                        <option value="">MM</option>
+                                        <option value="00">00</option>
+                                        <option value="15">15</option>
+                                        <option value="30">30</option>
+                                        <option value="45">45</option>
+                                    </select>
+                                    <input type="hidden" id="horaFin" name="horaFin">
+                                </div>
+                                <div class="help-text">Solo se permiten intervalos de 15 minutos</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="form-group">
+                        <label for="observaciones">Observaciones</label>
+                        <textarea id="observaciones" name="observaciones" placeholder="Detalles adicionales sobre la actividad (opcional)..."></textarea>
+                    </div>
+
+                    <!-- GPS (futuro) - Oculto temporalmente -->
+                    <div class="form-group" style="display: none;">
+                        <div class="form-row">
+                            <div>
+                                <label for="latitudInicio">Latitud Inicio</label>
+                                <input type="number" id="latitudInicio" name="latitudInicio" step="0.0000001" placeholder="Ej: 41.390205">
+                                <div class="help-text">GPS - Funcionalidad futura</div>
+                            </div>
+                            <div>
+                                <label for="longitudInicio">Longitud Inicio</label>
+                                <input type="number" id="longitudInicio" name="longitudInicio" step="0.0000001" placeholder="Ej: 2.154007">
+                                <div class="help-text">GPS - Funcionalidad futura</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                            🔄 Limpiar Formulario
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            💾 Guardar Actividad
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+        <!-- Configuración centralizada -->
+    <script src="src/config.js"></script>
+
+    <script>
+        // Configuración
+        // API_BASE se carga automáticamente desde config.js
+        let API_BASE = window.API_BASE || (window.appConfig?.getApiUrl('') || 'http://localhost:3002');
+
+        // Estado de la aplicación
+        let formData = {
+            obras: [],
+            recursos: [],
+            tiposActividad: []
+        };
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeForm();
+            initializeTimeSelectors();
+            setCurrentDateTime();
+            loadFormData();
+        });
+
+        // Inicializar selectores de tiempo
+        function initializeTimeSelectors() {
+            // Poblar horas (00-23)
+            const horaInicioSelect = document.getElementById('horaInicio_horas');
+            const horaFinSelect = document.getElementById('horaFin_horas');
+
+            for (let i = 0; i < 24; i++) {
+                const hora = i.toString().padStart(2, '0');
+
+                const optionInicio = document.createElement('option');
+                optionInicio.value = hora;
+                optionInicio.textContent = hora;
+                horaInicioSelect.appendChild(optionInicio);
+
+                const optionFin = document.createElement('option');
+                optionFin.value = hora;
+                optionFin.textContent = hora;
+                horaFinSelect.appendChild(optionFin);
+            }
+
+            // Agregar listeners para actualizar campos hidden
+            ['horaInicio', 'horaFin'].forEach(fieldName => {
+                const horasSelect = document.getElementById(fieldName + '_horas');
+                const minutosSelect = document.getElementById(fieldName + '_minutos');
+
+                function updateHiddenField() {
+                    const horas = horasSelect.value;
+                    const minutos = minutosSelect.value;
+                    const hiddenField = document.getElementById(fieldName);
+
+                    if (horas && minutos) {
+                        hiddenField.value = horas + ':' + minutos;
+                    } else {
+                        hiddenField.value = '';
+                    }
+                }
+
+                horasSelect.addEventListener('change', updateHiddenField);
+                minutosSelect.addEventListener('change', updateHiddenField);
+            });
+
+            // Agregar listener especial para hora inicio que actualice las opciones de hora fin
+            const horaInicioHoras = document.getElementById('horaInicio_horas');
+            const horaInicioMinutos = document.getElementById('horaInicio_minutos');
+
+            function updateEndTimeOptions() {
+                const horaFinHoras = document.getElementById('horaFin_horas');
+                const horaFinMinutos = document.getElementById('horaFin_minutos');
+
+                const startHour = parseInt(horaInicioHoras.value);
+                const startMinute = parseInt(horaInicioMinutos.value);
+
+                if (isNaN(startHour) || isNaN(startMinute)) {
+                    // Si no hay hora de inicio seleccionada, mostrar todas las opciones
+                    return;
+                }
+
+                // Limpiar opciones actuales de hora fin
+                horaFinHoras.innerHTML = '<option value="">HH</option>';
+
+                // Agregar solo horas posteriores a la hora de inicio
+                for (let i = startHour; i < 24; i++) {
+                    const hora = i.toString().padStart(2, '0');
+                    const option = document.createElement('option');
+                    option.value = hora;
+                    option.textContent = hora;
+                    horaFinHoras.appendChild(option);
+                }
+
+                // Si es la misma hora, actualizar minutos para que sean posteriores
+                updateEndMinuteOptions();
+            }
+
+            function updateEndMinuteOptions() {
+                const horaFinHoras = document.getElementById('horaFin_horas');
+                const horaFinMinutos = document.getElementById('horaFin_minutos');
+
+                const startHour = parseInt(horaInicioHoras.value);
+                const startMinute = parseInt(horaInicioMinutos.value);
+                const endHour = parseInt(horaFinHoras.value);
+
+                if (isNaN(startHour) || isNaN(startMinute) || isNaN(endHour)) {
+                    return;
+                }
+
+                // Limpiar opciones de minutos
+                horaFinMinutos.innerHTML = '<option value="">MM</option>';
+
+                const validMinutes = ['00', '15', '30', '45'];
+
+                if (endHour === startHour) {
+                    // Misma hora: solo permitir minutos posteriores
+                    validMinutes.forEach(minute => {
+                        const minuteValue = parseInt(minute);
+                        if (minuteValue > startMinute) {
+                            const option = document.createElement('option');
+                            option.value = minute;
+                            option.textContent = minute;
+                            horaFinMinutos.appendChild(option);
+                        }
+                    });
+                } else {
+                    // Hora diferente: permitir todos los minutos
+                    validMinutes.forEach(minute => {
+                        const option = document.createElement('option');
+                        option.value = minute;
+                        option.textContent = minute;
+                        horaFinMinutos.appendChild(option);
+                    });
+                }
+            }
+
+            // Listeners para actualizar opciones de hora fin
+            horaInicioHoras.addEventListener('change', updateEndTimeOptions);
+            horaInicioMinutos.addEventListener('change', updateEndTimeOptions);
+            document.getElementById('horaFin_horas').addEventListener('change', function() {
+                // Auto-establecer minutos a "00" cuando se selecciona una hora fin
+                const horaFinMinutos = document.getElementById('horaFin_minutos');
+                const horaFinHoras = document.getElementById('horaFin_horas');
+                if (horaFinHoras.value && horaFinMinutos.value !== '00') {
+                    horaFinMinutos.value = '00';
+                    console.log('🕐 Auto-establecidos minutos de hora fin a 00 (nueva-actividad)');
+                }
+                updateEndMinuteOptions();
+            });
+
+            // Listeners para auto-establecer fecha fin cuando se selecciona hora fin
+            document.getElementById('horaFin_horas').addEventListener('change', autoSetEndDate);
+            document.getElementById('horaFin_minutos').addEventListener('change', autoSetEndDate);
+        }
+
+        // Establecer fecha y hora actuales
+        function setCurrentDateTime() {
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+
+            // Solo establecer la fecha, no la hora automáticamente
+            document.getElementById('fechaInicio').value = today;
+
+            updateCurrentTimeDisplay();
+            setInterval(updateCurrentTimeDisplay, 1000);
+        }
+
+        // Redondear hora a cuartos de hora
+        function roundToQuarter(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const roundedMinutes = Math.round(minutes / 15) * 15;
+
+            if (roundedMinutes >= 60) {
+                return String(hours + 1).padStart(2, '0') + ':00';
+            }
+
+            return hours.toString().padStart(2, '0') + ':' + roundedMinutes.toString().padStart(2, '0');
+        }
+
+        // Actualizar display de tiempo actual
+        function updateCurrentTimeDisplay() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('es-ES', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = `Hora actual: ${timeStr}`;
+        }
+
+        // Cargar datos del formulario
+        async function loadFormData() {
+            showAlert('Cargando datos del formulario...', 'info');
+
+            try {
+                // Cargar todos los datos desde la API
+                await Promise.all([
+                    loadTiposActividad(),
+                    loadObras(),
+                    loadRecursos()
+                ]);
+
+            } catch (error) {
+                showAlert('Error al cargar datos: ' + error.message, 'error');
+            }
+        }
+
+        // Cargar tipos de actividad desde la API
+        async function loadTiposActividad() {
+            try {
+                const response = await fetch(`${API_BASE}/tipos-actividad`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const tiposActividad = await response.json();
+
+                const select = document.getElementById('tipoActividad');
+                tiposActividad.forEach(tipo => {
+                    const option = document.createElement('option');
+                    option.value = tipo.id;
+                    option.textContent = `${tipo.codigo} - ${tipo.nombre}`;
+                    select.appendChild(option);
+                });
+
+                formData.tiposActividad = tiposActividad;
+            } catch (error) {
+                console.error('Error loading tipos actividad:', error);
+                // Fallback a datos mock si la API falla
+                const tiposActividad = [
+                    { id: 1, codigo: 'TRANSP', nombre: 'Transporte' },
+                    { id: 2, codigo: 'EXTEND', nombre: 'Extendido' },
+                    { id: 3, codigo: 'FRESADO', nombre: 'Fresado' },
+                    { id: 4, codigo: 'COMPAC', nombre: 'Compactación' },
+                    { id: 5, codigo: 'MANT', nombre: 'Mantenimiento' }
+                ];
+
+                const select = document.getElementById('tipoActividad');
+                tiposActividad.forEach(tipo => {
+                    const option = document.createElement('option');
+                    option.value = tipo.id;
+                    option.textContent = `${tipo.codigo} - ${tipo.nombre}`;
+                    select.appendChild(option);
+                });
+
+                formData.tiposActividad = tiposActividad;
+                throw error;
+            }
+        }
+
+        // Cargar obras desde la API
+        async function loadObras() {
+            try {
+                const response = await fetch(`${API_BASE}/obras`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const obras = await response.json();
+
+                const obraSelect = document.getElementById('obra');
+                obras.forEach(obra => {
+                    const option = document.createElement('option');
+                    option.value = obra.id;
+                    option.textContent = `${obra.codigo} - ${obra.descripcion}`;
+                    obraSelect.appendChild(option);
+                });
+
+                formData.obras = obras;
+            } catch (error) {
+                console.error('Error loading obras:', error);
+                throw error;
+            }
+        }
+
+        // Cargar recursos desde la API
+        async function loadRecursos() {
+            try {
+                const response = await fetch(`${API_BASE}/recursos`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const recursos = await response.json();
+
+                const recursoSelect = document.getElementById('recurso');
+                recursos.forEach(recurso => {
+                    const option = document.createElement('option');
+                    option.value = recurso.id;
+                    const tipoIcon = recurso.tipo === 'operario' ? '👷' : '🚛';
+                    option.textContent = `${tipoIcon} ${recurso.codigo} - ${recurso.nombre}`;
+                    recursoSelect.appendChild(option);
+                });
+
+                formData.recursos = recursos;
+            } catch (error) {
+                console.error('Error loading recursos:', error);
+                throw error;
+            }
+        }
+
+        // Inicializar formulario
+        function initializeForm() {
+            const form = document.getElementById('activityForm');
+            form.addEventListener('submit', handleSubmit);
+
+            // Las validaciones de tiempo ahora se manejan automáticamente con los selectores
+
+            // Auto-completar fecha fin cuando se cambia la fecha inicio
+            document.getElementById('fechaInicio').addEventListener('change', function() {
+                if (!document.getElementById('fechaFin').value) {
+                    document.getElementById('fechaFin').value = this.value;
+                }
+            });
+        }
+
+        // Función para establecer tiempo en los selectores
+        function setTimeSelectors(fieldName, timeValue) {
+            if (timeValue) {
+                const [horas, minutos] = timeValue.split(':');
+                document.getElementById(fieldName + '_horas').value = horas;
+                document.getElementById(fieldName + '_minutos').value = minutos;
+                document.getElementById(fieldName).value = timeValue;
+            }
+        }
+
+        // Manejar envío del formulario
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<div class="loading"></div> Guardando...';
+
+                // Recoger datos del formulario
+                const formData = new FormData(event.target);
+                const activityData = Object.fromEntries(formData.entries());
+
+                // Validaciones básicas
+                if (!validateActivityData(activityData)) {
+                    return;
+                }
+
+                // Enviar a la API real
+                const result = await submitToAPI(activityData);
+
+                // Mostrar éxito
+                showAlert('✅ Actividad guardada correctamente', 'success');
+
+                // Opcional: limpiar formulario o redirigir
+                setTimeout(() => {
+                    if (confirm('¿Deseas crear otra actividad?')) {
+                        resetForm();
+                        hideAlert();
+                    } else {
+                        window.location.href = '/index.html';
+                    }
+                }, 2000);
+
+            } catch (error) {
+                showAlert('❌ Error al guardar: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        }
+
+        // Validar datos de actividad
+        function validateActivityData(data) {
+            if (!data.obraId || !data.recursoId || !data.tipoActividadId) {
+                showAlert('Por favor completa todos los campos obligatorios', 'error');
+                return false;
+            }
+
+            if (!data.fechaInicio || !data.horaInicio) {
+                showAlert('La fecha y hora de inicio son obligatorias', 'error');
+                return false;
+            }
+
+            // Fecha y hora de inicio pueden ser futuras (planificación de actividades)
+
+            // Si hay fecha fin, validar que sea posterior al inicio
+            if (data.fechaFin && data.horaFin) {
+                const fechaFin = new Date(data.fechaFin + 'T' + data.horaFin);
+                if (fechaFin <= fechaInicio) {
+                    showAlert('La fecha y hora de fin deben ser posteriores al inicio', 'error');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // Enviar datos a la API
+        async function submitToAPI(data) {
+            const response = await fetch(`${API_BASE}/actividades`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+        }
+
+        // Auto-establecer fecha fin cuando se selecciona hora fin
+        function autoSetEndDate() {
+            const horaFinHoras = document.getElementById('horaFin_horas');
+            const horaFinMinutos = document.getElementById('horaFin_minutos');
+            const fechaFin = document.getElementById('fechaFin');
+            const fechaInicio = document.getElementById('fechaInicio');
+
+            // Si se selecciona alguna hora fin y no hay fecha fin establecida
+            if ((horaFinHoras.value || horaFinMinutos.value) && !fechaFin.value) {
+                // Usar la fecha de inicio, o la fecha actual si no hay fecha de inicio
+                const fechaAUsar = fechaInicio.value || new Date().toISOString().split('T')[0];
+                fechaFin.value = fechaAUsar;
+
+                console.log('📅 Auto-establecida fecha fin:', fechaAUsar, 'debido a selección de hora fin');
+            }
+        }
+
+        // Limpiar formulario
+        function resetForm() {
+            document.getElementById('activityForm').reset();
+            // Limpiar selectores de tiempo
+            document.getElementById('horaInicio_horas').value = '';
+            document.getElementById('horaInicio_minutos').value = '00';
+            document.getElementById('horaFin_horas').value = '';
+            document.getElementById('horaFin_minutos').value = '';
+
+            // Solo establecer la fecha actual, no la hora
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            document.getElementById('fechaInicio').value = today;
+
+            hideAlert();
+        }
+
+        // Mostrar alerta
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alertContainer');
+            const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+
+            const alertElement = document.createElement('div');
+            alertElement.className = `alert ${alertClass}`;
+            alertElement.innerHTML = message;
+
+            container.appendChild(alertElement);
+
+            // Auto-hide after 4 seconds
+            setTimeout(() => {
+                alertElement.classList.add('hiding');
+                setTimeout(() => {
+                    if (alertElement.parentNode) {
+                        alertElement.parentNode.removeChild(alertElement);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Ocultar alerta
+        function hideAlert() {
+            document.getElementById('alertContainer').innerHTML = '';
+        }
+    </script>
+
+    
+    <!-- Footer de información de conexión -->
+    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #1f2937; color: #9ca3af; padding: 8px 16px; font-size: 11px; border-top: 1px solid #374151; z-index: 1000;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Frontend: http://localhost:5173</span>
+                <span>Backend: <span id="apiBaseUrl">http://localhost:3002</span></span>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Última llamada: <span id="lastApiCall">Ninguna</span></span>
+                <span id="apiStatus" style="padding: 2px 6px; border-radius: 3px; background-color: #374151;">Esperando...</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script para monitorear llamadas API -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Actualizar la URL del API en el footer
+            const apiBaseElement = document.getElementById('apiBaseUrl');
+            if (apiBaseElement && typeof API_BASE !== 'undefined') {
+                apiBaseElement.textContent = API_BASE;
+            }
+
+            // Interceptar llamadas fetch para mostrar actividad de API
+            const originalFetch = window.fetch;
+            const lastApiCallElement = document.getElementById('lastApiCall');
+            const apiStatusElement = document.getElementById('apiStatus');
+
+            window.fetch = async function(...args) {
+                const [url, options] = args;
+
+                // Solo mostrar llamadas que vayan al API backend
+                if (typeof url === 'string' && (url.includes('localhost:300') || url.includes(API_BASE))) {
+                    const method = options?.method || 'GET';
+                    const endpoint = url.replace(API_BASE, '').split('?')[0];
+
+                    // Mostrar llamada en progreso
+                    lastApiCallElement.textContent = `${method} ${endpoint}`;
+                    apiStatusElement.textContent = 'Cargando...';
+                    apiStatusElement.style.backgroundColor = '#f59e0b';
+
+                    try {
+                        const response = await originalFetch(...args);
+
+                        // Mostrar resultado
+                        const status = response.ok ? 'OK' : `Error ${response.status}`;
+                        apiStatusElement.textContent = status;
+                        apiStatusElement.style.backgroundColor = response.ok ? '#10b981' : '#ef4444';
+
+                        // Resetear después de 2 segundos
+                        setTimeout(() => {
+                            if (apiStatusElement.textContent === status) {
+                                apiStatusElement.textContent = 'Listo';
+                                apiStatusElement.style.backgroundColor = '#374151';
+                            }
+                        }, 2000);
+
+                        return response;
+                    } catch (error) {
+                        apiStatusElement.textContent = 'Error de red';
+                        apiStatusElement.style.backgroundColor = '#ef4444';
+                        setTimeout(() => {
+                            apiStatusElement.textContent = 'Error';
+                            apiStatusElement.style.backgroundColor = '#374151';
+                        }, 3000);
+                        throw error;
+                    }
+                }
+
+                return originalFetch(...args);
+            };
+        });
+    </script>
+</body>
+</html>

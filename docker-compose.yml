@@ -1,0 +1,457 @@
+version: '3.8'
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 60s
+
+services:
+  # SQL Server Database (Production)
+  # NOTE: This is commented out because you're using an external SQL Server at 192.168.0.30
+  # Uncomment only if you want to run SQL Server in a container
+  # database:
+  #   image: mcr.microsoft.com/mssql/server:2022-latest
+  #   container_name: gestion-sqlserver
+  #   environment:
+  #     - ACCEPT_EULA=Y
+  #     - MSSQL_SA_PASSWORD_FILE=/run/secrets/db_password
+  #     - MSSQL_PID=Developer
+  #     - MSSQL_LCID=3082  # Spanish - Spain
+  #     - MSSQL_COLLATION=Modern_Spanish_CI_AS
+  #   secrets:
+  #     - db_password
+  #   ports:
+  #     - "127.0.0.1:1433:1433"
+  #   volumes:
+  #     - mssql_data:/var/opt/mssql
+  #     - mssql_log:/var/opt/mssql/log
+  #     - mssql_backup:/var/opt/mssql/backup
+  #   networks:
+  #     - backend-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $(cat /run/secrets/db_password) -Q 'SELECT 1' || exit 1"]
+  #     <<: *healthcheck-defaults
+  #     start_period: 60s
+  #   restart: unless-stopped
+  #   logging: *default-logging
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 4G
+  #         cpus: '2.0'
+  #       reservations:
+  #         memory: 2G
+  #         cpus: '1.0'
+  #   security_opt:
+  #     - no-new-privileges:true
+
+  # Redis Cache
+  redis:
+    image: redis:7.2-alpine
+    container_name: gestion-redis
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass $(cat /run/secrets/redis_password)
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    secrets:
+      - redis_password
+    ports:
+      - "127.0.0.1:6379:6379"  # Bind to localhost only
+    volumes:
+      - redis_data:/data
+      - redis_conf:/usr/local/etc/redis
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "$(cat /run/secrets/redis_password)", "ping"]
+      <<: *healthcheck-defaults
+      start_period: 30s
+    restart: unless-stopped
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.2'
+    security_opt:
+      - no-new-privileges:true
+    user: "999:999"  # Redis user
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+      args:
+        NODE_ENV: production
+    container_name: gestion-backend
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # SQL Server Configuration (External Database)
+      - DB_HOST=${DB_HOST:-192.168.0.30}
+      - DB_PORT=${DB_PORT:-1433}
+      - DB_USERNAME=${DB_USERNAME:-rp-gestorjornadas}
+      - DB_PASSWORD_FILE=/run/secrets/db_password
+      - DB_NAME=${DB_NAME:-RP_GESTOR_JORNADAS}
+      - DB_SYNCHRONIZE=false
+      - DB_LOGGING=false
+      # Redis Configuration
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD_FILE=/run/secrets/redis_password
+      - REDIS_DB=0
+      # Authentication
+      - JWT_SECRET_FILE=/run/secrets/jwt_secret
+      - JWT_EXPIRES_IN=24h
+      - SESSION_SECRET_FILE=/run/secrets/session_secret
+      - SESSION_MAX_AGE=3600000
+      # Azure AD Configuration
+      - AZURE_AD_CLIENT_ID_FILE=/run/secrets/azure_client_id
+      - AZURE_AD_CLIENT_SECRET_FILE=/run/secrets/azure_client_secret
+      - AZURE_AD_TENANT_ID_FILE=/run/secrets/azure_tenant_id
+      - AZURE_AD_REDIRECT_URI=${AZURE_AD_REDIRECT_URI:-http://localhost:3000/auth/callback}
+      # Application URLs
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:8080}
+      # n8n Integration
+      - N8N_API_URL=${N8N_API_URL:-}
+      - N8N_API_KEY_FILE=/run/secrets/n8n_api_key
+      - N8N_WEBHOOK_SECRET_FILE=/run/secrets/n8n_webhook_secret
+      - N8N_TIMEOUT=30000
+      - N8N_RETRY_ATTEMPTS=3
+      # Synchronization
+      - SYNC_ENABLED=${SYNC_ENABLED:-true}
+      - SYNC_OBRAS_ENABLED=${SYNC_OBRAS_ENABLED:-true}
+      - SYNC_RECURSOS_ENABLED=${SYNC_RECURSOS_ENABLED:-true}
+      - SYNC_OBRAS_CRON=${SYNC_OBRAS_CRON:-0 6 * * *}
+      - SYNC_RECURSOS_CRON=${SYNC_RECURSOS_CRON:-0 6 * * *}
+      # Logging and Monitoring
+      - LOG_LEVEL=info
+      - LOG_FORMAT=json
+      - LOG_DIR=/app/logs
+      - METRICS_ENABLED=true
+      - HEALTH_CHECK_TIMEOUT=5000
+      # Rate Limiting
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=100
+      - EXPORT_RATE_LIMIT_WINDOW_MS=300000
+      - EXPORT_RATE_LIMIT_MAX_REQUESTS=10
+    secrets:
+      - db_password
+      - redis_password
+      - jwt_secret
+      - session_secret
+      - azure_client_id
+      - azure_client_secret
+      - azure_tenant_id
+      - n8n_api_key
+      - n8n_webhook_secret
+    ports:
+      - "127.0.0.1:3000:3000"  # Bind to localhost only
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - backend-network
+      - frontend-network
+    volumes:
+      - backend_logs:/app/logs:rw
+      - backend_uploads:/app/uploads:rw
+      - backend_tmp:/app/tmp:rw
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      <<: *healthcheck-defaults
+    restart: unless-stopped
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+
+  # Frontend (Nginx serving static files)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+      args:
+        VITE_API_URL: /api
+        VITE_APP_TITLE: "Gestión de Actividad Laboral"
+        VITE_APP_VERSION: "1.0.0"
+    container_name: gestion-frontend
+    environment:
+      - NGINX_WORKER_PROCESSES=auto
+      - NGINX_WORKER_CONNECTIONS=1024
+    ports:
+      - "8080:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - frontend-network
+    volumes:
+      - frontend_logs:/var/log/nginx:rw
+      - ./ssl:/etc/nginx/ssl:ro  # Mount SSL certificates if available
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health-check"]
+      <<: *healthcheck-defaults
+      start_period: 30s
+    restart: unless-stopped
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+        reservations:
+          memory: 128M
+          cpus: '0.2'
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=50m
+      - /var/cache/nginx:noexec,nosuid,size=50m
+      - /var/run:noexec,nosuid,size=10m
+
+  # Reverse Proxy (Production Load Balancer)
+  proxy:
+    image: nginx:1.25-alpine
+    container_name: gestion-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/proxy.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - proxy_logs:/var/log/nginx:rw
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - frontend-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      <<: *healthcheck-defaults
+      start_period: 30s
+    restart: unless-stopped
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+    security_opt:
+      - no-new-privileges:true
+    profiles: ["proxy"]  # Only start with --profile proxy
+
+  # Log aggregation
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: gestion-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki_data:/loki
+      - ./monitoring/loki-config.yaml:/etc/loki/local-config.yaml:ro
+    networks:
+      - monitoring-network
+    restart: unless-stopped
+    logging: *default-logging
+    profiles: ["monitoring"]
+
+  # Metrics collection
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: gestion-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - monitoring-network
+      - backend-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.retention.size=10GB'
+    restart: unless-stopped
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+    security_opt:
+      - no-new-privileges:true
+    profiles: ["monitoring"]
+
+  # Visualization
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: gestion-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD_FILE=/run/secrets/grafana_admin_password
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_DISABLE_GRAVATAR=true
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+    secrets:
+      - grafana_admin_password
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - monitoring-network
+    depends_on:
+      - prometheus
+      - loki
+    restart: unless-stopped
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    security_opt:
+      - no-new-privileges:true
+    user: "472:472"  # Grafana user
+    profiles: ["monitoring"]
+
+# Production secrets management
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  redis_password:
+    file: ./secrets/redis_password.txt
+  jwt_secret:
+    file: ./secrets/jwt_secret.txt
+  session_secret:
+    file: ./secrets/session_secret.txt
+  azure_client_id:
+    file: ./secrets/azure_client_id.txt
+  azure_client_secret:
+    file: ./secrets/azure_client_secret.txt
+  azure_tenant_id:
+    file: ./secrets/azure_tenant_id.txt
+  n8n_api_key:
+    file: ./secrets/n8n_api_key.txt
+  n8n_webhook_secret:
+    file: ./secrets/n8n_webhook_secret.txt
+  grafana_admin_password:
+    file: ./secrets/grafana_admin_password.txt
+
+# Network segmentation for security
+networks:
+  backend-network:
+    driver: bridge
+    internal: true  # No external access
+  frontend-network:
+    driver: bridge
+  monitoring-network:
+    driver: bridge
+    internal: true
+
+# Persistent volumes
+volumes:
+  # SQL Server volumes (only if running database in container)
+  # mssql_data:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     o: bind
+  #     device: /opt/gestion-actividad/data/mssql
+  # mssql_log:
+  #   driver: local
+  # mssql_backup:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     o: bind
+  #     device: /opt/gestion-actividad/backup/mssql
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gestion-actividad/data/redis
+  redis_conf:
+    driver: local
+  backend_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gestion-actividad/logs/backend
+  backend_uploads:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gestion-actividad/uploads
+  backend_tmp:
+    driver: local
+  frontend_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gestion-actividad/logs/frontend
+  proxy_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gestion-actividad/logs/proxy
+  prometheus_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gestion-actividad/data/prometheus
+  grafana_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gestion-actividad/data/grafana
+  loki_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gestion-actividad/data/loki

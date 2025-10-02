@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Equipos - Sistema de Actividades</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f9fafb;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            color: #1f2937;
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .card h2 {
+            color: #1f2937;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb {
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        input[type="text"], input[type="search"], select, textarea {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        input[type="search"] {
+            min-width: 300px;
+        }
+
+        .equipos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .equipo-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .equipo-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .equipo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .equipo-nombre {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .equipo-descripcion {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .recursos-section {
+            margin-top: 1rem;
+        }
+
+        .recursos-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .recursos-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .recurso-tag {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .recurso-tag.operario {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .recurso-tag.maquina {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .equipo-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-small {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 750px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .recursos-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .recursos-column {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 1rem;
+            background: #f9fafb;
+        }
+
+        .recursos-column-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .recursos-selector {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0.25rem;
+        }
+
+        .recurso-option {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .recurso-option:hover {
+            background: #f3f4f6;
+        }
+
+        .recurso-option input {
+            margin-right: 0.5rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        /* Sistema de Alertas */
+        .alert {
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            position: relative;
+            transition: all 0.3s ease;
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .alert.hiding {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        #alertContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .alert-error {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-info {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #dbeafe;
+        }
+
+        .alert-warning {
+            background-color: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fed7aa;
+        }
+
+        .alert-success {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            flex: 1;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .version-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            background-color: #dbeafe;
+            color: #1e40af;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            margin-left: 12px;
+        }
+
+        .version-link:hover {
+            background-color: #bfdbfe;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                    <h1>🎯 Gestión de Equipos</h1>
+                    <a href="changelog.html" class="version-link" title="Ver registro de cambios">
+                        v1.6.1
+                    </a>
+                </div>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-secondary" onclick="window.location.href='/configuracion.html'">
+                    ⚙️ Configuración
+                </button>
+                <button class="btn btn-secondary" onclick="window.location.href='/index.html'">
+                    🏠 Dashboard
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="/index.html">Dashboard</a> /
+            <a href="/configuracion.html">Configuración</a> /
+            Equipos
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="totalEquipos">0</div>
+                <div class="stat-label">Equipos Activos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalRecursosEnEquipos">0</div>
+                <div class="stat-label">Recursos Asignados</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="recursosLibres">0</div>
+                <div class="stat-label">Recursos Libres</div>
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="controls">
+            <div class="search-container">
+                <input type="search" id="searchInput" placeholder="🔍 Buscar equipos..." onkeyup="filterEquipos()">
+            </div>
+            <button class="btn btn-primary" onclick="openCreateModal()">
+                ➕ Nuevo Equipo
+            </button>
+        </div>
+
+        <!-- Contenedor de alertas -->
+        <div id="alertContainer"></div>
+
+        <!-- Grid de Equipos -->
+        <div class="equipos-grid" id="equiposGrid">
+            <!-- Los equipos se cargarán aquí dinámicamente -->
+        </div>
+
+        <!-- Estado vacío -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">🎯</div>
+            <h3>No hay equipos configurados</h3>
+            <p>Crea tu primer equipo para agrupar recursos y facilitar la asignación masiva de actividades.</p>
+            <button class="btn btn-primary" onclick="openCreateModal()" style="margin-top: 1rem;">
+                ➕ Crear Primer Equipo
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Crear/Editar Equipo -->
+    <div id="equipoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Nuevo Equipo</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+
+            <form id="equipoForm">
+                <div class="form-group">
+                    <label for="equipoNombre" class="form-label">Nombre del Equipo *</label>
+                    <input type="text" id="equipoNombre" class="form-control" required
+                           placeholder="Ej: Equipo Excavación">
+                </div>
+
+                <div class="form-group">
+                    <label for="equipoDescripcion" class="form-label">Descripción</label>
+                    <textarea id="equipoDescripcion" class="form-control" rows="3"
+                              placeholder="Descripción opcional del equipo y su función"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Recursos del Equipo</label>
+                    <div class="recursos-grid">
+                        <div class="recursos-column">
+                            <h4 class="recursos-column-title">👤 Operarios</h4>
+                            <div class="recursos-selector" id="operariosSelector">
+                                <!-- Los operarios se cargarán aquí dinámicamente -->
+                            </div>
+                        </div>
+                        <div class="recursos-column">
+                            <h4 class="recursos-column-title">🚜 Maquinaria</h4>
+                            <div class="recursos-selector" id="maquinasSelector">
+                                <!-- Las máquinas se cargarán aquí dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                    <small style="color: #6b7280;">Selecciona los recursos que formarán parte de este equipo</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                        ❌ Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        💾 <u>G</u>uardar Equipo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+        <!-- Configuración centralizada -->
+    <script src="src/config.js"></script>
+
+    <script>
+        // API_BASE se carga automáticamente desde config.js
+        let API_BASE = window.API_BASE || (window.appConfig?.getApiUrl('') || 'http://localhost:3002');
+
+        let allEquipos = [];
+        let allRecursos = [];
+        let currentEditingId = null;
+
+        // Sistema de cola de operaciones en background
+        let operationQueue = [];
+        let isProcessingQueue = false;
+        let queueId = 0;
+
+        // Estados de operaciones
+        const OPERATION_STATUS = {
+            PENDING: 'pending',
+            PROCESSING: 'processing',
+            SUCCESS: 'success',
+            ERROR: 'error'
+        };
+
+        // Procesar cola en background
+        async function processQueue() {
+            if (isProcessingQueue || operationQueue.length === 0) return;
+
+            isProcessingQueue = true;
+
+            while (operationQueue.length > 0) {
+                const operation = operationQueue.shift();
+                operation.status = OPERATION_STATUS.PROCESSING;
+
+                try {
+                    console.log(`🔄 Processing background operation: ${operation.type} (ID: ${operation.id})`);
+                    const result = await operation.execute();
+                    operation.status = OPERATION_STATUS.SUCCESS;
+                    operation.result = result;
+
+                    // Ejecutar callback de éxito si existe
+                    if (operation.onSuccess) {
+                        operation.onSuccess(result);
+                    }
+
+                    console.log(`✅ Background operation completed: ${operation.type} (ID: ${operation.id})`);
+                } catch (error) {
+                    operation.status = OPERATION_STATUS.ERROR;
+                    operation.error = error;
+
+                    console.error(`❌ Background operation failed: ${operation.type} (ID: ${operation.id})`, error);
+
+                    // Ejecutar callback de error si existe
+                    if (operation.onError) {
+                        operation.onError(error);
+                    } else {
+                        // Mostrar error genérico si no hay callback
+                        showAlert(`❌ Error en operación en segundo plano: ${error.message}`, 'error');
+                    }
+                }
+
+                // Pausa removida para mayor velocidad de respuesta
+                // await new Promise(resolve => setTimeout(resolve, 50));
+            }
+
+            isProcessingQueue = false;
+        }
+
+        // Agregar operación a la cola
+        function addToQueue(operation) {
+            operation.id = ++queueId;
+            operation.status = OPERATION_STATUS.PENDING;
+            operation.timestamp = new Date();
+
+            operationQueue.push(operation);
+            console.log(`📋 Added to queue: ${operation.type} (ID: ${operation.id})`);
+
+            // Iniciar procesamiento de cola
+            processQueue();
+
+            return operation.id;
+        }
+
+        // Test de conectividad API
+        async function testAPI() {
+            console.log('🧪 Iniciando test de conectividad API...');
+            try {
+                const response = await fetch(`${API_BASE}/equipos`);
+                console.log('🔗 Response:', response.status, response.statusText);
+                const data = await response.json();
+                console.log('📊 Data recibida:', data);
+                return data;
+            } catch (error) {
+                console.error('❌ Error en test API:', error);
+                return null;
+            }
+        }
+
+        // Cargar datos al inicio
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 DOM cargado, iniciando aplicación...');
+
+            // Test de conectividad primero
+            await testAPI();
+
+            // Cargar datos normalmente
+            loadEquipos();
+            loadRecursos();
+        });
+
+        // Event listeners
+        document.getElementById('equipoForm').addEventListener('submit', saveEquipo);
+
+        // Event listener para cerrar modal con ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' || e.keyCode === 27) {
+                closeModal();
+            }
+            // Alt+G para guardar
+            if (e.altKey && (e.key === 'g' || e.key === 'G' || e.keyCode === 71)) {
+                e.preventDefault();
+                const modal = document.getElementById('equipoModal');
+                if (modal.style.display === 'block') {
+                    document.getElementById('equipoForm').submit();
+                }
+            }
+        });
+
+        // Cargar equipos
+        async function loadEquipos() {
+            try {
+                console.log('🔄 Cargando equipos desde:', `${API_BASE}/equipos`);
+                const response = await fetch(`${API_BASE}/equipos`);
+                console.log('📡 Response status:', response.status, response.statusText);
+
+                if (!response.ok) throw new Error('Error al cargar equipos');
+
+                allEquipos = await response.json();
+                console.log('📋 Equipos cargados:', allEquipos.length, allEquipos);
+
+                renderEquipos();
+                updateStats();
+
+            } catch (error) {
+                console.error('❌ Error loadEquipos:', error);
+                showAlert('Error al cargar equipos: ' + error.message, 'error');
+            }
+        }
+
+        // Cargar recursos
+        async function loadRecursos() {
+            try {
+                const response = await fetch(`${API_BASE}/recursos`);
+                if (!response.ok) throw new Error('Error al cargar recursos');
+
+                allRecursos = await response.json();
+                updateStats();
+
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error al cargar recursos: ' + error.message, 'error');
+            }
+        }
+
+        // Renderizar equipos
+        function renderEquipos() {
+            console.log('🎨 Renderizando equipos, cantidad:', allEquipos.length);
+            const grid = document.getElementById('equiposGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (allEquipos.length === 0) {
+                console.log('📝 Mostrando estado vacío');
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            console.log('📋 Mostrando grid con equipos');
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            grid.innerHTML = allEquipos.map(equipo => `
+                <div class="equipo-card">
+                    <div class="equipo-header">
+                        <div>
+                            <div class="equipo-nombre">${equipo.nombre}</div>
+                            ${equipo.descripcion ? `<div class="equipo-descripcion">${equipo.descripcion}</div>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="recursos-section">
+                        <div class="recursos-label">Recursos (${equipo.recursos?.length || 0})</div>
+                        <div class="recursos-list">
+                            ${(equipo.recursos || []).map(recurso => `
+                                <span class="recurso-tag ${recurso.tipo}">
+                                    ${recurso.tipo === 'operario' ? '👤' : '🚜'} ${recurso.nombre}
+                                </span>
+                            `).join('')}
+                            ${equipo.recursos?.length === 0 ? '<span style="color: #6b7280; font-size: 0.875rem;">Sin recursos asignados</span>' : ''}
+                        </div>
+                    </div>
+
+                    <div class="equipo-actions">
+                        <button class="btn btn-primary btn-small" onclick="editEquipo(${equipo.id})">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteEquipo(${equipo.id}, '${equipo.nombre}')">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const totalEquipos = allEquipos.length;
+            const recursosEnEquipos = new Set();
+
+            allEquipos.forEach(equipo => {
+                (equipo.recursos || []).forEach(recurso => {
+                    recursosEnEquipos.add(recurso.id);
+                });
+            });
+
+            const totalRecursosEnEquipos = recursosEnEquipos.size;
+            const recursosLibres = allRecursos.length - totalRecursosEnEquipos;
+
+            document.getElementById('totalEquipos').textContent = totalEquipos;
+            document.getElementById('totalRecursosEnEquipos').textContent = totalRecursosEnEquipos;
+            document.getElementById('recursosLibres').textContent = Math.max(0, recursosLibres);
+        }
+
+        // Filtrar equipos
+        function filterEquipos() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredEquipos = allEquipos.filter(equipo =>
+                equipo.nombre.toLowerCase().includes(searchTerm) ||
+                (equipo.descripcion && equipo.descripcion.toLowerCase().includes(searchTerm)) ||
+                (equipo.recursos || []).some(recurso =>
+                    recurso.nombre.toLowerCase().includes(searchTerm)
+                )
+            );
+
+            const grid = document.getElementById('equiposGrid');
+            grid.innerHTML = filteredEquipos.map(equipo => `
+                <div class="equipo-card">
+                    <div class="equipo-header">
+                        <div>
+                            <div class="equipo-nombre">${equipo.nombre}</div>
+                            ${equipo.descripcion ? `<div class="equipo-descripcion">${equipo.descripcion}</div>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="recursos-section">
+                        <div class="recursos-label">Recursos (${equipo.recursos?.length || 0})</div>
+                        <div class="recursos-list">
+                            ${(equipo.recursos || []).map(recurso => `
+                                <span class="recurso-tag ${recurso.tipo}">
+                                    ${recurso.tipo === 'operario' ? '👤' : '🚜'} ${recurso.nombre}
+                                </span>
+                            `).join('')}
+                            ${equipo.recursos?.length === 0 ? '<span style="color: #6b7280; font-size: 0.875rem;">Sin recursos asignados</span>' : ''}
+                        </div>
+                    </div>
+
+                    <div class="equipo-actions">
+                        <button class="btn btn-primary btn-small" onclick="editEquipo(${equipo.id})">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteEquipo(${equipo.id}, '${equipo.nombre}')">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Abrir modal crear
+        async function openCreateModal() {
+            currentEditingId = null;
+            document.getElementById('modalTitle').textContent = 'Nuevo Equipo';
+            document.getElementById('submitBtn').textContent = '💾 Guardar Equipo';
+            document.getElementById('equipoForm').reset();
+            await loadRecursosSelector();
+            document.getElementById('equipoModal').style.display = 'block';
+        }
+
+        // Editar equipo
+        async function editEquipo(id) {
+            const equipo = allEquipos.find(e => e.id === id);
+            if (!equipo) return;
+
+            currentEditingId = id;
+            document.getElementById('modalTitle').textContent = 'Editar Equipo';
+            document.getElementById('submitBtn').innerHTML = '💾 <u>G</u>uardar Cambios';
+
+            document.getElementById('equipoNombre').value = equipo.nombre;
+            document.getElementById('equipoDescripcion').value = equipo.descripcion || '';
+
+            await loadRecursosSelector(equipo.recursos || []);
+            document.getElementById('equipoModal').style.display = 'block';
+        }
+
+        // Cargar selector de recursos
+        async function loadRecursosSelector(selectedRecursos = []) {
+            const operariosSelector = document.getElementById('operariosSelector');
+            const maquinasSelector = document.getElementById('maquinasSelector');
+            const selectedIds = selectedRecursos.map(r => r.id);
+
+            try {
+                // Obtener recursos disponibles (para edición incluye recursos del equipo actual)
+                const url = currentEditingId
+                    ? `${API_BASE}/recursos/disponibles?equipoId=${currentEditingId}`
+                    : `${API_BASE}/recursos/disponibles`;
+
+                const response = await fetch(url);
+                const recursosDisponibles = await response.json();
+
+                // Separar recursos por tipo
+                const operarios = recursosDisponibles.filter(r => r.tipo === 'operario');
+                const maquinas = recursosDisponibles.filter(r => r.tipo === 'maquina');
+
+                // Cargar operarios
+                operariosSelector.innerHTML = operarios.map(recurso => `
+                    <div class="recurso-option">
+                        <input type="checkbox"
+                               id="recurso_${recurso.id}"
+                               value="${recurso.id}"
+                               ${selectedIds.includes(recurso.id) ? 'checked' : ''}>
+                        <label for="recurso_${recurso.id}">
+                            👤 ${recurso.nombre} (${recurso.codigo})
+                        </label>
+                    </div>
+                `).join('');
+
+                // Cargar máquinas
+                maquinasSelector.innerHTML = maquinas.map(recurso => `
+                    <div class="recurso-option">
+                        <input type="checkbox"
+                               id="recurso_${recurso.id}"
+                               value="${recurso.id}"
+                               ${selectedIds.includes(recurso.id) ? 'checked' : ''}>
+                        <label for="recurso_${recurso.id}">
+                            🚜 ${recurso.nombre} (${recurso.codigo})
+                        </label>
+                    </div>
+                `).join('');
+
+                console.log(`📋 Cargados ${operarios.length} operarios y ${maquinas.length} máquinas disponibles`);
+
+            } catch (error) {
+                console.error('Error cargando recursos disponibles:', error);
+                showAlert('Error al cargar recursos disponibles', 'error');
+
+                // Fallback: cargar con todos los recursos
+                const operarios = allRecursos.filter(r => r.tipo === 'operario');
+                const maquinas = allRecursos.filter(r => r.tipo === 'maquina');
+
+                operariosSelector.innerHTML = operarios.map(recurso => `
+                    <div class="recurso-option">
+                        <input type="checkbox"
+                               id="recurso_${recurso.id}"
+                               value="${recurso.id}"
+                               ${selectedIds.includes(recurso.id) ? 'checked' : ''}>
+                        <label for="recurso_${recurso.id}">
+                            👤 ${recurso.nombre} (${recurso.codigo})
+                        </label>
+                    </div>
+                `).join('');
+
+                maquinasSelector.innerHTML = maquinas.map(recurso => `
+                    <div class="recurso-option">
+                        <input type="checkbox"
+                               id="recurso_${recurso.id}"
+                               value="${recurso.id}"
+                               ${selectedIds.includes(recurso.id) ? 'checked' : ''}>
+                        <label for="recurso_${recurso.id}">
+                            🚜 ${recurso.nombre} (${recurso.codigo})
+                        </label>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Guardar equipo
+        async function saveEquipo(e) {
+            e.preventDefault();
+
+            const nombre = document.getElementById('equipoNombre').value.trim();
+            const descripcion = document.getElementById('equipoDescripcion').value.trim();
+
+            // Recoger recursos seleccionados de ambas columnas
+            const operariosSeleccionados = Array.from(
+                document.querySelectorAll('#operariosSelector input[type="checkbox"]:checked')
+            ).map(checkbox => parseInt(checkbox.value));
+
+            const maquinasSeleccionadas = Array.from(
+                document.querySelectorAll('#maquinasSelector input[type="checkbox"]:checked')
+            ).map(checkbox => parseInt(checkbox.value));
+
+            const recursosSeleccionados = [...operariosSeleccionados, ...maquinasSeleccionadas];
+
+            if (!nombre) {
+                showAlert('El nombre del equipo es obligatorio', 'error');
+                return;
+            }
+
+            const equipoData = {
+                nombre,
+                descripcion,
+                recursos: recursosSeleccionados
+            };
+
+            // Mostrar estado de carga en el botón
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '⏳ Guardando...';
+            submitBtn.disabled = true;
+
+            try {
+                // Realizar la llamada a la API de forma directa (no en background)
+                const url = currentEditingId
+                    ? `${API_BASE}/equipos/${currentEditingId}`
+                    : `${API_BASE}/equipos`;
+
+                const method = currentEditingId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(equipoData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || `HTTP error! status: ${response.status}`);
+                }
+
+                // Cerrar modal solo después del éxito
+                closeModal();
+
+                // Actualizar la lista de equipos
+                await loadEquipos();
+
+                // Mostrar mensaje de éxito real
+                showAlert(
+                    currentEditingId
+                        ? '✅ Equipo actualizado correctamente'
+                        : '✅ Equipo creado y guardado correctamente',
+                    'success'
+                );
+
+            } catch (error) {
+                console.error('Error saving equipo:', error);
+                showAlert(`❌ Error al guardar equipo: ${error.message}`, 'error');
+            } finally {
+                // Restaurar el botón al estado original
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+
+            // Resetear el ID de edición
+            currentEditingId = null;
+        }
+
+        // Eliminar equipo
+        async function deleteEquipo(id, nombre) {
+            if (!confirm(`¿Estás seguro de que deseas eliminar el equipo "${nombre}"?\n\nEsta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/equipos/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Error al eliminar equipo');
+                }
+
+                showAlert('Equipo eliminado exitosamente', 'success');
+                loadEquipos();
+
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error al eliminar equipo: ' + error.message, 'error');
+            }
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            document.getElementById('equipoModal').style.display = 'none';
+            currentEditingId = null;
+        }
+
+        // Mostrar alertas
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            let alertClass = 'alert-info';
+            if (type === 'error') alertClass = 'alert-error';
+            else if (type === 'warning') alertClass = 'alert-warning';
+            else if (type === 'success') alertClass = 'alert-success';
+
+            const alertElement = document.createElement('div');
+            alertElement.className = `alert ${alertClass}`;
+
+            // Para warnings y errors, añadir botón de cerrar manual
+            if (type === 'warning' || type === 'error') {
+                alertElement.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>${message}</span>
+                        <button onclick="this.parentElement.parentElement.remove()"
+                                style="background: none; border: none; color: inherit; cursor: pointer; padding: 0 0 0 10px; font-size: 16px;">
+                            ×
+                        </button>
+                    </div>
+                `;
+            } else {
+                alertElement.innerHTML = message;
+                // Auto-cerrar después de 4 segundos para success e info
+                setTimeout(() => {
+                    if (alertElement && alertElement.parentNode) {
+                        alertElement.classList.add('hiding');
+                        setTimeout(() => {
+                            if (alertElement && alertElement.parentNode) {
+                                alertElement.remove();
+                            }
+                        }, 300);
+                    }
+                }, 4000);
+            }
+
+            container.appendChild(alertElement);
+        }
+
+        // Cerrar modal al hacer click fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('equipoModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' || e.keyCode === 27) {
+                const modal = document.getElementById('equipoModal');
+                if (modal.style.display === 'block') {
+                    closeModal();
+                }
+            }
+        });
+    </script>
+
+    
+    <!-- Footer de información de conexión -->
+    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #1f2937; color: #9ca3af; padding: 8px 16px; font-size: 11px; border-top: 1px solid #374151; z-index: 1000;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Frontend: http://localhost:5173</span>
+                <span>Backend: <span id="apiBaseUrl">http://localhost:3002</span></span>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span>Última llamada: <span id="lastApiCall">Ninguna</span></span>
+                <span id="apiStatus" style="padding: 2px 6px; border-radius: 3px; background-color: #374151;">Esperando...</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script para monitorear llamadas API -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Actualizar la URL del API en el footer
+            const apiBaseElement = document.getElementById('apiBaseUrl');
+            if (apiBaseElement && typeof API_BASE !== 'undefined') {
+                apiBaseElement.textContent = API_BASE;
+            }
+
+            // Interceptar llamadas fetch para mostrar actividad de API
+            const originalFetch = window.fetch;
+            const lastApiCallElement = document.getElementById('lastApiCall');
+            const apiStatusElement = document.getElementById('apiStatus');
+
+            window.fetch = async function(...args) {
+                const [url, options] = args;
+
+                // Solo mostrar llamadas que vayan al API backend
+                if (typeof url === 'string' && (url.includes('localhost:300') || url.includes(API_BASE))) {
+                    const method = options?.method || 'GET';
+                    const endpoint = url.replace(API_BASE, '').split('?')[0];
+
+                    // Mostrar llamada en progreso
+                    lastApiCallElement.textContent = `${method} ${endpoint}`;
+                    apiStatusElement.textContent = 'Cargando...';
+                    apiStatusElement.style.backgroundColor = '#f59e0b';
+
+                    try {
+                        const response = await originalFetch(...args);
+
+                        // Mostrar resultado
+                        const status = response.ok ? 'OK' : `Error ${response.status}`;
+                        apiStatusElement.textContent = status;
+                        apiStatusElement.style.backgroundColor = response.ok ? '#10b981' : '#ef4444';
+
+                        // Resetear después de 2 segundos
+                        setTimeout(() => {
+                            if (apiStatusElement.textContent === status) {
+                                apiStatusElement.textContent = 'Listo';
+                                apiStatusElement.style.backgroundColor = '#374151';
+                            }
+                        }, 2000);
+
+                        return response;
+                    } catch (error) {
+                        apiStatusElement.textContent = 'Error de red';
+                        apiStatusElement.style.backgroundColor = '#ef4444';
+                        setTimeout(() => {
+                            apiStatusElement.textContent = 'Error';
+                            apiStatusElement.style.backgroundColor = '#374151';
+                        }, 3000);
+                        throw error;
+                    }
+                }
+
+                return originalFetch(...args);
+            };
+        });
+    </script>
+</body>
+</html>
