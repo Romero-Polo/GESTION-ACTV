@@ -6,16 +6,14 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy all files first (package.json, package-lock.json, source, configs)
+COPY . .
 
 # Install ALL dependencies (including devDependencies for build)
-# Explicitly set NODE_ENV to ensure devDependencies are installed
-ENV NODE_ENV=development
-RUN npm install
-
-# Copy all necessary files for build (excluding node_modules via .dockerignore)
-COPY . .
+# Delete package-lock.json to avoid cache issues and install fresh
+RUN rm -f package-lock.json && \
+    npm install && \
+    npm list typescript vite
 
 # Build arguments for environment variables
 ARG VITE_API_URL=/api
@@ -25,9 +23,10 @@ ARG VITE_APP_VERSION="1.0.0"
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_APP_TITLE=$VITE_APP_TITLE
 ENV VITE_APP_VERSION=$VITE_APP_VERSION
+ENV NODE_ENV=production
 
-# Build the application
-RUN npm run build
+# Build the application using npx to ensure binaries are found
+RUN npx tsc -b && npx vite build
 
 # Production stage - nginx
 FROM nginx:1.25-alpine

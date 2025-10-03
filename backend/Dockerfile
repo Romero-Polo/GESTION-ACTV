@@ -14,20 +14,17 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-COPY tsconfig.json ./
+# Copy all files
+COPY . .
 
 # Install ALL dependencies (including devDependencies for build)
-# Explicitly set NODE_ENV to ensure devDependencies are installed
-ENV NODE_ENV=development
-RUN npm install
-
-# Copy source code
-COPY src ./src
+# Delete package-lock.json to avoid cache issues and install fresh
+RUN rm -f package-lock.json && \
+    npm install && \
+    npm list typescript
 
 # Build TypeScript to JavaScript
-RUN npm run build && \
+RUN npx tsc && \
     npm prune --production
 
 # Production stage
