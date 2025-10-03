@@ -12,8 +12,9 @@ yarn-error.log*
 .env.production.local
 
 # Build directories
-dist/
+backend/dist/
 build/
+# Frontend dist is NOT ignored - needed for Docker deployment
 
 # Coverage reports
 coverage/
