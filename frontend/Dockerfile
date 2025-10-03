@@ -10,8 +10,9 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install ALL dependencies (including devDependencies for build)
-# Use --legacy-peer-deps if needed and ensure devDependencies are installed
-RUN npm install --include=dev
+# Explicitly set NODE_ENV to ensure devDependencies are installed
+ENV NODE_ENV=development
+RUN npm install
 
 # Copy all necessary files for build (excluding node_modules via .dockerignore)
 COPY . .

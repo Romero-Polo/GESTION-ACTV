@@ -19,7 +19,9 @@ COPY package*.json ./
 COPY tsconfig.json ./
 
 # Install ALL dependencies (including devDependencies for build)
-RUN npm install --include=dev
+# Explicitly set NODE_ENV to ensure devDependencies are installed
+ENV NODE_ENV=development
+RUN npm install
 
 # Copy source code
 COPY src ./src
