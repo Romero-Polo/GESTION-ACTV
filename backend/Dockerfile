@@ -1,18 +1,42 @@
 # Backend Dockerfile for Gestión de Actividad Laboral
-# Simplified - runs TypeScript directly with tsx (no compilation needed)
+# Multi-stage build - compiles TypeScript to JavaScript for production
 
+# Build stage
+FROM node:18-alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    unixodbc-dev \
+    freetds-dev || true
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY tsconfig.json ./
+
+# Install ALL dependencies (including devDependencies for build)
+RUN npm ci
+
+# Copy source code
+COPY src ./src
+
+# Build TypeScript to JavaScript
+RUN npm run build && \
+    npm prune --production
+
+# Production stage
 FROM node:18-alpine
 
 # Install runtime dependencies
 RUN apk add --no-cache \
     dumb-init \
-    curl || true
-
-# Install SQL Server ODBC drivers if available
-RUN apk add --no-cache \
+    curl \
     unixodbc \
-    freetds \
-    freetds-dev || echo "Warning: SQL Server ODBC drivers may not be available"
+    freetds || true
 
 # Create app user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -26,14 +50,12 @@ ENV TZ=Europe/Madrid
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime 2>/dev/null || true && \
     echo $TZ > /etc/timezone 2>/dev/null || true
 
-# Copy package.json and install ONLY production dependencies
+# Copy package.json
 COPY package.json ./
-RUN npm install --only=production --omit=dev && \
-    npm install tsx && \
-    chown -R nodejs:nodejs /app
 
-# Copy source code
-COPY --chown=nodejs:nodejs . .
+# Copy production node_modules and compiled code from builder
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 
 # Create necessary directories with proper permissions
 RUN mkdir -p logs tmp uploads && \
@@ -59,8 +81,8 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 # Use dumb-init as PID 1 for proper signal handling
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 
-# Start the application with tsx (runs TypeScript directly)
-CMD ["npx", "tsx", "src/index.ts"]
+# Start the compiled application
+CMD ["node", "dist/index.js"]
 
 # Add labels for better container management
 LABEL maintainer="Gestión de Actividad Laboral" \
