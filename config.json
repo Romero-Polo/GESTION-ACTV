@@ -1,7 +1,7 @@
 {
   "development": {
     "backend": {
-      "port": 3002,
+      "port": 3005,
       "host": "localhost",
       "protocol": "http"
     },
