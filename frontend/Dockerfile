@@ -8,16 +8,12 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY tsconfig*.json ./
-COPY vite.config.ts ./
-COPY index.html ./
 
 # Install ALL dependencies (including devDependencies for build)
 RUN npm ci
 
-# Copy source code
-COPY src ./src
-COPY public ./public
+# Copy all necessary files for build (excluding node_modules via .dockerignore)
+COPY . .
 
 # Build arguments for environment variables
 ARG VITE_API_URL=/api
