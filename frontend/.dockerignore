@@ -85,16 +85,3 @@ backup/
 
 # Server files (not needed for frontend build)
 server-static.cjs
-
-# HTML templates (keep index.html and build outputs)
-actividades.html
-agenda.html
-changelog.html
-configuracion.html
-equipos.html
-logs.html
-nueva-actividad.html
-obras.html
-report-agenda.html
-tipos-actividad.html
-usuarios.html

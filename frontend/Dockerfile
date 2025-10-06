@@ -46,6 +46,9 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy built files from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+# Copy static HTML files from builder (legacy pages)
+COPY --from=builder /app/*.html /usr/share/nginx/html/
+
 # Create health check endpoint
 RUN echo 'OK' > /usr/share/nginx/html/health-check
 

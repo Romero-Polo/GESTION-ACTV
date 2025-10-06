@@ -1,31 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(test:*)",
-      "Bash(node:*)",
-      "Bash(taskkill:*)",
-      "Bash(npm install)",
-      "Bash(if exist node_modules rmdir /s /q node_modules)",
-      "Bash(if exist package-lock.json del package-lock.json)",
-      "Bash(npm cache clean:*)",
-      "Bash(npm install:*)",
-      "Bash(dir node_modules)",
-      "Bash(npx ts-node-dev:*)",
-      "Bash(powershell:*)",
-      "Bash(npm run dev:*)",
-      "Bash(npx tsx:*)",
-      "Bash(dir node_modulesreflect-metadata)",
-      "Bash(npm run dev:old:*)",
-      "Bash(findstr:*)",
-      "Bash(dir:*)",
-      "Bash(if exist:*)",
-      "Bash(mssql:*)",
-      "Bash(git remote add:*)",
-      "Bash(git branch:*)",
-      "Bash(git push:*)",
-      "Bash(git add:*)",
-      "Bash(del nul)",
-      "Bash(rm:*)"
+      "Bash(chmod:*)",
+      "Bash(bash:*)",
+      "Bash(find:*)",
+      "Bash(for:*)"
     ],
     "deny": [],
     "ask": []
