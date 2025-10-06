@@ -18,7 +18,7 @@ export interface AuthState {
   error: string | null;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+import { API_BASE_URL } from '../config/api';
 
 export const useAuth = () => {
   const [authState, setAuthState] = useState<AuthState>({

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+import { API_BASE_URL } from '../config/api';
 
 export interface Actividad {
   id: number;
