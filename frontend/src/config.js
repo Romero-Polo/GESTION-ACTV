@@ -15,8 +15,8 @@ class AppConfig {
         }
 
         try {
-            // Intentar cargar desde config.json en la raíz del proyecto
-            const response = await fetch('../config.json');
+            // Intentar cargar desde config.json (en public/ en producción, raíz en desarrollo)
+            const response = await fetch('/config.json');
             if (!response.ok) {
                 throw new Error('Config file not found');
             }
