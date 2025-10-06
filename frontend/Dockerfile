@@ -49,6 +49,10 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy static HTML files from builder (legacy pages)
 COPY --from=builder /app/*.html /usr/share/nginx/html/
 
+# Copy config files from public directory
+COPY --from=builder /app/public/config.js /usr/share/nginx/html/config.js
+COPY --from=builder /app/public/config.json /usr/share/nginx/html/config.json
+
 # Create health check endpoint
 RUN echo 'OK' > /usr/share/nginx/html/health-check
 
