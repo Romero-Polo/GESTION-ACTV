@@ -1,33 +1,6 @@
 # Backend Dockerfile for Gestión de Actividad Laboral
-# Multi-stage build - compiles TypeScript to JavaScript for production
+# Runs TypeScript directly with tsx (no compilation needed)
 
-# Build stage
-FROM node:18-alpine AS builder
-
-# Install build dependencies
-RUN apk add --no-cache \
-    python3 \
-    make \
-    g++ \
-    unixodbc-dev \
-    freetds-dev || true
-
-WORKDIR /app
-
-# Copy all files
-COPY . .
-
-# Install ALL dependencies (including devDependencies for build)
-# Delete package-lock.json to avoid cache issues and install fresh
-RUN rm -f package-lock.json && \
-    npm install && \
-    npm list typescript
-
-# Build TypeScript to JavaScript
-RUN npx tsc && \
-    npm prune --production
-
-# Production stage
 FROM node:18-alpine
 
 # Install runtime dependencies
@@ -49,12 +22,14 @@ ENV TZ=Europe/Madrid
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime 2>/dev/null || true && \
     echo $TZ > /etc/timezone 2>/dev/null || true
 
-# Copy package.json
-COPY package.json ./
+# Copy all files
+COPY . .
 
-# Copy production node_modules and compiled code from builder
-COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+# Install ALL dependencies and tsx
+RUN rm -f package-lock.json && \
+    npm install && \
+    npm install tsx && \
+    chown -R nodejs:nodejs /app
 
 # Create necessary directories with proper permissions
 RUN mkdir -p logs tmp uploads && \
@@ -80,8 +55,8 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 # Use dumb-init as PID 1 for proper signal handling
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 
-# Start the compiled application
-CMD ["node", "dist/index.js"]
+# Run TypeScript directly with tsx
+CMD ["npx", "tsx", "src/index.ts"]
 
 # Add labels for better container management
 LABEL maintainer="Gestión de Actividad Laboral" \
